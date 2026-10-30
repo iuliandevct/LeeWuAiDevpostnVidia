@@ -20,14 +20,31 @@ import html as html_mod
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-PORT = int(os.getenv("PORT", "8080"))
-HOST = os.getenv("HOST", "127.0.0.1")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Check if running from scratch or project dir
 if "scratch" in BASE_DIR:
     PROJECT_DIR = r"c:\Users\PC\Documents\ProiecteAutomatizareSincron\proiecte\youtube"
 else:
     PROJECT_DIR = BASE_DIR
+
+# Load .env file if present (do not override existing environment variables)
+_dotenv_path = os.path.join(PROJECT_DIR, ".env")
+if os.path.exists(_dotenv_path):
+    try:
+        with open(_dotenv_path, "r", encoding="utf-8") as _ef:
+            for _line in _ef:
+                _line = _line.strip()
+                if _line and not _line.startswith("#") and "=" in _line:
+                    _k, _v = _line.split("=", 1)
+                    _k = _k.strip()
+                    _v = _v.strip().strip('"').strip("'")
+                    if _k and _k not in os.environ:
+                        os.environ[_k] = _v
+    except Exception:
+        pass
+
+PORT = int(os.getenv("PORT", "8080"))
+HOST = os.getenv("HOST", "127.0.0.1")
 
 _env_data_dir = os.getenv("DATA_DIR", "").strip()
 if _env_data_dir:
@@ -312,6 +329,85 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
             self.render_statutory_export("LW-DEMO-001")
             return
 
+        if path == "/api/telegram/remarks":
+            remarks_file = os.path.join(DATA_DIR, "survey_remarks.json")
+            remarks = []
+            if os.path.exists(remarks_file):
+                try:
+                    with open(remarks_file, "r", encoding="utf-8") as f:
+                        remarks = json.load(f)
+                except Exception:
+                    pass
+            self.send_json(200, {"ok": True, "count": len(remarks), "remarks": remarks})
+            return
+
+        if path == "/api/kanban/cards":
+            cards_file = os.path.join(DATA_DIR, "kanban_cards.json")
+            cards = []
+            if os.path.exists(cards_file):
+                try:
+                    with open(cards_file, "r", encoding="utf-8") as f:
+                        cards = json.load(f)
+                except Exception:
+                    pass
+            if not cards:
+                cards = [
+                    {
+                        "id": "KBN-2026-001",
+                        "title": "MV WAN FU - Discharge Survey",
+                        "vessel_name": "MV WAN FU (IMO: 1072842)",
+                        "imo_number": "1072842",
+                        "client_name": "COSCO SHIPPING ROMANIA",
+                        "cargo": "Hot-Rolled Structural Steel I-Beams & Coils",
+                        "tonnage": "11,020 MT",
+                        "berth": "Berth 120",
+                        "port": "Port of Constanta Sud",
+                        "priority": "URGENT",
+                        "stage": "active_survey",
+                        "source": "Gmail AI (n8n auto-parsed)"
+                    },
+                    {
+                        "id": "KBN-2026-002",
+                        "title": "MV DEMO CARRIER - Heavy Lift MWS",
+                        "vessel_name": "MV DEMO CARRIER (IMO: 9845120)",
+                        "imo_number": "9845120",
+                        "client_name": "SIEMENS ENERGY GLOBAL",
+                        "cargo": "Industrial Transformer TR-001 (124.5 MT)",
+                        "tonnage": "124.5 MT",
+                        "berth": "Berth 120",
+                        "port": "Port of Constanta",
+                        "priority": "HIGH",
+                        "stage": "berth_triage",
+                        "source": "Statutory MWS Nomination"
+                    },
+                    {
+                        "id": "KBN-2026-003",
+                        "title": "MV ATLANTIC PIONEER - Bulk Grain Intake",
+                        "vessel_name": "MV ATLANTIC PIONEER (IMO: 9710442)",
+                        "imo_number": "9710442",
+                        "client_name": "CARGILL GRAIN",
+                        "cargo": "Milling Wheat (Holds #1-#4)",
+                        "tonnage": "24,500 MT",
+                        "berth": "Berth 119",
+                        "port": "Port of Constanta",
+                        "priority": "NORMAL",
+                        "stage": "gmail_intake",
+                        "source": "Gmail AI"
+                    }
+                ]
+            self.send_json(200, {"ok": True, "cards": cards})
+            return
+
+        if path == "/api/fleet/reminders":
+            self.send_json(200, {
+                "ok": True,
+                "vehicles": [
+                    {"plate": "CT-88-LPM", "model": "Dacia Duster 4x4", "itp_days": 18, "rca_days": 142, "rovinieta_days": 64},
+                    {"plate": "CT-22-LPM", "model": "Ford Ranger Wildtrak", "itp_days": 89, "rca_days": 45, "rovinieta_days": 7}
+                ]
+            })
+            return
+
         # AI Operations & Cost Observatory Endpoints
         if path == "/ai-ops" or path == "/ai-ops.html":
             self.path = "/ai-ops.html"
@@ -452,6 +548,84 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_reset("LW-DEMO-001")
             return
 
+        if path == "/api/telegram/remark":
+            remarks_file = os.path.join(DATA_DIR, "survey_remarks.json")
+            remarks = []
+            if os.path.exists(remarks_file):
+                try:
+                    with open(remarks_file, "r", encoding="utf-8") as f:
+                        remarks = json.load(f)
+                except Exception:
+                    pass
+            raw_text = str(payload.get("text", "")).replace("/remark", "").strip()
+            new_rem = {
+                "id": f"REM-{int(time.time()) % 10000}",
+                "hold_no": int(payload.get("hold_no", 3)),
+                "item_ref": payload.get("item_ref", "Cargo Unit"),
+                "description": raw_text or "Inspection remark logged",
+                "photo_timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
+                "severity": payload.get("severity", "CRITIC"),
+                "attributed_party": payload.get("attributed_party", "Stevedore / Carrier Inspection"),
+                "legal_status": "Hague-Visby Art. III r.2 / Legea 51/1995",
+                "created_via": payload.get("source", "Telegram Bot (@Leewubot)"),
+                "surveyor": payload.get("surveyor", "Alexandru Radu"),
+                "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            }
+            remarks.insert(0, new_rem)
+            with open(remarks_file, "w", encoding="utf-8") as f:
+                json.dump(remarks, f, ensure_ascii=False, indent=2)
+            self.send_json(200, {"ok": True, "remark": new_rem})
+            return
+
+        if path == "/api/telegram-notify":
+            msg_text = str(payload.get("message") or payload.get("custom_message") or "LeeWu AI Notification")
+            chat_id = str(payload.get("chatId") or os.getenv("TELEGRAM_CHAT_ID", "7442343423")).strip()
+            bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+            delivered = False
+            msg_id = int(time.time()) % 1000000
+            if bot_token and chat_id:
+                try:
+                    tg_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                    tg_body = json.dumps({"chat_id": chat_id, "text": msg_text, "parse_mode": "HTML"}).encode("utf-8")
+                    req = urllib.request.Request(tg_url, data=tg_body, headers={"Content-Type": "application/json"}, method="POST")
+                    with urllib.request.urlopen(req, timeout=10) as resp:
+                        res_json = json.loads(resp.read().decode("utf-8"))
+                        delivered = bool(res_json.get("ok"))
+                        msg_id = res_json.get("result", {}).get("message_id", msg_id)
+                except Exception:
+                    pass
+            self.send_json(200, {"ok": True, "delivered": delivered, "messageId": msg_id})
+            return
+
+        if path == "/api/kanban/card":
+            cards_file = os.path.join(DATA_DIR, "kanban_cards.json")
+            cards = []
+            if os.path.exists(cards_file):
+                try:
+                    with open(cards_file, "r", encoding="utf-8") as f:
+                        cards = json.load(f)
+                except Exception:
+                    pass
+            new_card = {
+                "id": f"KBN-{int(time.time()) % 100000}",
+                "title": payload.get("title", "New Discharge Survey"),
+                "vessel_name": payload.get("vessel_name", "MV CARGO VESSEL"),
+                "imo_number": payload.get("imo_number", "9000000"),
+                "client_name": payload.get("client_name", "MARITIME CLIENT"),
+                "cargo": payload.get("cargo", "General Cargo"),
+                "tonnage": payload.get("tonnage", "5,000 MT"),
+                "berth": payload.get("berth", "Berth 120"),
+                "port": payload.get("port", "Port of Constanta"),
+                "priority": payload.get("priority", "NORMAL"),
+                "stage": payload.get("stage", "gmail_intake"),
+                "source": payload.get("source", "Web Console")
+            }
+            cards.insert(0, new_card)
+            with open(cards_file, "w", encoding="utf-8") as f:
+                json.dump(cards, f, ensure_ascii=False, indent=2)
+            self.send_json(201, {"ok": True, "card": new_card})
+            return
+
         if path.startswith("/api/ai-ops/"):
             if not check_admin_auth(self, parsed):
                 self.send_json(401, {"error": "Unauthorized: Administrator privileges required for AI Observatory.", "status": "AUTH_REQUIRED"})
@@ -478,6 +652,43 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         self.send_json(404, {"error": "Endpoint not found"})
+
+    def do_PATCH(self):
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+        length = int(self.headers.get("Content-Length", 0))
+        if has_query_credentials(parsed):
+            if 0 < length <= 65536:
+                self.rfile.read(length)
+            self.send_json(401, {"error": "Unauthorized", "status": "AUTH_REQUIRED"})
+            return
+        REQUIRE_AUTH_FOR_WRITES = os.getenv("REQUIRE_AUTH_FOR_WRITES", "true").strip().lower() not in ("false", "0")
+        if REQUIRE_AUTH_FOR_WRITES and not check_admin_auth(self, parsed):
+            if 0 < length <= 65536:
+                self.rfile.read(length)
+            self.send_json(401, {"error": "Unauthorized", "status": "AUTH_REQUIRED"})
+            return
+        body = self.rfile.read(length) if length > 0 else b""
+        payload = json.loads(body.decode("utf-8")) if body else {}
+        if path.startswith("/api/kanban/card/") and path.endswith("/stage"):
+            card_id = path.split("/")[4]
+            new_stage = payload.get("stage", "berth_triage")
+            cards_file = os.path.join(DATA_DIR, "kanban_cards.json")
+            cards = []
+            if os.path.exists(cards_file):
+                try:
+                    with open(cards_file, "r", encoding="utf-8") as f:
+                        cards = json.load(f)
+                except Exception:
+                    pass
+            for c in cards:
+                if c.get("id") == card_id:
+                    c["stage"] = new_stage
+            with open(cards_file, "w", encoding="utf-8") as f:
+                json.dump(cards, f, ensure_ascii=False, indent=2)
+            self.send_json(200, {"ok": True, "id": card_id, "stage": new_stage})
+            return
+        self.send_json(404, {"error": "PATCH route not found"})
 
     def send_json(self, code, data):
         self.send_response(code)
@@ -845,12 +1056,15 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     server_address = (HOST, PORT)
-    with socketserver.TCPServer(server_address, LeeWuMVPHandler) as httpd:
+    class ThreadingLeeWuServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+        allow_reuse_address = True
+        daemon_threads = True
+    with ThreadingLeeWuServer(server_address, LeeWuMVPHandler) as httpd:
         print(f"==================================================")
         print(f"LEEWU AI LOCAL MVP SERVER ACTIVE")
-        print(f"Listening on: http://127.0.0.1:{PORT}")
-        print(f"Demo URL:     http://127.0.0.1:{PORT}/demo.html")
-        print(f"Console:      http://127.0.0.1:{PORT}/survey-console.html")
+        print(f"Listening on: http://{HOST}:{PORT}")
+        print(f"Demo URL:     http://{HOST}:{PORT}/demo.html")
+        print(f"Console:      http://{HOST}:{PORT}/survey-console.html")
         print(f"==================================================")
         try:
             httpd.serve_forever()
