@@ -13,6 +13,26 @@
 [![Maritime Law 51/1995](https://img.shields.io/badge/Compliance-Law%2051%2F1995%20Bar%20Gate-FFB800)](#statutory-maritime-law)
 
 
+
+### 10. Enterprise Cloud & GPU Pricing Gateway (leewuai.ro/prices)
+Integrated dedicated infrastructure pricing page ([prices.html](file:///prices.html)) reflecting wholesale Nebius bare-metal rates with our proprietary **+20% Enterprise Maritime SLA markup**:
+- **NVIDIA GPU Compute Instances**:
+  - **NVIDIA HGX B300**: Preemptible de la $1.19 / GPU-h | On-Demand $11.40 / GPU-h ($8.322 / lună)
+  - **NVIDIA HGX B200**: Preemptible de la $1.19 / GPU-h | On-Demand $10.20 / GPU-h ($7.446 / lună)
+  - **NVIDIA HGX H200**: Preemptible de la $0.95 / GPU-h | On-Demand $6.48 / GPU-h ($4.730 / lună)
+  - **NVIDIA HGX H100**: Preemptible de la $0.95 / GPU-h | On-Demand $5.40 / GPU-h ($3.942 / lună)
+  - **NVIDIA RTX PRO 6000 Ada**: Preemptible de la $0.95 / GPU-h | On-Demand $2.16 / GPU-h ($1.576 / lună)
+  - **NVIDIA L40S**: Preemptible de la $0.89 / GPU-h | On-Demand $1.86 / GPU-h ($1.357 / lună)
+- **Nebius Token Factory (Serverless LLM APIs)**:
+  - **nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B**: $0.18 / 1M Input | $0.72 / 1M Output
+  - **NousResearch/Hermes-4-405B**: $2.16 / 1M Input | $4.32 / 1M Output
+  - **nvidia/Nemotron-3.5-Super-VL**: $0.30 / 1M Input | $1.20 / 1M Output
+  - **DeepSeek V4 Pro**: $2.10 / 1M Input | $4.20 / 1M Output
+  - **Meta Llama 3.1 70B Fast**: $0.60 / 1M Input | $1.80 / 1M Output
+  - **NV-Embed-QA**: $0.06 / 1M Tokens
+- **High-Performance Storage**: Shared Filesystem ($0.0960/GiB/m), WEKA Filesystem ($0.1200/GiB/m), Standard Object Storage ($0.0176/GiB/m), Block NVMe SSD ($0.0780/GiB/m).
+- **Interactive Multi-Currency & Period Calculator**: Live conversion between USD ($), EUR (€), and RON (lei), with hourly and monthly (730h) commitment estimates.
+
 ### 9. Autonomous Field Surveyor Operations: Accounting Brain + Legal Brain + EXIF Chrono Log
 LeeWu AI closes the gap between raw physical inspection on cargo holds and back-office statutory accounting:
 - **The Core Event Loop**: `Mail (Comandă Nouă) ➡️ Ingestie n8n ➡️ Notificare Telegram ➡️ Inspectorul face poze ➡️ EXIF Time-Log (Reconstituire cronologică descărcare) ➡️ Remarks Piese Bulite ➡️ Foaie de Parcurs & Pontaj ➡️ Raport Semnat`.

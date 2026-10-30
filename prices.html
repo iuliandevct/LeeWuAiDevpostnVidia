@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html class="dark" lang="ro">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Prețuri Cloud & GPU | LeeWu AI & Nebius Token Factory (leewuai.ro/prices)</title>
+<meta name="description" content="Tarife transparente NVIDIA GPU Compute (B300, B200, H200, H100, L40S) și Nebius Token Factory API cu SLA Enterprise Maritim garantat de LeeWu AI."/>
+<link rel="canonical" href="https://leewuai.ro/prices"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#94da32",
+        "primary-container": "#76b900",
+        "secondary": "#81cfff",
+        "secondary-container": "#00a3e0",
+        "tertiary": "#ffb95f",
+        "background": "#101319",
+        "surface": "#101319",
+        "surface-container-lowest": "#0b0e14",
+        "surface-container-low": "#191c22",
+        "surface-container": "#1d2026",
+        "surface-container-high": "#272a30",
+        "surface-container-highest": "#32353b",
+        "on-surface": "#e1e2eb",
+        "on-surface-variant": "#c1cab1",
+        "outline": "#8c947d",
+        "outline-variant": "#424936",
+        "error": "#ffb4ab"
+      },
+      fontFamily: {
+        "headline": ["Geist", "sans-serif"],
+        "body": ["Inter", "sans-serif"],
+        "mono": ["JetBrains Mono", "monospace"]
+      }
+    }
+  }
+}
+</script>
+<style>
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #101319; }
+  ::-webkit-scrollbar-thumb { background: #272a30; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94da32; }
+  
+  .glow-primary {
+    box-shadow: 0 0 35px rgba(148, 218, 50, 0.22);
+  }
+  .glow-cyan {
+    box-shadow: 0 0 35px rgba(129, 207, 255, 0.22);
+  }
+  .grid-pattern {
+    background-size: 32px 32px;
+    background-image: linear-gradient(to right, rgba(66, 73, 54, 0.15) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(66, 73, 54, 0.15) 1px, transparent 1px);
+  }
+  .gradient-border {
+    position: relative;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(148,218,50,0.4), rgba(129,207,255,0.2), rgba(66,73,54,0.1));
+    padding: 1px;
+  }
+  .gradient-border-content {
+    background: #191c22;
+    border-radius: calc(0.75rem - 1px);
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased overflow-x-hidden min-h-screen flex flex-col selection:bg-primary/30 selection:text-primary">
+
+  <!-- ==================== VIRTUAL DOMAIN BAR ==================== -->
+  <div class="bg-surface-container-lowest border-b border-outline-variant/30 py-1.5 px-4 text-xs font-mono text-on-surface-variant flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+      <span>OFICIAL:</span>
+      <span class="text-primary font-bold">leewuai.ro/prices</span>
+      <span class="text-outline">|</span>
+      <span>NVIDIA Compute & Nebius Token Factory Enterprise Gateway</span>
+    </div>
+    <div class="hidden sm:flex items-center gap-4 text-[11px]">
+      <span class="text-secondary flex items-center gap-1">
+        <span class="material-symbols-outlined text-[13px]">verified_user</span>
+        SLA 99.95% Maritim Inclus
+      </span>
+      <span class="text-on-surface-variant">InfiniBand 3.2 Tbps</span>
+      <span class="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 font-semibold">+20% Enterprise Margin Applied</span>
+    </div>
+  </div>
+
+  <!-- ==================== TOP STICKY NAVBAR ==================== -->
+  <header class="sticky top-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="landing.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary/20 border border-primary/50 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(148,218,50,0.3)]">
+          <span class="material-symbols-outlined text-xl">directions_boat</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-headline font-bold text-lg text-on-surface tracking-tight leading-none">LeeWu AI</span>
+          <span class="font-mono text-[9px] uppercase tracking-widest text-primary font-semibold">Autonomous Maritime Intelligence</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 font-mono text-xs text-on-surface-variant">
+        <a href="landing.html#capabilities" class="hover:text-primary transition-colors">Capabilități</a>
+        <a href="landing.html#models" class="hover:text-primary transition-colors">Nemotron Tiers</a>
+        <a href="#gpu-instances" class="text-primary font-bold">Instanțe GPU</a>
+        <a href="#token-factory" class="hover:text-primary transition-colors">Token Factory</a>
+        <a href="#storage" class="hover:text-primary transition-colors">Stocare & FS</a>
+        <a href="#calculator" class="hover:text-primary transition-colors">Calculator Cost</a>
+        <a href="#faq" class="hover:text-primary transition-colors">Întrebări Frecvente</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="survey-console.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/50 text-xs font-mono text-on-surface hover:border-secondary hover:text-secondary transition-all">
+          <span class="material-symbols-outlined text-sm">dashboard</span>
+          <span>Consola Surveyor</span>
+        </a>
+        <a href="login.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-background font-headline font-semibold text-xs hover:bg-primary-container shadow-[0_0_20px_rgba(148,218,50,0.35)] transition-all">
+          <span class="material-symbols-outlined text-sm">rocket_launch</span>
+          <span>Deschide Cont Cloud</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 grid-pattern border-b border-outline-variant/20 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-background pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto relative z-10 text-center">
+      
+      <!-- Top Tag -->
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/50 text-xs font-mono text-on-surface-variant mb-6 shadow-sm">
+        <span class="material-symbols-outlined text-sm text-primary">data_thresholding</span>
+        <span>Catalog Oficial Prețuri Cloud (Infrastructură Bare-Metal +20% SLA Enterprise)</span>
+      </div>
+
+      <h1 class="font-headline font-extrabold text-3xl sm:text-5xl lg:text-6xl text-on-surface tracking-tight max-w-4xl mx-auto leading-tight">
+        Prețuri Transparente <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-container to-secondary">GPU & Token Factory</span>
+      </h1>
+      
+      <p class="mt-4 font-body text-base sm:text-lg text-on-surface-variant max-w-3xl mx-auto leading-relaxed">
+        Putere de calcul garantată pe clustere dedicate <b>NVIDIA HGX B300, B200, H200, H100</b> și serverless <b>Nebius Token Factory</b>. Toate tarifele reflectă suportul de înaltă disponibilitate (99.95% SLA), rețeaua InfiniBand 3.2 Tbps și conformitatea statutară maritimă pentru operațiuni portuare.
+      </p>
+
+      <!-- Value Proposition Badges -->
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto text-left">
+        <div class="p-4 rounded-xl bg-surface-container/60 border border-outline-variant/30 backdrop-blur flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-primary/10 border border-primary/40 flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined text-base">percent</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-semibold text-sm text-on-surface">Reduceri pentru Angajament</h4>
+            <p class="text-xs text-on-surface-variant mt-0.5">Economisești până la 35% față de tariful on-demand rezervând clustere pe perioade de 6 - 24 luni.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-surface-container/60 border border-outline-variant/30 backdrop-blur flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/40 flex items-center justify-center text-secondary shrink-0">
+            <span class="material-symbols-outlined text-base">tune</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-semibold text-sm text-on-surface">Strategie Flexibilă On-Demand</h4>
+            <p class="text-xs text-on-surface-variant mt-0.5">Plătești la secundă pentru instanțele active și beneficiezi de mașini Preemptible/Spot cu discount de până la 80%.</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-surface-container/60 border border-outline-variant/30 backdrop-blur flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-tertiary/10 border border-tertiary/40 flex items-center justify-center text-tertiary shrink-0">
+            <span class="material-symbols-outlined text-base">credit_card</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-semibold text-sm text-on-surface">Plăți Convenabile & Facturare PDF</h4>
+            <p class="text-xs text-on-surface-variant mt-0.5">Plăți cu cardul prin Stripe (minim $25) sau ordin de plată bancar pentru companii cu termene de 30 zile.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Panel (Currency & Period Switcher) -->
+      <div class="mt-10 p-4 rounded-2xl bg-surface-container-high/70 border border-outline-variant/40 max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4 backdrop-blur-md">
+        
+        <!-- Currency Toggle -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-on-surface-variant">Monedă:</span>
+          <div class="inline-flex rounded-lg bg-surface-container-lowest p-1 border border-outline-variant/30">
+            <button onclick="setCurrency('USD')" id="btn-curr-USD" class="px-3 py-1 text-xs font-mono rounded font-semibold bg-primary text-background shadow transition-all">USD ($)</button>
+            <button onclick="setCurrency('EUR')" id="btn-curr-EUR" class="px-3 py-1 text-xs font-mono rounded font-semibold text-on-surface-variant hover:text-on-surface transition-all">EUR (€)</button>
+            <button onclick="setCurrency('RON')" id="btn-curr-RON" class="px-3 py-1 text-xs font-mono rounded font-semibold text-on-surface-variant hover:text-on-surface transition-all">RON (lei)</button>
+          </div>
+        </div>
+
+        <!-- Billing Period Toggle -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-on-surface-variant">Calcul:</span>
+          <div class="inline-flex rounded-lg bg-surface-container-lowest p-1 border border-outline-variant/30">
+            <button onclick="setTimeframe('hour')" id="btn-tf-hour" class="px-3 py-1 text-xs font-mono rounded font-semibold bg-secondary text-background shadow transition-all">Pe Oră (Hourly)</button>
+            <button onclick="setTimeframe('month')" id="btn-tf-month" class="px-3 py-1 text-xs font-mono rounded font-semibold text-on-surface-variant hover:text-on-surface transition-all">Lunar (730h / lună)</button>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="w-full sm:w-auto relative flex-1 min-w-[200px]">
+          <span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-base pointer-events-none">search</span>
+          <input type="text" id="filter-input" onkeyup="filterPricing()" placeholder="Caută GPU (ex: H100, B200, L40S, Nemotron)..." class="w-full pl-9 pr-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-xs font-mono text-on-surface focus:outline-none focus:border-primary"/>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 1: NVIDIA GPU INSTANCES ==================== -->
+  <section id="gpu-instances" class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-outline-variant/20 gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-primary"></span>
+          <h2 class="font-headline font-bold text-2xl text-on-surface">Instanțe NVIDIA GPU Compute</h2>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-1">
+          NVIDIA HGX & NVLink bare-metal cu interconect InfiniBand Quantum-2 3.2 Tbps și memorie HBM3/HBM3e. Prețurile afișate conțin marja Enterprise LeeWu AI de +20%.
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 font-semibold">
+          Preemptible Spot: de la $0.95 / GPU-h
+        </span>
+      </div>
+    </div>
+
+    <!-- Pricing Table -->
+    <div class="mt-6 overflow-x-auto rounded-xl border border-outline-variant/30 bg-surface-container-low shadow-xl">
+      <table class="w-full text-left border-collapse text-xs font-mono" id="gpu-table">
+        <thead>
+          <tr class="bg-surface-container border-b border-outline-variant/40 text-on-surface font-semibold uppercase tracking-wider text-[11px]">
+            <th class="py-3.5 px-4">Instanță & Arhitectură</th>
+            <th class="py-3.5 px-3">vCPUs</th>
+            <th class="py-3.5 px-3">RAM</th>
+            <th class="py-3.5 px-4 text-secondary">Preemptible (Spot) *</th>
+            <th class="py-3.5 px-4 text-primary">On-Demand</th>
+            <th class="py-3.5 px-4 text-on-surface">Estimat Lunar (730h)</th>
+            <th class="py-3.5 px-4 text-right">Comandă</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/20 text-on-surface-variant">
+          
+          <!-- GB300 NVL72 -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA GB300 NVL72 Blackwell Ultra">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <div>
+                <div class="text-sm">NVIDIA GB300 NVL72</div>
+                <div class="text-[10px] font-mono text-outline">Blackwell Ultra • 72-GPU Rack Liquid-Cooled</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">112</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">800 GB</td>
+            <td class="py-3.5 px-4 text-outline font-semibold">— (Cluster dedicat)</td>
+            <td class="py-3.5 px-4 font-semibold text-primary">Cotație Personalizată</td>
+            <td class="py-3.5 px-4 text-on-surface font-semibold">Contact Enterprise</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="#calculator" class="px-3 py-1 rounded bg-surface-container-high border border-outline-variant hover:border-primary text-on-surface text-[11px] font-semibold transition-all">Solicită</a>
+            </td>
+          </tr>
+
+          <!-- HGX B300 -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA HGX B300 Blackwell">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <div>
+                <div class="text-sm">NVIDIA HGX B300</div>
+                <div class="text-[10px] font-mono text-outline">Blackwell HGX • 288GB HBM3e per GPU</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">24</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">346 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="1.19" data-type="spot">de la $1.19 / GPU-h</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="11.40" data-type="ondemand">$11.40 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="11.40" data-type="monthly">$8.322 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-primary/20 text-primary border border-primary/40 hover:bg-primary hover:text-background text-[11px] font-semibold transition-all">Rezervă</a>
+            </td>
+          </tr>
+
+          <!-- GB200 NVL72 -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA GB200 NVL72 Blackwell">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <div>
+                <div class="text-sm">NVIDIA GB200 NVL72</div>
+                <div class="text-[10px] font-mono text-outline">Blackwell NVLink 72 • Grace CPU Dual Superchip</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">112</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">800 GB</td>
+            <td class="py-3.5 px-4 text-outline font-semibold">— (Rezervare anuală)</td>
+            <td class="py-3.5 px-4 font-semibold text-primary">Cotație Personalizată</td>
+            <td class="py-3.5 px-4 text-on-surface font-semibold">Contact Enterprise</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="#calculator" class="px-3 py-1 rounded bg-surface-container-high border border-outline-variant hover:border-primary text-on-surface text-[11px] font-semibold transition-all">Solicită</a>
+            </td>
+          </tr>
+
+          <!-- HGX B200 -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA HGX B200 Blackwell">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <div>
+                <div class="text-sm">NVIDIA HGX B200</div>
+                <div class="text-[10px] font-mono text-outline">Blackwell HGX • 192GB HBM3e per GPU</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">20</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">224 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="1.19" data-type="spot">de la $1.19 / GPU-h</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="10.20" data-type="ondemand">$10.20 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="10.20" data-type="monthly">$7.446 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-primary/20 text-primary border border-primary/40 hover:bg-primary hover:text-background text-[11px] font-semibold transition-all">Rezervă</a>
+            </td>
+          </tr>
+
+          <!-- HGX H200 -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA HGX H200 Hopper 141GB">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <div>
+                <div class="text-sm">NVIDIA HGX H200</div>
+                <div class="text-[10px] font-mono text-outline">Hopper • 141GB HBM3e • 4.8 TB/s Lățime de bandă</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">16</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">200 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="0.95" data-type="spot">de la $0.95 / GPU-h</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="6.48" data-type="ondemand">$6.48 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="6.48" data-type="monthly">$4.730 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-primary text-background hover:bg-primary-container text-[11px] font-semibold shadow-[0_0_12px_rgba(148,218,50,0.3)] transition-all">Activare</a>
+            </td>
+          </tr>
+
+          <!-- HGX H100 (Recomandat Producție) -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row bg-primary/5" data-name="NVIDIA HGX H100 Hopper SXM5">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+              <div>
+                <div class="text-sm flex items-center gap-2">
+                  <span>NVIDIA HGX H100</span>
+                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-primary text-background font-bold uppercase tracking-wider">Flotă Activă</span>
+                </div>
+                <div class="text-[10px] font-mono text-outline">Hopper SXM5 • 80GB HBM3 • 3.35 TB/s NVLink 900 GB/s</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">16</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">200 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="0.95" data-type="spot">de la $0.95 / GPU-h</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="5.40" data-type="ondemand">$5.40 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="5.40" data-type="monthly">$3.942 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-primary text-background hover:bg-primary-container text-[11px] font-semibold shadow-[0_0_15px_rgba(148,218,50,0.35)] transition-all">Activare Instant</a>
+            </td>
+          </tr>
+
+          <!-- RTX PRO 6000 -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA RTX PRO 6000 Ada Generation">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-outline"></span>
+              <div>
+                <div class="text-sm">NVIDIA RTX PRO 6000</div>
+                <div class="text-[10px] font-mono text-outline">Ada Generation • 48GB GDDR6 ECC</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">24</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">218 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="0.95" data-type="spot">de la $0.95 / GPU-h</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="2.16" data-type="ondemand">$2.16 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="2.16" data-type="monthly">$1.576 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-surface-container-high border border-outline-variant hover:border-primary text-on-surface text-[11px] font-semibold transition-all">Rezervă</a>
+            </td>
+          </tr>
+
+          <!-- L40S Intel -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA L40S with Intel CPU">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-outline"></span>
+              <div>
+                <div class="text-sm">NVIDIA L40S (Intel CPU)</div>
+                <div class="text-[10px] font-mono text-outline">Ada Lovelace • 48GB GDDR6 • Intel Xeon Platinum</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">8 - 40</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">32 - 160 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="0.89" data-type="spot">de la $0.89 / GPU-h **</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="1.86" data-type="ondemand">de la $1.86 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="1.86" data-type="monthly">$1.357 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-surface-container-high border border-outline-variant hover:border-primary text-on-surface text-[11px] font-semibold transition-all">Rezervă</a>
+            </td>
+          </tr>
+
+          <!-- L40S AMD -->
+          <tr class="hover:bg-surface-container/50 transition-colors gpu-row" data-name="NVIDIA L40S with AMD CPU">
+            <td class="py-3.5 px-4 font-headline font-semibold text-on-surface flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-outline"></span>
+              <div>
+                <div class="text-sm">NVIDIA L40S (AMD EPYC)</div>
+                <div class="text-[10px] font-mono text-outline">Ada Lovelace • 48GB GDDR6 • AMD EPYC Genoa</div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">16 - 192</td>
+            <td class="py-3.5 px-3 font-semibold text-on-surface">96 - 1152 GB</td>
+            <td class="py-3.5 px-4 text-secondary font-bold price-cell" data-usd-hour="1.08" data-type="spot">de la $1.08 / GPU-h **</td>
+            <td class="py-3.5 px-4 text-primary font-bold price-cell" data-usd-hour="2.18" data-type="ondemand">de la $2.18 / GPU-h</td>
+            <td class="py-3.5 px-4 text-on-surface font-bold price-cell" data-usd-hour="2.18" data-type="monthly">$1.591 / lună</td>
+            <td class="py-3.5 px-4 text-right">
+              <a href="login.html" class="px-3 py-1 rounded bg-surface-container-high border border-outline-variant hover:border-primary text-on-surface text-[11px] font-semibold transition-all">Rezervă</a>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footnotes -->
+    <div class="mt-4 text-[11px] font-mono text-outline space-y-1">
+      <p>* Prețurile Spot sunt dinamice și reflectă capacitatea clusterelor active din regiunile UE (Finlanda / Paris). Rata maximă PVM este întotdeauna cu 1 cent sub tariful on-demand.</p>
+      <p>** Instanțele NVIDIA L40S preemptible sunt facturate la tarif fix flat-rate.</p>
+      <p>*** Toate prețurile includ marja Enterprise Managed de +20% pentru asistență 24/7, rețea privată izolată și SLA portuar.</p>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 2: NEBIUS TOKEN FACTORY (LLM API) ==================== -->
+  <section id="token-factory" class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-outline-variant/20 gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-secondary"></span>
+          <h2 class="font-headline font-bold text-2xl text-on-surface">Nebius Token Factory (Serverless LLM APIs)</h2>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-1">
+          Endpoint OpenAI-compatibil (<code class="text-secondary">https://api.studio.nebius.ai/v1</code>) cu pay-per-token fără costuri ascunse. Tarife per 1 Milion de token-uri (+20% Enterprise SLA).
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="text-[11px] font-mono px-2.5 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/30 font-semibold">
+          Fereastră Context până la 1M Tokens
+        </span>
+      </div>
+    </div>
+
+    <!-- Models Grid -->
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="models-grid">
+      
+      <!-- Nemotron-3-Nano (Active Field Model) -->
+      <div class="p-5 rounded-xl bg-surface-container border border-primary/40 shadow-lg relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute top-0 right-0 px-2.5 py-0.5 bg-primary text-background text-[10px] font-mono font-bold uppercase tracking-wider rounded-bl">
+          Model Teren Activ
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+            <h3 class="font-headline font-bold text-base text-on-surface">nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B</h3>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Motorul neuronal de teren integrat în <b>@Leewubot</b>. Procesare cronologică poze EXIF, generare automată pontaje și foi de parcurs.
+          </p>
+          <div class="mt-4 pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] text-outline block">Input / 1M Tokens:</span>
+              <span class="text-sm font-bold text-primary token-price" data-usd="0.18">$0.18</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-outline block">Output / 1M Tokens:</span>
+              <span class="text-sm font-bold text-primary token-price" data-usd="0.72">$0.72</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-[11px] font-mono">
+          <span class="text-outline">Context: <b>1.000.000 tokens</b></span>
+          <a href="survey-console.html" class="text-primary hover:underline font-semibold">Testează în Consolă &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Hermes-4-405B (Statutory Legal Model) -->
+      <div class="p-5 rounded-xl bg-surface-container border border-secondary/40 shadow-lg relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute top-0 right-0 px-2.5 py-0.5 bg-secondary text-background text-[10px] font-mono font-bold uppercase tracking-wider rounded-bl">
+          Arbitraj Juridic
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+            <h3 class="font-headline font-bold text-base text-on-surface">NousResearch/Hermes-4-405B</h3>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Raționament complex pentru avize juridice Legea 51/1995, arbitraj daune navale Hague-Visby și negocieri cu Cluburile P&I internaționale.
+          </p>
+          <div class="mt-4 pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] text-outline block">Input / 1M Tokens:</span>
+              <span class="text-sm font-bold text-secondary token-price" data-usd="2.16">$2.16</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-outline block">Output / 1M Tokens:</span>
+              <span class="text-sm font-bold text-secondary token-price" data-usd="4.32">$4.32</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-[11px] font-mono">
+          <span class="text-outline">Context: <b>128.000 tokens</b></span>
+          <a href="survey-console.html" class="text-secondary hover:underline font-semibold">Explorează Dosare &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Nemotron-3.5-Super-VL (Vision Model) -->
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/40 shadow-lg relative overflow-hidden flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+            <h3 class="font-headline font-bold text-base text-on-surface">nvidia/Nemotron-3.5-Super-VL</h3>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Model vizual multimodal pentru inspecția optică a bobinelor de oțel, deformărilor de table, ruginei de cală și identificarea etichetelor de marfă.
+          </p>
+          <div class="mt-4 pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] text-outline block">Input / 1M Tokens:</span>
+              <span class="text-sm font-bold text-tertiary token-price" data-usd="0.30">$0.30</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-outline block">Output / 1M Tokens:</span>
+              <span class="text-sm font-bold text-tertiary token-price" data-usd="1.20">$1.20</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-[11px] font-mono">
+          <span class="text-outline">Multimodal: <b>Imagini & EXIF</b></span>
+          <a href="survey-console.html" class="text-tertiary hover:underline font-semibold">Index Foto &rarr;</a>
+        </div>
+      </div>
+
+      <!-- DeepSeek V4 Pro -->
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30 shadow-md flex flex-col justify-between">
+        <div>
+          <h3 class="font-headline font-bold text-base text-on-surface">DeepSeek V4 Pro (1M Context)</h3>
+          <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Arhitectură avansată MoE pentru calculul analitic al secvențelor de descărcare, randamentelor de combustibil și balanțelor de masă navă.
+          </p>
+          <div class="mt-4 pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] text-outline block">Input / 1M Tokens:</span>
+              <span class="text-sm font-bold text-on-surface token-price" data-usd="2.10">$2.10</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-outline block">Output / 1M Tokens:</span>
+              <span class="text-sm font-bold text-on-surface token-price" data-usd="4.20">$4.20</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-[11px] font-mono">
+          <span class="text-outline">Context: <b>1M Tokens</b></span>
+          <span class="text-outline">Flavor: Fast</span>
+        </div>
+      </div>
+
+      <!-- Meta Llama 3.1 70B Fast -->
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30 shadow-md flex flex-col justify-between">
+        <div>
+          <h3 class="font-headline font-bold text-base text-on-surface">Meta Llama 3.1 70B Instruct Fast</h3>
+          <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Optimizat pentru triajul instantaneu al emailurilor sosite prin n8n din Gmail și generarea automată a cardurilor de descărcare în Kanban.
+          </p>
+          <div class="mt-4 pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] text-outline block">Input / 1M Tokens:</span>
+              <span class="text-sm font-bold text-on-surface token-price" data-usd="0.60">$0.60</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-outline block">Output / 1M Tokens:</span>
+              <span class="text-sm font-bold text-on-surface token-price" data-usd="1.80">$1.80</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-[11px] font-mono">
+          <span class="text-outline">Context: <b>128.000 tokens</b></span>
+          <span class="text-outline">Speculative Decoding</span>
+        </div>
+      </div>
+
+      <!-- NV-Embed-QA (Vector Embeddings) -->
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30 shadow-md flex flex-col justify-between">
+        <div>
+          <h3 class="font-headline font-bold text-base text-on-surface">NV-Embed-QA (Vector Embeddings)</h3>
+          <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Model de embedding vectorial cu 1024 dimensiuni optimizat pentru indexare HNSW în pgvector (Reglementări IMO, Cod CSS, Precedente Maritime).
+          </p>
+          <div class="mt-4 pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-xs font-mono">
+            <div>
+              <span class="text-[10px] text-outline block">Cost / 1M Tokens:</span>
+              <span class="text-sm font-bold text-primary token-price" data-usd="0.06">$0.06</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-outline block">Vectori generați:</span>
+              <span class="text-sm font-bold text-on-surface">1024 dims</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-outline-variant/20 flex items-center justify-between text-[11px] font-mono">
+          <span class="text-outline">Latență: <b>&lt; 15 ms</b></span>
+          <span class="text-primary font-bold">HNSW Ready</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 3: CPU & STORAGE & INFRASTRUCTURE ==================== -->
+  <section id="storage" class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Stocare de Mare Performanță -->
+      <div>
+        <div class="flex items-center gap-2 pb-4 border-b border-outline-variant/20">
+          <span class="material-symbols-outlined text-primary text-xl">folder_data</span>
+          <h3 class="font-headline font-bold text-xl text-on-surface">Stocare & Sisteme de Fișiere (FS)</h3>
+        </div>
+        
+        <div class="mt-4 overflow-x-auto rounded-xl border border-outline-variant/30 bg-surface-container-low">
+          <table class="w-full text-left text-xs font-mono divide-y divide-outline-variant/20">
+            <thead class="bg-surface-container text-on-surface font-semibold text-[11px]">
+              <tr>
+                <th class="py-3 px-3">Tip Serviciu Stocare</th>
+                <th class="py-3 px-3 text-primary">Tarif (+20%)</th>
+                <th class="py-3 px-3 text-outline">Unitate</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/20 text-on-surface-variant">
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-on-surface">Shared Filesystem (by Nebius)</td>
+                <td class="py-2.5 px-3 font-bold text-primary storage-price" data-usd="0.0960">$0.0960</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-on-surface">WEKA Ultra-High IOPS Filesystem</td>
+                <td class="py-2.5 px-3 font-bold text-primary storage-price" data-usd="0.1200">$0.1200</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Object Storage — Standard (Volum)</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.0176">$0.0176</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Object Storage — Egress Traffic</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.0180">$0.0180</td>
+                <td class="py-2.5 px-3 text-outline">GiB transferat</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Object Storage — Intelligent Warm Tier</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.0360">$0.0360</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Object Storage — Intelligent Cold Tier</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.0120">$0.0120</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Object Storage — Enhanced (High Throughput)</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.1320">$0.1320</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună (Egress Gratuit)</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Block Volumes (Erasure Coding)</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.0852">$0.0852</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3">Block Volumes (3x Replicare / Oglindire)</td>
+                <td class="py-2.5 px-3 font-bold text-on-surface storage-price" data-usd="0.1416">$0.1416</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-semibold text-secondary">Block Volumes — Local NVMe SSD Disk</td>
+                <td class="py-2.5 px-3 font-bold text-secondary storage-price" data-usd="0.0780">$0.0780</td>
+                <td class="py-2.5 px-3 text-outline">GiB / lună</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Instanțe CPU & Servicii Gratuite -->
+      <div class="flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 pb-4 border-b border-outline-variant/20">
+            <span class="material-symbols-outlined text-secondary text-xl">memory</span>
+            <h3 class="font-headline font-bold text-xl text-on-surface">Instanțe On-Demand CPU-Only</h3>
+          </div>
+
+          <div class="mt-4 overflow-x-auto rounded-xl border border-outline-variant/30 bg-surface-container-low">
+            <table class="w-full text-left text-xs font-mono divide-y divide-outline-variant/20">
+              <thead class="bg-surface-container text-on-surface font-semibold text-[11px]">
+                <tr>
+                  <th class="py-3 px-3">Arhitectură CPU</th>
+                  <th class="py-3 px-3">vCPUs</th>
+                  <th class="py-3 px-3">RAM</th>
+                  <th class="py-3 px-3 text-secondary">Tarif (+20%)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/20 text-on-surface-variant">
+                <tr>
+                  <td class="py-3 px-3 font-semibold text-on-surface">AMD EPYC Genoa (Gen 4)</td>
+                  <td class="py-3 px-3">4 - 64</td>
+                  <td class="py-3 px-3">16 - 256 GB</td>
+                  <td class="py-3 px-3 font-bold text-secondary cpu-price" data-usd="0.156">de la $0.156 / CPU-h</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3 font-semibold text-on-surface">Intel Ice Lake Xeon</td>
+                  <td class="py-3 px-3">2 - 80</td>
+                  <td class="py-3 px-3">8 - 320 GB</td>
+                  <td class="py-3 px-3 font-bold text-secondary cpu-price" data-usd="0.072">de la $0.072 / CPU-h</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Servicii cu Tarif 0.00$ -->
+          <div class="mt-6 p-4 rounded-xl bg-surface-container/60 border border-primary/30">
+            <h4 class="font-headline font-bold text-sm text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-base">check_circle</span>
+              Servicii Incluse Gratuit (Tarif 0.00$)
+            </h4>
+            <div class="mt-3 grid grid-cols-2 gap-3 text-xs font-mono text-on-surface-variant">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                <span>Managed Kubernetes (K8s)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                <span>Managed Slurm (Soperator)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                <span>Trafic Privat Ingress / Egress</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                <span>Adresă IP Publică Dedicată</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-4 rounded-xl bg-surface-container-high/40 border border-outline-variant/30 text-xs font-mono text-outline">
+          💡 <b>Notă de Facturare:</b> Toate serviciile de rețea internă de mare viteză (Infiniband VPC) între nodurile de calcul și stocarea WEKA sunt oferite la latență de microsecundă fără taxe de transfer intra-regiune.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 4: INTERACTIVE COST CALCULATOR ==================== -->
+  <section id="calculator" class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="gradient-border glow-primary">
+      <div class="gradient-border-content p-6 sm:p-10">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-outline-variant/20 gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-primary/10 text-primary text-xs font-mono font-bold mb-2">
+              <span class="material-symbols-outlined text-sm">calculate</span>
+              SIMULATOR DE COSTURI LEEWU CLOUD
+            </div>
+            <h2 class="font-headline font-bold text-2xl sm:text-3xl text-on-surface">Configurează Bugetul Flotei Tale Maritime</h2>
+          </div>
+          <span class="text-xs font-mono text-on-surface-variant">Estimare instantanee la nivel de oră / lună</span>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- Slider 1: GPU Platform & Count -->
+          <div class="space-y-4">
+            <label class="block text-xs font-mono text-on-surface uppercase tracking-wider font-semibold">1. Selectează Platforma GPU</label>
+            <select id="calc-gpu-select" onchange="runCalculator()" class="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-xs font-mono text-on-surface focus:outline-none focus:border-primary">
+              <option value="5.40">NVIDIA HGX H100 (80GB SXM5) - $5.40/h</option>
+              <option value="6.48">NVIDIA HGX H200 (141GB HBM3e) - $6.48/h</option>
+              <option value="10.20">NVIDIA HGX B200 (Blackwell) - $10.20/h</option>
+              <option value="11.40">NVIDIA HGX B300 (Blackwell Ultra) - $11.40/h</option>
+              <option value="1.86">NVIDIA L40S (Intel 48GB) - $1.86/h</option>
+              <option value="2.16">NVIDIA RTX PRO 6000 Ada - $2.16/h</option>
+            </select>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-outline">Număr GPU-uri:</span>
+                <span class="font-bold text-primary" id="calc-gpu-count-lbl">1 GPU</span>
+              </div>
+              <input type="range" id="calc-gpu-count" min="1" max="16" value="1" oninput="runCalculator()" class="w-full accent-primary cursor-pointer"/>
+            </div>
+          </div>
+
+          <!-- Slider 2: NVMe Storage -->
+          <div class="space-y-4">
+            <label class="block text-xs font-mono text-on-surface uppercase tracking-wider font-semibold">2. Stocare NVMe / WEKA (GB)</label>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-outline">Capacitate disc:</span>
+                <span class="font-bold text-secondary" id="calc-storage-lbl">500 GB</span>
+              </div>
+              <input type="range" id="calc-storage" min="100" max="10000" step="100" value="500" oninput="runCalculator()" class="w-full accent-secondary cursor-pointer"/>
+            </div>
+            <p class="text-[11px] font-mono text-outline">Include snapshot-uri automate și backup criptat ISO 27001.</p>
+          </div>
+
+          <!-- Slider 3: Token Factory Usage -->
+          <div class="space-y-4">
+            <label class="block text-xs font-mono text-on-surface uppercase tracking-wider font-semibold">3. Consum Lunar Token Factory</label>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-outline">Volum tokeni LLM:</span>
+                <span class="font-bold text-tertiary" id="calc-tokens-lbl">5 Milioane Tokens</span>
+              </div>
+              <input type="range" id="calc-tokens" min="1" max="100" step="1" value="5" oninput="runCalculator()" class="w-full accent-tertiary cursor-pointer"/>
+            </div>
+            <p class="text-[11px] font-mono text-outline">Mix estimat: 70% Nemotron-3-Nano + 30% Hermes-4-405B.</p>
+          </div>
+
+        </div>
+
+        <!-- Calculated Summary Banner -->
+        <div class="mt-8 p-6 rounded-xl bg-surface-container-lowest border border-outline-variant/30 flex flex-wrap items-center justify-between gap-6">
+          <div class="flex items-center gap-6">
+            <div>
+              <span class="text-[10px] font-mono text-outline uppercase block">Cost Orar Estimat:</span>
+              <span class="text-2xl sm:text-3xl font-headline font-extrabold text-primary" id="calc-result-hour">$5.46 / oră</span>
+            </div>
+            <div class="h-10 w-px bg-outline-variant/40"></div>
+            <div>
+              <span class="text-[10px] font-mono text-outline uppercase block">Cost Lunar (730 ore):</span>
+              <span class="text-2xl sm:text-3xl font-headline font-extrabold text-on-surface" id="calc-result-month">$3.985 / lună</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="alert('Clusterul configurat a fost salvat în profilul tău! Vei fi redirecționat către pasul de autentificare.')" class="px-5 py-2.5 rounded-lg bg-primary text-background font-headline font-bold text-xs hover:bg-primary-container shadow-[0_0_20px_rgba(148,218,50,0.35)] transition-all">
+              Configurează Clusterul Acum
+            </button>
+            <a href="survey-console.html" class="px-4 py-2.5 rounded-lg border border-outline-variant hover:border-secondary text-xs font-mono text-on-surface hover:text-secondary transition-all">
+              Vezi În Acțiune
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 5: FAQ & PAYMENT POLICIES ==================== -->
+  <section id="faq" class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="text-center max-w-3xl mx-auto pb-8">
+      <h2 class="font-headline font-bold text-2xl sm:text-3xl text-on-surface">Întrebări și Răspunsuri despre Plăți & Facturare</h2>
+      <p class="text-xs text-on-surface-variant mt-2 font-mono">Tot ce trebuie să știi despre alimentarea contului, reducerile contractuale și emiterea facturilor.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+      
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30">
+        <h4 class="font-headline font-bold text-sm text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-base">savings</span>
+          Cum pot obține un discount?
+        </h4>
+        <p class="text-on-surface-variant mt-2 leading-relaxed">
+          Dacă planifici să rulezi sarcini maritime pe termen lung (ex. monitorizare continuă în danele Portului Constanța), angajamentele pe 6, 12 sau 24 de luni îți oferă economii de până la 35% față de tariful on-demand. Înregistrează-te ca entitate juridică și contactează biroul comercial LeeWu AI.
+        </p>
+      </div>
+
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30">
+        <h4 class="font-headline font-bold text-sm text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-base">payments</span>
+          Ce metode de plată sunt acceptate?
+        </h4>
+        <p class="text-on-surface-variant mt-2 leading-relaxed">
+          Persoanele fizice și juridice pot efectua plăți instantanee cu cardul bancar (Visa, Mastercard, Amex prin Stripe). Companiile pot opta suplimentar pentru plăți prin transfer bancar (ordin de plată cu termen contractual) pe bază de factură proformă.
+        </p>
+      </div>
+
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30">
+        <h4 class="font-headline font-bold text-sm text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary text-base">currency_exchange</span>
+          În ce monedă se efectuează facturarea?
+        </h4>
+        <p class="text-on-surface-variant mt-2 leading-relaxed">
+          Platforma suportă plăți în <b>USD</b>, <b>EUR</b> și <b>RON</b>. Facturile emise pentru firmele din România sunt generate cu respectarea legislației naționale (inclusiv e-Factura SPV) la cursul BNR din ziua emiterii.
+        </p>
+      </div>
+
+      <div class="p-5 rounded-xl bg-surface-container border border-outline-variant/30">
+        <h4 class="font-headline font-bold text-sm text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary text-base">receipt_long</span>
+          Cum primesc facturile și există sumă minimă?
+        </h4>
+        <p class="text-on-surface-variant mt-2 leading-relaxed">
+          Facturile detaliate cu consumul pe fiecare instanță și token sunt transmise automat în format PDF pe adresa ta de email la închiderea fiecărei luni. Suma minimă pentru prima alimentare a contului este de <b>$25 (sau echivalentul în RON/EUR)</b>.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto bg-surface-container-lowest border-t border-outline-variant/30 py-10 px-4 sm:px-6 lg:px-8 text-xs font-mono text-outline">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded bg-primary/20 border border-primary/40 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-sm">directions_boat</span>
+        </div>
+        <div>
+          <span class="font-headline font-bold text-on-surface">LeeWu AI</span>
+          <span class="text-[11px] block text-outline">© 2026 LeeWu Maritime Services • Infrastructură Cloud NVIDIA & Nebius</span>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-6 text-on-surface-variant text-[11px]">
+        <a href="landing.html" class="hover:text-primary transition-colors">Acasă</a>
+        <a href="survey-console.html" class="hover:text-primary transition-colors">Consolă Live</a>
+        <a href="survey.html" target="_blank" class="hover:text-primary transition-colors">Raport A4</a>
+        <a href="login.html" class="hover:text-primary transition-colors">Autentificare</a>
+        <a href="https://github.com/imlazar/LeeWuAiDevpostnVidia" target="_blank" class="hover:text-primary transition-colors">GitHub Repository</a>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==================== LOGIC / INTERACTIVE SCRIPT ==================== -->
+  <script>
+    // Rates & Multipliers
+    let currentCurrency = 'USD';
+    let currentTimeframe = 'hour'; // 'hour' or 'month' (730h)
+    const RATES = {
+      USD: 1.0,
+      EUR: 0.92,
+      RON: 4.60
+    };
+    const SYMBOLS = {
+      USD: '$',
+      EUR: '€',
+      RON: ' lei'
+    };
+
+    function setCurrency(curr) {
+      currentCurrency = curr;
+      ['USD', 'EUR', 'RON'].forEach(c => {
+        const btn = document.getElementById('btn-curr-' + c);
+        if (btn) {
+          if (c === curr) {
+            btn.className = "px-3 py-1 text-xs font-mono rounded font-semibold bg-primary text-background shadow transition-all";
+          } else {
+            btn.className = "px-3 py-1 text-xs font-mono rounded font-semibold text-on-surface-variant hover:text-on-surface transition-all";
+          }
+        }
+      });
+      updateAllPrices();
+      runCalculator();
+    }
+
+    function setTimeframe(tf) {
+      currentTimeframe = tf;
+      const btnH = document.getElementById('btn-tf-hour');
+      const btnM = document.getElementById('btn-tf-month');
+      if (tf === 'hour') {
+        btnH.className = "px-3 py-1 text-xs font-mono rounded font-semibold bg-secondary text-background shadow transition-all";
+        btnM.className = "px-3 py-1 text-xs font-mono rounded font-semibold text-on-surface-variant hover:text-on-surface transition-all";
+      } else {
+        btnM.className = "px-3 py-1 text-xs font-mono rounded font-semibold bg-secondary text-background shadow transition-all";
+        btnH.className = "px-3 py-1 text-xs font-mono rounded font-semibold text-on-surface-variant hover:text-on-surface transition-all";
+      }
+      updateAllPrices();
+    }
+
+    function formatPrice(usdVal, isHour) {
+      const rate = RATES[currentCurrency];
+      const sym = SYMBOLS[currentCurrency];
+      let val = usdVal * rate;
+      if (currentTimeframe === 'month' && isHour) {
+        val = val * 730;
+      }
+      
+      let formatted;
+      if (val >= 100) {
+        formatted = Math.round(val).toLocaleString();
+      } else if (val >= 1) {
+        formatted = val.toFixed(2);
+      } else {
+        formatted = val.toFixed(4);
+      }
+
+      if (currentCurrency === 'RON') {
+        return formatted + sym;
+      } else {
+        return sym + formatted;
+      }
+    }
+
+    function updateAllPrices() {
+      const suffix = (currentTimeframe === 'month') ? ' / lună' : ' / GPU-h';
+
+      // 1. GPU Table
+      document.querySelectorAll('.price-cell').forEach(cell => {
+        const usdHour = parseFloat(cell.getAttribute('data-usd-hour') || '0');
+        const type = cell.getAttribute('data-type');
+        if (type === 'spot') {
+          cell.innerText = 'de la ' + formatPrice(usdHour, true) + suffix;
+        } else if (type === 'ondemand') {
+          cell.innerText = formatPrice(usdHour, true) + suffix;
+        } else if (type === 'monthly') {
+          const rate = RATES[currentCurrency];
+          const sym = SYMBOLS[currentCurrency];
+          const mVal = Math.round(usdHour * 730 * rate);
+          cell.innerText = (currentCurrency === 'RON') ? (mVal.toLocaleString() + sym + ' / lună') : (sym + mVal.toLocaleString() + ' / lună');
+        }
+      });
+
+      // 2. Token Factory Prices
+      document.querySelectorAll('.token-price').forEach(el => {
+        const usd = parseFloat(el.getAttribute('data-usd') || '0');
+        el.innerText = formatPrice(usd, false);
+      });
+
+      // 3. Storage Prices
+      document.querySelectorAll('.storage-price').forEach(el => {
+        const usd = parseFloat(el.getAttribute('data-usd') || '0');
+        el.innerText = formatPrice(usd, false);
+      });
+
+      // 4. CPU Prices
+      document.querySelectorAll('.cpu-price').forEach(el => {
+        const usd = parseFloat(el.getAttribute('data-usd') || '0');
+        el.innerText = 'de la ' + formatPrice(usd, true) + (currentTimeframe === 'month' ? ' / lună' : ' / CPU-h');
+      });
+    }
+
+    function filterPricing() {
+      const query = (document.getElementById('filter-input').value || '').toLowerCase().trim();
+      
+      // Filter GPU rows
+      document.querySelectorAll('.gpu-row').forEach(row => {
+        const name = (row.getAttribute('data-name') || '').toLowerCase();
+        if (!query || name.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    function runCalculator() {
+      const gpuRate = parseFloat(document.getElementById('calc-gpu-select').value || '5.40');
+      const gpuCount = parseInt(document.getElementById('calc-gpu-count').value || '1');
+      const storageGb = parseInt(document.getElementById('calc-storage').value || '500');
+      const tokenM = parseInt(document.getElementById('calc-tokens').value || '5');
+
+      document.getElementById('calc-gpu-count-lbl').innerText = gpuCount + (gpuCount > 1 ? ' GPU-uri' : ' GPU');
+      document.getElementById('calc-storage-lbl').innerText = storageGb.toLocaleString() + ' GB';
+      document.getElementById('calc-tokens-lbl').innerText = tokenM + ' Milioane Tokens';
+
+      // Hourly base
+      const gpuCostHour = gpuRate * gpuCount;
+      const storageCostMonth = storageGb * 0.12; // WEKA rate $0.12
+      const storageCostHour = storageCostMonth / 730;
+      // Mixed token rate: avg $1.00 per 1M
+      const tokenCostMonth = tokenM * 1.00;
+      const tokenCostHour = tokenCostMonth / 730;
+
+      const totalHourUSD = gpuCostHour + storageCostHour + tokenCostHour;
+      const totalMonthUSD = (gpuCostHour * 730) + storageCostMonth + tokenCostMonth;
+
+      const rate = RATES[currentCurrency];
+      const sym = SYMBOLS[currentCurrency];
+
+      const hVal = (totalHourUSD * rate).toFixed(2);
+      const mVal = Math.round(totalMonthUSD * rate).toLocaleString();
+
+      if (currentCurrency === 'RON') {
+        document.getElementById('calc-result-hour').innerText = hVal + sym + ' / oră';
+        document.getElementById('calc-result-month').innerText = mVal + sym + ' / lună';
+      } else {
+        document.getElementById('calc-result-hour').innerText = sym + hVal + ' / oră';
+        document.getElementById('calc-result-month').innerText = sym + mVal + ' / lună';
+      }
+    }
+
+    // Init on load
+    updateAllPrices();
+    runCalculator();
+  </script>
+</body>
+</html>
