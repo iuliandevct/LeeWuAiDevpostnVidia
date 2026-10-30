@@ -20,6 +20,7 @@ import urllib.request
 import urllib.parse
 import html
 import threading
+from pathlib import Path
 
 # Ensure UTF-8 output on Windows console
 if hasattr(sys.stdout, "reconfigure"):
@@ -97,6 +98,13 @@ def safe_log_err(prefix, err):
     """Log errors with guaranteed secrets redaction."""
     import re
     msg = str(err)
+    if hasattr(err, "read"):
+        try:
+            body = err.read().decode("utf-8", errors="ignore")
+            if body:
+                msg = f"{msg} | Body: {body[:300]}"
+        except Exception:
+            pass
     if BOT_TOKEN:
         msg = msg.replace(BOT_TOKEN, "[MASKED_BOT_TOKEN]")
     if NEBIUS_KEY:
@@ -367,6 +375,9 @@ def send_message(chat_id, text, thread_id=None):
         print("[Telegram Bot] Cannot send message: TELEGRAM_BOT_TOKEN is not configured.", file=sys.stderr)
         return None
 
+    if text and len(text) > 3950:
+        text = text[:3950] + "\n..."
+
     payload = {
         "chat_id": chat_id,
         "text": text,
@@ -388,10 +399,12 @@ def send_message(chat_id, text, thread_id=None):
         with urllib.request.urlopen(req, timeout=15) as r:
             return json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as he:
-        # If HTML entity parsing fails (e.g. unclosed tags from AI), fallback to plain text
         if he.code == 400 and payload.get("parse_mode") == "HTML":
             try:
+                import re
                 payload.pop("parse_mode", None)
+                plain_text = html.unescape(re.sub(r"<[^>]+>", "", text))
+                payload["text"] = plain_text[:3950]
                 data_plain = json.dumps(payload).encode("utf-8")
                 req_plain = urllib.request.Request(
                     BASE_URL + "/sendMessage",
@@ -413,26 +426,154 @@ def send_message(chat_id, text, thread_id=None):
         return None
 
 
+def format_ai_for_telegram_html(raw_text: str) -> str:
+    """
+    Converts Markdown-style LLM output (**bold**, `code`, ### headings) into clean
+    Telegram HTML while stripping internal reasoning summaries and avoiding nested tags.
+    """
+    import re
+    if not raw_text:
+        return ""
+    text = raw_text.strip()
+
+    if "[Reasoning Summary]" in text:
+        parts = re.split(r"\n\s*\n", text)
+        filtered = [p for p in parts if not p.strip().startswith("[Reasoning Summary]")]
+        if filtered:
+            text = "\n\n".join(filtered).strip()
+
+    escaped = html.escape(text)
+    escaped = re.sub(r"`([^`\n]+)`", r"<code>\1</code>", escaped)
+
+    out_lines = []
+    for line in escaped.splitlines():
+        m = re.match(r"^#{1,4}\s+(.+)$", line.strip())
+        if m:
+            heading_clean = m.group(1).replace("**", "")
+            out_lines.append(f"📌 <b>{heading_clean}</b>")
+        else:
+            out_lines.append(re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line))
+    return "\n".join(out_lines)
+
+
+def get_live_operational_context() -> str:
+    """
+    Reads real-time survey state from SQLite (in immutable read-only mode so the DB file
+    is never modified) and field remarks from survey_remarks.json to ground the AI in facts.
+    """
+    import sqlite3
+    lines = [
+        "=== CONTEXT OPERAȚIONAL REAL (PORTUL CONSTANȚA — LEEWU MARITIME SURVEY) ===",
+        "1. INSPECȚIE GREA (HEAVY-LIFT) ÎN BAZA SQLITE — DOSAR LW-DEMO-001:"
+    ]
+    db_file = os.path.join(DATA_DIR, "leewu_mvp.db")
+    if os.path.exists(db_file):
+        try:
+            uri = f"file:{Path(db_file).as_posix()}?mode=ro&immutable=1"
+            conn = sqlite3.connect(uri, uri=True, timeout=5.0)
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM surveys WHERE survey_id = 'LW-DEMO-001'")
+            s = cur.fetchone()
+            if s:
+                lines.append(
+                    f"   - Navă: {s['vessel_name']} (IMO {s['imo_number']}) | Locație: {s['location']}, {s['berth']}"
+                )
+                lines.append(
+                    f"   - Marfă: {s['cargo_name']} (Unitate: {s['cargo_item']}, Greutate brută: 124.5 MT) | Client: {s['client_name']}"
+                )
+                lines.append(
+                    f"   - Status dosar: {s['status']} | Inspector: {s['approved_by'] or 'Ing. Alexandru Radu'} "
+                    f"(Licență: {s['surveyor_license'] or 'DEMO-MWS-2026-001'})"
+                )
+                if s["cryptographic_hash"]:
+                    lines.append(f"   - Sigiliu SHA-256 raport: {s['cryptographic_hash'][:24]}...")
+            cur.execute("SELECT COUNT(*), MAX(sha256) FROM evidence WHERE survey_id = 'LW-DEMO-001'")
+            ev_row = cur.fetchone()
+            if ev_row and ev_row[0]:
+                lines.append(f"   - Dovezi foto atașate: {ev_row[0]} fotografie HD verificată (SHA-256: {ev_row[1][:16]}...)")
+            cur.execute(
+                "SELECT nitrogen_pressure, impact_recorder_g, lashing_status FROM ai_assessments "
+                "WHERE survey_id = 'LW-DEMO-001' ORDER BY id DESC LIMIT 1"
+            )
+            ai_row = cur.fetchone()
+            if ai_row:
+                lines.append(
+                    f"   - Telemetrie măsurată TR-001: Presiune azot (N2) = {ai_row['nitrogen_pressure']} (țintă 0.15-0.35 bar, OPTIM); "
+                    f"Înregistrator șocuri = {ai_row['impact_recorder_g']} (sub limita IMO CSS Annex 13 de 1.5 G); "
+                    f"Amarare = {ai_row['lashing_status']}."
+                )
+            else:
+                lines.append(
+                    "   - Telemetrie standard TR-001: Presiune azot (N2) = 0.24-0.25 bar (țintă 0.15-0.35 bar, OPTIM); "
+                    "Șocuri = 0.75 G longitudinal / 0.35 G transversal (sub pragul de 1.5 G IMO CSS Code Annex 13); "
+                    "Amarare = 8 lanțuri Grade 80 de 16mm la 45° cu întinzătoare sigilate."
+                )
+            conn.close()
+        except Exception:
+            pass
+
+    lines.append(
+        "2. OPERAȚIUNE DESCĂRCARE OȚEL — NAVA MV WAN FU (IMO 9482184, Dana 52 Constanța Sud):\n"
+        "   - Marfă: 15.420 MT oțel laminat & bobine laminate la cald (Hot Rolled Steel Coils) | Client: GLOBAL OCEAN SHIPPING.\n"
+        "   - Progres descărcare: 4.820 MT descărcate (31.2%), rămase 10.600 MT | Macarale active: Macara 2 & Macara 3 cheu.\n"
+        "   - Condiții meteo în port: Vânt 12 noduri ESE, mare grad 2, fără precipitații active."
+    )
+
+    remarks_list = []
+    if os.path.exists(REMARKS_FILE):
+        try:
+            with open(REMARKS_FILE, "r", encoding="utf-8") as f:
+                remarks_list = json.load(f)
+        except Exception:
+            remarks_list = []
+
+    if remarks_list:
+        lines.append(f"3. AVARII / REMARCI ÎNREGISTRATE PE TEREN ({len(remarks_list)} înregistrări în survey_remarks.json):")
+        for r in remarks_list[:5]:
+            lines.append(
+                f"   - [{r.get('id')}] Magazia (Hold) {r.get('hold_no')}: {r.get('description')} "
+                f"(Severitate: {r.get('severity')}, Cauză: {r.get('attributed_party')}, Ora: {r.get('photo_timestamp')})"
+            )
+    else:
+        lines.append("3. AVARII / REMARCI ÎNREGISTRATE PE TEREN: Nicio avarie activă înregistrată momentan (se pot adăuga cu /remark).")
+
+    lines.append(
+        "4. FLOTĂ AUTO & PONTAJ INSPECTOR (Ing. Alexandru Radu):\n"
+        "   - Pontaj curent reconstituit EXIF: 08:14 - 17:08 (8.15 ore net facturabile după 45 min pauză meteo) = 1.507,75 RON (185 RON/oră).\n"
+        "   - Foaie parcurs CT-88-LPM (Dacia Duster 4x4): 48 km (Mamaia -> Poarta 10 -> Dana 52 -> Retur), consum 3.45L Diesel, randament 0.89 RON/km.\n"
+        "   - Alerte acte auto: CT-88-LPM ITP expiră în 18 zile (17.11.2026); CT-22-LPM (Renault Megane) Rovinietă expiră în 7 zile (06.11.2026).\n"
+        "   - Cadru juridic: Hague-Visby Rules Art. III r.2, Codul IMO CSS Annex 13, Legea 51/1995 (Baroul Constanța), Club P&I Gard Norway."
+    )
+    return "\n".join(lines)
+
+
 def query_nemotron_with_history(chat_id, user_prompt, api_key=None):
     key = api_key if api_key is not None else (os.getenv("NEBIUS_API_KEY") if "NEBIUS_API_KEY" in os.environ else NEBIUS_KEY)
     key = (key or "").strip()
     if not key:
         return "⚠️ Serviciul de inteligență artificială nu este configurat (NEBIUS_API_KEY lipsește). Contactați administratorul de sistem."
 
+    live_context = get_live_operational_context()
     context_msgs = get_recent_context(chat_id, limit=8)
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "Ești LeeWu AI — Asistentul Neural de Inspecție Maritimă și Daune Navale "
-                "al LeeWu Maritime Services, operativ în Portul Constanța (Dana 52 - MV WAN FU). "
-                "Ești alimentat de NVIDIA Nemotron și ai memorie de conversație activă. "
-                "Ține minte întrebările și răspunsurile anterioare din sesiune. "
-                "Răspunde scurt, profesional, direct și autoritar în limba română (cu trimiteri la codul CSS IMO, Hague-Visby sau Legea 51/1995 dacă e cazul)."
-            )
-        }
-    ]
 
+    system_prompt = (
+        "Ești LeeWu AI — Senior Marine Cargo Warranty Surveyor (MWS) și Asistentul Neural Operațional "
+        "al LeeWu Maritime Survey în Portul Constanța, lucrând direct cu inspectorul șef Ing. Alexandru Radu.\n\n"
+        f"{live_context}\n\n"
+        "REGULI STRICTE DE COMUNICARE ȘI INTELIGENȚĂ:\n"
+        "1. Vorbește o limba română impecabilă, naturală, tehnică și directă (folosește termeni corecți: "
+        "'marfă/cargo', 'magazie (Hold)', 'dană', 'amarare (lashing)', 'conosament (Bill of Lading)', 'Clean Mate\\'s Receipt', 'notificare de rezervă P&I'). "
+        "NU inventa niciodată cuvinte stricate precum 'Navtiic Mare' sau 'compartimentul de cargă' și NU inventa ani din trecut (suntem în octombrie 2026).\n"
+        "2. Folosește întotdeauna datele reale din CONTEXTUL OPERAȚIONAL de mai sus (atât pentru transformatorul TR-001 de pe MV DEMO CARRIER la Dana 120, "
+        "cât și pentru bobinele de oțel de pe MV WAN FU la Dana 52, avariile din survey_remarks.json, pontaj și flotă).\n"
+        "3. INTERZIS să repeți mecanic același mesaj sau să închei cu fraze robotice de tipul 'Vă rugăm să confirmați acceptarea acestor puncte'.\n"
+        "4. Dacă utilizatorul spune 'Confirm', 'Aprob', 'Ok', 'Deci?', 'Ce facem acum?' sau pune o întrebare scurtă, "
+        "răspunde inteligent la pasul următor concret (de ex. confirmă că raportul statutar este pregătit fără rezerve / Clean Mate's Receipt, "
+        "sau rezumă exact ce mai este de făcut pe cheu la Dana 52 / Dana 120). Fii concis (max 6-10 rânduri clare)."
+    )
+
+    messages = [{"role": "system", "content": system_prompt}]
     for cm in context_msgs:
         messages.append(cm)
 
@@ -441,33 +582,90 @@ def query_nemotron_with_history(chat_id, user_prompt, api_key=None):
         "content": sanitize_input(user_prompt, max_len=1500)
     })
 
-    payload = {
-        "model": NEBIUS_MODEL,
-        "messages": messages,
-        "max_tokens": 450,
-        "temperature": 0.4
-    }
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(NEBIUS_URL, data=data, headers={
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + key,
-        "User-Agent": "LeeWuNemotron/1.0",
-        "Connection": "close"
-    })
-    try:
-        with urllib.request.urlopen(req, timeout=25) as r:
-            res = json.loads(r.read().decode("utf-8"))
-            choices = res.get("choices", [])
-            reply_raw = choices[0].get("message", {}).get("content") if choices else None
-            reply = (reply_raw or "").strip()
-            if not reply:
-                reply = "Răspunsul recepționat este gol. Te rog reformulează întrebarea."
-            save_chat_message(chat_id, "user", user_prompt)
-            save_chat_message(chat_id, "assistant", reply)
-            return reply
-    except Exception as e:
-        safe_log_err("Nemotron query error", e)
-        return "Am întâmpinat o întârziere la comunicarea cu serverul NVIDIA Nemotron. Te rog reformulează."
+    # Prefer flagship Nemotron-3-Ultra-550b-a55b for natural Romanian reasoning, with automatic fallback to NEBIUS_MODEL
+    primary_model = os.getenv("TELEGRAM_AI_MODEL", "nvidia/Nemotron-3-Ultra-550b-a55b").strip()
+    candidate_models = [primary_model]
+    if NEBIUS_MODEL not in candidate_models:
+        candidate_models.append(NEBIUS_MODEL)
+
+    for chosen_model in candidate_models:
+        payload = {
+            "model": chosen_model,
+            "messages": messages,
+            "max_tokens": 1800,
+            "temperature": 0.25
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(NEBIUS_URL, data=data, headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + key,
+            "User-Agent": "LeeWuNemotron/1.0",
+            "Connection": "close"
+        })
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                res = json.loads(r.read().decode("utf-8"))
+                choices = res.get("choices", [])
+                reply_raw = choices[0].get("message", {}).get("content") if choices else None
+                reply = (reply_raw or "").strip()
+                if reply:
+                    save_chat_message(chat_id, "user", user_prompt)
+                    save_chat_message(chat_id, "assistant", reply)
+                    return format_ai_for_telegram_html(reply)
+        except Exception as e:
+            safe_log_err(f"Nemotron query error ({chosen_model})", e)
+            continue
+
+    return "Am întâmpinat o întârziere la comunicarea cu serverul NVIDIA Nemotron. Te rog încearcă din nou."
+
+
+def build_live_status_html() -> str:
+    import sqlite3
+    status_tr = "IN_PROGRESS"
+    approved_by = "Ing. Alexandru Radu"
+    ev_count = 0
+    seal_short = "În așteptare"
+    db_file = os.path.join(DATA_DIR, "leewu_mvp.db")
+    if os.path.exists(db_file):
+        try:
+            uri = f"file:{Path(db_file).as_posix()}?mode=ro&immutable=1"
+            conn = sqlite3.connect(uri, uri=True, timeout=5.0)
+            cur = conn.cursor()
+            cur.execute("SELECT status, approved_by, cryptographic_hash FROM surveys WHERE survey_id = 'LW-DEMO-001'")
+            row = cur.fetchone()
+            if row:
+                status_tr = row[0] or "IN_PROGRESS"
+                approved_by = row[1] or "Ing. Alexandru Radu"
+                if row[2]:
+                    seal_short = row[2][:16] + "..."
+            cur.execute("SELECT COUNT(*) FROM evidence WHERE survey_id = 'LW-DEMO-001'")
+            ev_count = cur.fetchone()[0]
+            conn.close()
+        except Exception:
+            pass
+
+    remarks = []
+    if os.path.exists(REMARKS_FILE):
+        try:
+            with open(REMARKS_FILE, "r", encoding="utf-8") as f:
+                remarks = json.load(f)
+        except Exception:
+            remarks = []
+
+    return (
+        "📊 <b>Panou Operațional Live — Portul Constanța</b>\n\n"
+        "⚡ <b>1. Dosar Heavy-Lift <code>LW-DEMO-001</code> (Dana 120):</b>\n"
+        "  • <b>Navă:</b> MV DEMO CARRIER (IMO 9845120)\n"
+        "  • <b>Unitate:</b> Transformator 110kV <code>TR-001</code> (124.5 MT)\n"
+        "  • <b>Telemetrie:</b> N2 = <code>0.24 bar</code> (Optim) | Șoc = <code>0.75 G</code> (&lt; 1.5 G IMO)\n"
+        f"  • <b>Dovezi Foto:</b> {ev_count} atașate | <b>Status:</b> <code>{status_tr}</code>\n"
+        f"  • <b>Inspector:</b> {html.escape(approved_by)} | <b>Sigiliu:</b> <code>{seal_short}</code>\n\n"
+        "🚢 <b>2. Descărcare Bobine Oțel — <code>MV WAN FU</code> (Dana 52):</b>\n"
+        "  • <b>Marfă:</b> 15.420 MT Hot Rolled Steel Coils\n"
+        "  • <b>Descărcat:</b> 4.820 MT (<b>31.2%</b>) — Macaralele 2 &amp; 3 active\n"
+        f"  • <b>Avarii (Remarks) înregistrate:</b> <b>{len(remarks)}</b> piese (vezi <code>/avarii</code>)\n\n"
+        "💡 <i>Comenzi rapide:</i> <code>/avarii</code> | <code>/raport</code> | <code>/nava</code> | <code>/pontaj</code> | <code>/acte</code>"
+    )
 
 
 def handle_remark(chat_id, thread_id, text):
@@ -655,6 +853,9 @@ def main():
                         "• <code>/pontaj</code> — Afișează pontajul calculat automat din pozele EXIF (08:14 - 17:08)\n"
                         "• <code>/foaie</code> — Generează foaie de parcurs pentru CT-88-LPM (0.89 RON/km)\n"
                         "• <code>/acte</code> — Verifică scadențele actelor mașinilor (ITP, RCA, Rovinietă)\n"
+                        "• <code>/status</code> — Panou operațional live (TR-001 Dana 120 + MV WAN FU Dana 52)\n"
+                        "• <code>/avarii</code> — Lista avariilor înregistrate pe teren\n"
+                        "• <code>/raport</code> — Rezumatul certificatului statutar & sigiliul SHA-256\n"
                         "• <code>/nava</code> — Status descărcare MV WAN FU Dana 52 Port Constanța\n"
                         "• <code>/juridic</code> — Baza legală Legea 51/1995 & arbitraj daune\n"
                         "• <code>/istoric</code> — Afișează ultimele mesaje din istoricul salvat\n"
@@ -680,6 +881,49 @@ def main():
                 elif low.startswith("/reset") or low.startswith("/clear"):
                     clear_chat_history(chat_id)
                     send_message(chat_id, "🧹 <b>Memoria conversației curente a fost ștearsă!</b> Putem începe un nou subiect curat.", thread_id)
+
+                elif low.startswith("/status") or low.startswith("/inspectie"):
+                    status_html = build_live_status_html()
+                    send_message(chat_id, status_html, thread_id)
+                    save_chat_message(chat_id, "user", text)
+                    save_chat_message(chat_id, "assistant", "Panou operațional live afișat (LW-DEMO-001 TR-001 + MV WAN FU Dana 52).")
+
+                elif low.startswith("/avarii") or low.startswith("/remarks"):
+                    remarks = []
+                    if os.path.exists(REMARKS_FILE):
+                        try:
+                            with open(REMARKS_FILE, "r", encoding="utf-8") as f:
+                                remarks = json.load(f)
+                        except Exception:
+                            remarks = []
+                    if not remarks:
+                        msg_av = "✅ <b>Registru Avarii:</b> Nu există piese avariate înregistrate momentan.\nFolosește <code>/remark [Magazie] [Piesă] [Descriere]</code> pentru a raporta o daună."
+                    else:
+                        lines_av = [f"⚠️ <b>Registru Avarii Teren ({len(remarks)} înregistrări):</b>\n"]
+                        for r in remarks[:8]:
+                            lines_av.append(
+                                f"• <b>{html.escape(str(r.get('id')))}</b> | Magazia {html.escape(str(r.get('hold_no')))}: "
+                                f"{html.escape(str(r.get('description')))} (<i>{html.escape(str(r.get('photo_timestamp')))}</i>)"
+                            )
+                        msg_av = "\n".join(lines_av)
+                    send_message(chat_id, msg_av, thread_id)
+                    save_chat_message(chat_id, "user", text)
+                    save_chat_message(chat_id, "assistant", f"Registru avarii afișat ({len(remarks)} înregistrări).")
+
+                elif low.startswith("/raport"):
+                    rap_html = (
+                        "📜 <b>Certificat Statutar MWS — Dosar <code>LW-DEMO-001</code></b>\n\n"
+                        "• <b>Unitate inspectată:</b> Transformator Industrial 110kV <code>TR-001</code> (124.5 MT)\n"
+                        "• <b>Navă / Terminal:</b> MV DEMO CARRIER (IMO 9845120) — Dana 120 Constanța\n"
+                        "• <b>Atmosferă internă:</b> Pernă azot <code>0.24 bar</code> (etanșare intactă, silicagel albastru cobalt)\n"
+                        "• <b>Dinamică maritimă:</b> <code>0.75 G</code> longitudinal / <code>0.35 G</code> transversal (sub pragul IMO CSS de 1.5 G)\n"
+                        "• <b>Amarare:</b> 8 lanțuri Grade 80 Ø16mm la 45° verificate\n"
+                        "• <b>Concluzie MWS:</b> Emitere <b>UNCONDITIONAL CLEAN MATE'S RECEIPT</b> fără rezerve de daună\n"
+                        "• <b>Inspector certificator:</b> Ing. Alexandru Radu (<code>DEMO-MWS-2026-001</code>)"
+                    )
+                    send_message(chat_id, rap_html, thread_id)
+                    save_chat_message(chat_id, "user", text)
+                    save_chat_message(chat_id, "assistant", "Certificat statutar LW-DEMO-001 TR-001 afișat (Clean Mate's Receipt).")
 
                 elif low.startswith("/remark"):
                     handle_remark(chat_id, thread_id, text)
