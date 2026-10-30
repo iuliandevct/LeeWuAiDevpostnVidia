@@ -1,0 +1,1539 @@
+{
+  "name": "LeeWu Maritime - AI Agent Image Prompt + Image + Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "chunkSize": 1200,
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "430f67bc-89aa-4cd1-9f9a-f307b6b37941",
+      "name": "Recursive Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        16544,
+        5568
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## LeeWu Maritime Services – CLEAN workflow\n\nPăstrat doar flow-ul nou, tip tutorial:\n`Form blog_url → Scrape → AI Agent/OpenRouter → Image Prompt → Image → Google Drive → Google Sheets → Form Ending`.\n\n### De ce a fost curățat\nÎn fișier existau două flow-uri în același canvas: unul vechi de Surveyor/RAG și unul nou pentru LinkedIn + imagine. Am păstrat flow-ul nou ca să nu ruleze ramuri duplicate și să nu amestece câmpurile `question/source_url` cu `blog_url`.\n\n### Sheets\nNodul `Append row in sheet` este conectat după `Upload image` și primește atât linkul imaginii din Google Drive, cât și textul din `Create content package`.\n\n### Coloane Google Sheet\ncreated_at | source_url | title | summary | post_text | image_prompt | image_id | image_url | published | confirmation\n\n### Credentials\n- OpenRouter native chat model\n- Supabase account\n- OpenAI/compatible embeddings pentru vector store\n- OpenAI API key în ENV pentru generare imagine\n- Google Drive + Google Sheets\n",
+        "height": 720,
+        "width": 620,
+        "color": 3
+      },
+      "id": "481e6f7b-b993-4449-9826-429a40b13ac1",
+      "name": "Sticky Note - Setup / Env2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        15840,
+        4752
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "LeeWu Maritime Services Content AI",
+        "formDescription": "Trimite un URL de articol / pagină. Workflow-ul extrage conținutul, îl rezumă, generează o postare LinkedIn și un prompt de imagine, apoi urcă imaginea în Google Drive și salvează logul în Google Sheets.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "blog_url",
+              "placeholder": "https://example.com/article",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Run LeeWu Maritime AI"
+        }
+      },
+      "id": "9ffd4669-19f0-4ca1-b94d-f0c1e307fadc",
+      "name": "On form submission2",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        15520,
+        5136
+      ],
+      "webhookId": "56718528-14ce-4124-b0d8-0629b641257e"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://r.jina.ai/http://' + (($json.blog_url || '').replace(/^https?:\\/\\//, '')) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "a4907b97-a87d-4346-8729-dc136c23cc05",
+      "name": "Scrape url and get its content2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        15776,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.body || $json.data || '';\nconst markdown = String(raw).replace(/\\u0000/g, '').trim();\nconst headingMatch = markdown.match(/^#\\s+(.+)$/m);\nconst title = headingMatch ? headingMatch[1].trim() : 'LeeWu Maritime content';\nreturn [{ json: {\n  blog_url: $('On form submission2').first().json.blog_url,\n  title,\n  data: { markdown: markdown.slice(0, 120000) },\n  topic: markdown.slice(0, 120000),\n  source_type: 'blog_url',\n  question: 'Summarize this source and generate an LeeWu Maritime LinkedIn post plus image prompt'\n} }];"
+      },
+      "id": "89eee803-5cf0-45ab-af98-f74582cf8ff0",
+      "name": "Variables and context2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16032,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  blog_url: $json.blog_url,\n  title: $json.title,\n  question: $json.question,\n  source_text: $json.data?.markdown || $json.topic || '',\n  data: $json.data,\n  client_name: 'LeeWu Maritime Services',\n  source_type: $json.source_type || 'blog_url'\n} }];"
+      },
+      "id": "f3f48b71-36df-465d-b52c-a3dbef6fbefa",
+      "name": "Prepare LeeWu Maritime prompt2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16304,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.data.markdown }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $json.blog_url }}"
+              },
+              {
+                "name": "title",
+                "value": "={{ $json.title }}"
+              },
+              {
+                "name": "business",
+                "value": "LeeWu Maritime Services"
+              }
+            ]
+          }
+        }
+      },
+      "id": "c77b30a1-d935-4e4c-83ff-9ba525e9a081",
+      "name": "Chunk source for vector2",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        16544,
+        5360
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "lp_maritime_documents",
+        "options": {
+          "queryName": "match_lp_maritime_documents"
+        }
+      },
+      "id": "a5efb2be-5c8e-4c7b-bcd9-f0c862e3d736",
+      "name": "Supabase Vector Store2",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        16800,
+        5360
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "2icVF8YyJEnom7GQ",
+          "name": "LP Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "lp_maritime_research_tool",
+        "toolDescription": "Search LeeWu Maritime Services internal knowledge base, survey notes, procedures, vessel inspection insights, compliance notes, and maritime context. Use this when extra maritime context would improve the summary or LinkedIn post.",
+        "tableName": "lp_maritime_documents",
+        "topK": 6,
+        "options": {
+          "queryName": "match_lp_maritime_documents"
+        }
+      },
+      "id": "ec9328e6-a32f-4570-a623-586787385272",
+      "name": "LeeWu Maritime Research Tool2",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        16832,
+        4928
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "2icVF8YyJEnom7GQ",
+          "name": "LP Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\"\n    },\n    \"summary\": {\n      \"type\": \"string\"\n    },\n    \"customized_post_text\": {\n      \"type\": \"string\"\n    },\n    \"llm_image_prompt\": {\n      \"type\": \"string\"\n    },\n    \"source_notes\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"summary\",\n    \"customized_post_text\",\n    \"llm_image_prompt\",\n    \"source_notes\"\n  ]\n}"
+      },
+      "id": "e0e703d1-fa78-4010-af43-c8247335d53b",
+      "name": "Structured Output Parser2",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        17424,
+        4928
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic / markdown content:\n{{ $json.data.markdown }}\n\nSource URL: {{ $json.blog_url }}",
+        "options": {
+          "systemMessage": "You are an AI content strategist and maritime analyst for LeeWu Maritime Services.\n\nYou will receive article or page content as markdown.\n\nGoal:\n1. Analyze the content.\n2. If extra maritime context would help, use the tool `lp_maritime_research_tool`.\n3. Summarize the content while preserving essential information.\n4. Create a polished LinkedIn post in Romanian for LeeWu Maritime Services.\n5. Generate an image prompt in English, 20-35 words, suitable for a diagram / blueprint / technical illustration.\n\nImage prompt style requirements:\n- clean diagram\n- flat workflow\n- structured layout\n- navy/orange palette\n- analytical mood\n- split-screen or side-by-side composition\n- blueprint style\n- technical connector lines\n- isometric or technical illustration feeling\n- maritime survey / vessel / inspection / AI reporting context\n\nRules:\n- Do not invent facts, dates, vessel names, or regulations if they are not present.\n- Keep the summary useful and concise.\n- The LinkedIn post should be professional, practical, and business-oriented, around 180-280 words.\n- The LinkedIn post should include a hook, a short body, 3-5 bullets if appropriate, and a soft CTA.\n- Return data that matches the connected structured output parser exactly."
+        }
+      },
+      "id": "2fe3c0b6-1794-4da4-9bcd-9b8464ed6956",
+      "name": "Get URL Content & Generate Post2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        17152,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = $json.output || $json;\nconst payload = typeof out === 'string' ? { summary: out } : out;\nconst title = payload.title || $('Prepare LeeWu Maritime prompt2').first().json.title || 'LeeWu Maritime content';\nconst summary = payload.summary || '';\nconst post_text = payload.customized_post_text || payload.post_text || summary;\nconst llm_image_prompt = payload.llm_image_prompt || 'Technical maritime workflow illustration, navy and orange, clean blueprint style';\nreturn [{ json: {\n  created_at: new Date().toISOString(),\n  blog_url: $('Prepare LeeWu Maritime prompt2').first().json.blog_url,\n  title,\n  summary,\n  post_text,\n  llm_image_prompt,\n  source_notes: payload.source_notes || [],\n  published: false,\n  confirmation: 'Ready for review'\n} }];"
+      },
+      "id": "05cacdeb-49c4-4dad-b98a-137bc912617e",
+      "name": "Create content package2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        17664,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENAI_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": $env.IMAGE_MODEL || \"gpt-image-1\",\n  \"prompt\": $json.llm_image_prompt,\n  \"size\": \"1024x1024\",\n  \"quality\": \"high\",\n  \"background\": \"opaque\"\n}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "a186ba97-fe5e-4940-a019-fa06f6407377",
+      "name": "HTTP Request - Generate Image2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        17904,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {
+          "fileName": "=LP_Maritime_LinkedIn_{{ $now.format('yyyyLLdd_HHmm') }}.png",
+          "mimeType": "image/png"
+        }
+      },
+      "id": "bcabdcbb-87e4-400c-91fb-27922e0b8f9a",
+      "name": "Convert Image to File2",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        18144,
+        5136
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=LP_Maritime_LinkedIn_{{ $now.format('yyyyLLdd_HHmm') }}.png",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "5bfdc40b-5542-4557-a7ce-d3575d13c0ca",
+      "name": "Upload image2",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        18384,
+        5136
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9MkMC927t3MeZn7t",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "=10eHOxB22dRpsZsAwjolttKf-y8elNcW8zAiIP9sqP1E",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Foaie1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10eHOxB22dRpsZsAwjolttKf-y8elNcW8zAiIP9sqP1E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $('Create content package2').first().json.created_at }}",
+            "source_url": "={{ $('Create content package2').first().json.blog_url }}",
+            "title": "={{ $('Create content package2').first().json.title }}",
+            "summary": "={{ $('Create content package2').first().json.summary }}",
+            "post_text": "={{ $('Create content package2').first().json.post_text }}",
+            "image_prompt": "={{ $('Create content package2').first().json.llm_image_prompt }}",
+            "image_id": "={{ $json.id || '' }}",
+            "image_url": "={{ $json.webViewLink || $json.webContentLink || ($json.id ? 'https://drive.google.com/file/d/' + $json.id + '/view' : '') }}",
+            "published": "={{ false }}",
+            "confirmation": "={{ $('Create content package2').first().json.confirmation }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_text",
+              "displayName": "post_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_id",
+              "displayName": "image_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "published",
+              "displayName": "published",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confirmation",
+              "displayName": "confirmation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a32fd593-6e31-4a08-b6a0-315d3047b9f3",
+      "name": "Append row in sheet2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        18624,
+        5136
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FpKKRPowDUlLe5yE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "showText",
+        "responseText": "=<h2>LeeWu Maritime Services Content AI</h2>\n<p><b>Status:</b> completed</p>\n<p><b>Source URL:</b> {{ $('Create content package2').first().json.blog_url }}</p>\n<h3>Summary</h3>\n<pre>{{ $('Create content package2').first().json.summary }}</pre>\n<h3>LinkedIn Post</h3>\n<pre>{{ $('Create content package2').first().json.post_text }}</pre>\n<p><b>Image prompt:</b> {{ $('Create content package2').first().json.llm_image_prompt }}</p>\n<p><b>Google Drive image:</b> {{ $('Upload image2').first().json.webViewLink || $('Upload image2').first().json.id || 'Uploaded, but no link returned' }}</p>"
+      },
+      "id": "7aa8c906-c098-4ee5-8bbd-62071f53caec",
+      "name": "Form Ending - Show result2",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        18864,
+        5136
+      ],
+      "webhookId": "lp-maritime-form-ending-result"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        16640,
+        4832
+      ],
+      "id": "141d82be-8adc-4c1a-905e-babec1dd609e",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "LZRfjAkaB3DiTuXF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        16800,
+        5568
+      ],
+      "id": "586a19fe-bda2-47dc-929d-202accd57bdc",
+      "name": "Embeddings Google Gemini2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "324cVbIBuiaq3UQc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## LeeWu Maritime Services – CLEAN workflow\n\nPăstrat doar flow-ul nou, tip tutorial:\n`Form blog_url → Scrape → AI Agent/OpenRouter → Image Prompt → Image → Google Drive → Google Sheets → Form Ending`.\n\n### De ce a fost curățat\nÎn fișier existau două flow-uri în același canvas: unul vechi de Surveyor/RAG și unul nou pentru LinkedIn + imagine. Am păstrat flow-ul nou ca să nu ruleze ramuri duplicate și să nu amestece câmpurile `question/source_url` cu `blog_url`.\n\n### Sheets\nNodul `Append row in sheet` este conectat după `Upload image` și primește atât linkul imaginii din Google Drive, cât și textul din `Create content package`.\n\n### Coloane Google Sheet\ncreated_at | source_url | title | summary | post_text | image_prompt | image_id | image_url | published | confirmation\n\n### Credentials\n- OpenRouter native chat model\n- Supabase account\n- OpenAI/compatible embeddings pentru vector store\n- OpenAI API key în ENV pentru generare imagine\n- Google Drive + Google Sheets\n",
+        "height": 720,
+        "width": 620,
+        "color": 3
+      },
+      "id": "ed1aae49-8540-4981-afd8-16743eb79bc3",
+      "name": "Sticky Note - Setup / Env",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        19232,
+        6496
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "LeeWu Maritime Services Content AI",
+        "formDescription": "Trimite un URL de articol / pagină. Workflow-ul extrage conținutul, îl rezumă, generează o postare LinkedIn și un prompt de imagine, apoi urcă imaginea în Google Drive și salvează logul în Google Sheets.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "blog_url",
+              "placeholder": "https://example.com/article",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Run LeeWu Maritime AI"
+        }
+      },
+      "id": "caaf0f27-c5d3-4726-b31b-9f9ba9148af9",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        18912,
+        6880
+      ],
+      "webhookId": "06f7e125-fe1d-4a2c-a52f-e5d6fb52d231"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://r.jina.ai/http://' + (($json.blog_url || '').replace(/^https?:\\/\\//, '')) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "43e36b80-e313-416a-b87f-1dc69d030855",
+      "name": "Scrape url and get its content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        19168,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.body || $json.data || '';\nconst markdown = String(raw).replace(/\\u0000/g, '').trim();\nconst headingMatch = markdown.match(/^#\\s+(.+)$/m);\nconst title = headingMatch ? headingMatch[1].trim() : 'LeeWu Maritime content';\nreturn [{ json: {\n  blog_url: $('On form submission').first().json.blog_url,\n  title,\n  data: { markdown: markdown.slice(0, 120000) },\n  topic: markdown.slice(0, 120000),\n  source_type: 'blog_url',\n  question: 'Summarize this source and generate an LeeWu Maritime LinkedIn post plus image prompt'\n} }];"
+      },
+      "id": "216aa7ec-d23e-4474-ba2d-cf7c419ac6e7",
+      "name": "Variables and context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        19424,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  blog_url: $json.blog_url,\n  title: $json.title,\n  question: $json.question,\n  source_text: $json.data?.markdown || $json.topic || '',\n  data: $json.data,\n  client_name: 'LeeWu Maritime Services',\n  source_type: $json.source_type || 'blog_url'\n} }];"
+      },
+      "id": "4f5f205a-852b-49dd-bc28-926983bbe05c",
+      "name": "Prepare LeeWu Maritime prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        19696,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.data.markdown }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $json.blog_url }}"
+              },
+              {
+                "name": "title",
+                "value": "={{ $json.title }}"
+              },
+              {
+                "name": "business",
+                "value": "LeeWu Maritime Services"
+              }
+            ]
+          }
+        }
+      },
+      "id": "d07d1aee-de86-4480-8379-fb757a85f024",
+      "name": "Chunk source for vector",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        19936,
+        7104
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "lp_maritime_documents",
+        "options": {
+          "queryName": "match_lp_maritime_documents"
+        }
+      },
+      "id": "7ccdabb1-2a88-4f08-a15d-31d88b459608",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        20192,
+        7104
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "2icVF8YyJEnom7GQ",
+          "name": "LP Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "lp_maritime_documents",
+        "toolDescription": "Search LeeWu Maritime Services internal knowledge base, survey notes, procedures, vessel inspection insights, compliance notes, and maritime context. Use this when extra maritime context would improve the summary or LinkedIn post.",
+        "tableName": {
+          "__rl": true,
+          "value": "lp_maritime_documents",
+          "mode": "list",
+          "cachedResultName": "lp_maritime_documents"
+        },
+        "topK": 6,
+        "options": {
+          "queryName": "match_lp_maritime_documents"
+        }
+      },
+      "id": "122399ad-a23b-4659-b8df-3f25a0db6a34",
+      "name": "LeeWu Maritime Research Tool",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        20224,
+        6672
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "2icVF8YyJEnom7GQ",
+          "name": "LP Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\"\n    },\n    \"summary\": {\n      \"type\": \"string\"\n    },\n    \"customized_post_text\": {\n      \"type\": \"string\"\n    },\n    \"llm_image_prompt\": {\n      \"type\": \"string\"\n    },\n    \"source_notes\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"summary\",\n    \"customized_post_text\",\n    \"llm_image_prompt\",\n    \"source_notes\"\n  ]\n}"
+      },
+      "id": "eb5b5ea1-4569-40c9-a58b-de5ad54e67ff",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        20816,
+        6672
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic / markdown content:\n{{ $json.data.markdown }}\n\nSource URL: {{ $json.blog_url }}",
+        "options": {
+          "systemMessage": "You are an AI content strategist and maritime analyst for LeeWu Maritime Services.\n\nYou will receive article or page content as markdown.\n\nGoal:\n1. Analyze the content.\n2. If extra maritime context would help, use the tool `lp_maritime_research_tool`.\n3. Summarize the content while preserving essential information.\n4. Create a polished LinkedIn post in Romanian for LeeWu Maritime Services.\n5. Generate an image prompt in English, 20-35 words, suitable for a diagram / blueprint / technical illustration.\n\nImage prompt style requirements:\n- clean diagram\n- flat workflow\n- structured layout\n- navy/orange palette\n- analytical mood\n- split-screen or side-by-side composition\n- blueprint style\n- technical connector lines\n- isometric or technical illustration feeling\n- maritime survey / vessel / inspection / AI reporting context\n\nRules:\n- Do not invent facts, dates, vessel names, or regulations if they are not present.\n- Keep the summary useful and concise.\n- The LinkedIn post should be professional, practical, and business-oriented, around 180-280 words.\n- The LinkedIn post should include a hook, a short body, 3-5 bullets if appropriate, and a soft CTA.\n- Return data that matches the connected structured output parser exactly."
+        }
+      },
+      "id": "71d20207-7542-4eee-a3af-374c74a37d60",
+      "name": "Get URL Content & Generate Post1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        20544,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = $json.output || $json;\nconst payload = typeof out === 'string' ? { summary: out } : out;\nconst title = payload.title || $('Prepare LeeWu Maritime prompt').first().json.title || 'LeeWu Maritime content';\nconst summary = payload.summary || '';\nconst post_text = payload.customized_post_text || payload.post_text || summary;\nconst llm_image_prompt = payload.llm_image_prompt || 'Technical maritime workflow illustration, navy and orange, clean blueprint style';\nreturn [{ json: {\n  created_at: new Date().toISOString(),\n  blog_url: $('Prepare LeeWu Maritime prompt').first().json.blog_url,\n  title,\n  summary,\n  post_text,\n  llm_image_prompt,\n  source_notes: payload.source_notes || [],\n  published: false,\n  confirmation: 'Ready for review'\n} }];"
+      },
+      "id": "73747e60-1820-4a1e-a867-83842ece5545",
+      "name": "Create content package",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        21056,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer YOUR_OPENROUTER_API_KEY\n"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "HTTP-Referer",
+              "value": "https://leewuai.ro"
+            },
+            {
+              "name": "X-Title",
+              "value": "LeeWu Maritime Services"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-2.5-flash-image\",\n  \"modalities\": [\"image\", \"text\"],\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"{{$json.llm_image_prompt}}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "4b57a10f-21dc-4fab-8f41-d16416b85115",
+      "name": "HTTP Request - Generate Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        21776,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "image_base64",
+        "options": {
+          "fileName": "=LP_Maritime_LinkedIn_{{ $now.format('yyyyLLdd_HHmm') }}.png",
+          "mimeType": "image/png"
+        }
+      },
+      "id": "7ad9872a-0d4e-4318-8dbb-c7806337fc49",
+      "name": "Convert Image to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        22224,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=LP_Maritime_LinkedIn_{{ $now.format('yyyyLLdd_HHmm') }}.png",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "5b8f3f06-c265-48f5-ae4d-ddd0c8d2f506",
+      "name": "Upload image",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        22464,
+        6880
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9MkMC927t3MeZn7t",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "=10eHOxB22dRpsZsAwjolttKf-y8elNcW8zAiIP9sqP1E",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Foaie1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10eHOxB22dRpsZsAwjolttKf-y8elNcW8zAiIP9sqP1E/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{ $('Prepare image request').first().json.created_at }}",
+            "source_url": "={{ $('Prepare image request').first().json.blog_url }}",
+            "title": "={{ $('Prepare image request').first().json.title }}",
+            "summary": "={{ $('Prepare image request').first().json.summary }}",
+            "post_text": "={{ $('Prepare image request').first().json.post_text }}",
+            "image_prompt": "={{ $('Prepare image request').first().json.llm_image_prompt }}",
+            "image_id": "={{ $json.id || '' }}",
+            "image_url": "={{ $json.webViewLink || $json.webContentLink || ($json.id ? 'https://drive.google.com/file/d/' + $json.id + '/view' : '') }}",
+            "published": "={{ false }}",
+            "confirmation": "={{ $('Prepare image request').first().json.confirmation }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_text",
+              "displayName": "post_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_id",
+              "displayName": "image_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "published",
+              "displayName": "published",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confirmation",
+              "displayName": "confirmation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "3c323387-5908-4e0f-8132-0f2fd2b1acf1",
+      "name": "Append row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        22704,
+        6880
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FpKKRPowDUlLe5yE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "showText",
+        "responseText": "=<h2>LeeWu Maritime Services Content AI</h2>\n<p><b>Status:</b> completed</p>\n<p><b>Source URL:</b> {{ $('Prepare image request').first().json.blog_url }}</p>\n<h3>Summary</h3>\n<pre>{{ $('Prepare image request').first().json.summary }}</pre>\n<h3>LinkedIn Post</h3>\n<pre>{{ $('Prepare image request').first().json.post_text }}</pre>\n<p><b>Final AI Agent image prompt:</b> {{ $('Prepare image request').first().json.llm_image_prompt }}</p>\n<p><b>Google Drive image:</b> {{ $('Upload image').first().json.webViewLink || $('Upload image').first().json.id || 'Uploaded, but no link returned' }}</p>"
+      },
+      "id": "edf29264-7c6a-4f2d-932a-66850c73f0ce",
+      "name": "Form Ending - Show result",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        22944,
+        6880
+      ],
+      "webhookId": "lp-maritime-form-ending-result"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        20032,
+        6576
+      ],
+      "id": "20a8f3d2-4641-4bb1-82c6-56b56e0c564d",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "LZRfjAkaB3DiTuXF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summary:\\n{{ $json.summary }}\\n\\nLinkedIn post:\\n{{ $json.post_text }}\\n\\nInitial image idea:\\n{{ $json.llm_image_prompt }}",
+        "options": {
+          "systemMessage": "You are an AI visual prompt agent for LeeWu Maritime Services. Create ONE final image prompt in English for an AI image generator. The prompt must be 20-35 words. Style: clean diagram, flat workflow, structured layout, navy/orange palette, analytical mood, blueprint style, technical connector lines, maritime survey, vessel inspection, AI reporting. Return only the final prompt text. No JSON, no markdown, no quotes."
+        }
+      },
+      "id": "e258dbde-4d88-4070-b7c0-93f1237da978",
+      "name": "AI Agent - Generate Image Prompt",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        21296,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOut = $json.output || $json.text || $json.answer || $json;\nconst finalPrompt = typeof agentOut === 'string' ? agentOut : (agentOut.output || agentOut.text || agentOut.answer || JSON.stringify(agentOut));\nconst pkg = $('Create content package').first().json;\nreturn [{ json: { ...pkg, llm_image_prompt: String(finalPrompt).trim() || pkg.llm_image_prompt } }];"
+      },
+      "id": "8448305f-9411-4351-97fd-cd4435a0a0ce",
+      "name": "Prepare image request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        21536,
+        6880
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 1200,
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "e7495522-f056-4427-8ecf-f5ef28cbc1e7",
+      "name": "Recursive Text Splitter1",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        19936,
+        7312
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        20192,
+        7312
+      ],
+      "id": "eb413dd4-37ef-46ee-80b2-ec0256ba3672",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "324cVbIBuiaq3UQc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        21168,
+        7088
+      ],
+      "id": "c0e2f774-8a77-43cb-b6dd-634c1508c4bd",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "LZRfjAkaB3DiTuXF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const imageUrl =\n  $json.choices?.[0]?.message?.images?.[0]?.image_url?.url || '';\n\nif (!imageUrl) {\n  throw new Error('No image found in OpenRouter response. Check choices[0].message.images[0].image_url.url');\n}\n\nconst base64 = imageUrl.includes(',')\n  ? imageUrl.split(',')[1]\n  : imageUrl;\n\nreturn [\n  {\n    json: {\n      ...$json,\n      image_base64: base64,\n      image_data_url: imageUrl\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        21984,
+        6880
+      ],
+      "id": "ccea11dd-e8a6-4ca7-ac79-853144f2876d",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Recursive Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Chunk source for vector2",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission2": {
+      "main": [
+        [
+          {
+            "node": "Scrape url and get its content2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape url and get its content2": {
+      "main": [
+        [
+          {
+            "node": "Variables and context2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variables and context2": {
+      "main": [
+        [
+          {
+            "node": "Prepare LeeWu Maritime prompt2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare LeeWu Maritime prompt2": {
+      "main": [
+        [
+          {
+            "node": "Get URL Content & Generate Post2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunk source for vector2": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LeeWu Maritime Research Tool2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get URL Content & Generate Post2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get URL Content & Generate Post2": {
+      "main": [
+        [
+          {
+            "node": "Create content package2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create content package2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Generate Image2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Generate Image2": {
+      "main": [
+        [
+          {
+            "node": "Convert Image to File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Image to File2": {
+      "main": [
+        [
+          {
+            "node": "Upload image2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload image2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Form Ending - Show result2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get URL Content & Generate Post2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "LeeWu Maritime Research Tool2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Scrape url and get its content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape url and get its content": {
+      "main": [
+        [
+          {
+            "node": "Variables and context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variables and context": {
+      "main": [
+        [
+          {
+            "node": "Prepare LeeWu Maritime prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare LeeWu Maritime prompt": {
+      "main": [
+        [
+          {
+            "node": "Get URL Content & Generate Post1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunk source for vector": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LeeWu Maritime Research Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get URL Content & Generate Post1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "AI Agent - Generate Image Prompt",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get URL Content & Generate Post1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get URL Content & Generate Post1": {
+      "main": [
+        [
+          {
+            "node": "Create content package",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create content package": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Generate Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Generate Image": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Image to File": {
+      "main": [
+        [
+          {
+            "node": "Upload image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload image": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Form Ending - Show result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Generate Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Prepare image request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare image request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Generate Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Chunk source for vector",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "LeeWu Maritime Research Tool",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Generate Image Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert Image to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "82115593-9f90-44e6-ae0b-fe852c702851",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "642068f38571eaa6e6dd7cfaa2bba51d674572c544a08400fdd8fe42e135038e"
+  },
+  "id": "S2OGdPXridMp79sH",
+  "tags": [
+    {
+      "name": "LeeWu Maritime Services",
+      "id": "ewLFv1MxatRCGuE3",
+      "updatedAt": "2026-06-06T17:57:53.721Z",
+      "createdAt": "2026-06-06T17:57:53.721Z"
+    },
+    {
+      "name": "LeeWu Maritime",
+      "id": "W2p1YuXBYXVuzIIr",
+      "updatedAt": "2026-06-06T18:01:24.324Z",
+      "createdAt": "2026-06-06T18:01:24.324Z"
+    },
+    {
+      "name": "OpenRouter",
+      "id": "TkhLqseUl4DqCN6T",
+      "updatedAt": "2026-06-06T18:01:24.274Z",
+      "createdAt": "2026-06-06T18:01:24.274Z"
+    },
+    {
+      "name": "Supabase Vector",
+      "id": "vWCFPn0dgUmefBoR",
+      "updatedAt": "2026-06-06T18:01:24.314Z",
+      "createdAt": "2026-06-06T18:01:24.314Z"
+    },
+    {
+      "name": "Google Sheets",
+      "id": "J1fyIC62QvWxulr4",
+      "updatedAt": "2026-06-06T18:44:31.819Z",
+      "createdAt": "2026-06-06T18:44:31.819Z"
+    }
+  ]
+}

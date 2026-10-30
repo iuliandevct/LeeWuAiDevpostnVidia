@@ -1,0 +1,171 @@
+{
+  "name": "LeeWu AI - Gmail Maritime Discharge Order Intake & Telegram Kanban Dispatch",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": true,
+        "filters": {
+          "q": "subject:(discharging OR survey OR nomination OR descarcare OR cargo OR inspection OR WAN FU)"
+        }
+      },
+      "name": "Gmail Trigger (New Survey Nominations)",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [
+        180,
+        240
+      ],
+      "id": "node_gmail_trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this incoming maritime cargo discharge email:\n\nSubject: {{ $json.subject }}\nSender: {{ $json.from.text }}\nBody:\n{{ $json.text || $json.snippet }}\n\nTask: Determine if this is a Cargo Discharge Survey Nomination. If yes, extract in JSON format:\n{\n  \"is_discharge_order\": true,\n  \"vessel_name\": \"...\",\n  \"imo_number\": \"...\",\n  \"port\": \"PORT OF CONSTANTA SUD\",\n  \"berth\": \"Berth 120\",\n  \"client_name\": \"...\",\n  \"cargo_description\": \"...\",\n  \"total_tonnage_mt\": 0,\n  \"bl_number\": \"...\",\n  \"eta_date\": \"YYYY-MM-DD\",\n  \"special_instructions\": \"...\",\n  \"priority\": \"URGENT|NORMAL|HIGH\"\n}",
+        "options": {
+          "temperature": 0.1,
+          "systemMessage": "You are an expert maritime shipping agent AI. You extract structured cargo survey discharge orders from emails with 100% precision. Return valid JSON only."
+        }
+      },
+      "name": "NVIDIA Nemotron / OpenAI Parser",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        420,
+        240
+      ],
+      "id": "node_ai_extractor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.is_discharge_order }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Filter: Is Discharge Order?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        660,
+        240
+      ],
+      "id": "node_filter_order"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:1880/api/kanban/card",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"{{ $json.vessel_name }} - Discharge Survey\",\n  \"vessel_name\": \"{{ $json.vessel_name }}\",\n  \"imo_number\": \"{{ $json.imo_number || '1072842' }}\",\n  \"client_name\": \"{{ $json.client_name }}\",\n  \"cargo\": \"{{ $json.cargo_description }}\",\n  \"tonnage\": \"{{ $json.total_tonnage_mt }} MT\",\n  \"bl_number\": \"{{ $json.bl_number || 'B/L PENDING' }}\",\n  \"berth\": \"{{ $json.berth || 'Berth 120' }}\",\n  \"port\": \"{{ $json.port || 'Port of Constanta Sud' }}\",\n  \"stage\": \"gmail_intake\",\n  \"priority\": \"{{ $json.priority || 'NORMAL' }}\",\n  \"source\": \"Google Gmail AI\",\n  \"email_sender\": \"{{ $('Gmail Trigger (New Survey Nominations)').item.json.from.text }}\"\n}",
+        "options": {}
+      },
+      "name": "Push to Web Interface Kanban",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        160
+      ],
+      "id": "node_push_kanban"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:1880/api/telegram-notify",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chatId\": \"@leewu_maritime_ops\",\n  \"message\": \"🚨 <b>[NEW GMAIL DISCHARGE ORDER DETECTED]</b>\\n<b>Vessel:</b> {{ $json.vessel_name }} (IMO: {{ $json.imo_number }})\\n<b>Client:</b> {{ $json.client_name }}\\n<b>Cargo:</b> {{ $json.cargo_description }} ({{ $json.total_tonnage_mt }} MT)\\n<b>Terminal:</b> {{ $json.port }} - {{ $json.berth }}\\n<b>ETA:</b> {{ $json.eta_date }}\\n<b>Special Notes:</b> {{ $json.special_instructions }}\\n\\n✅ <i>Added to Web Kanban Pipeline stage [Incoming Nominations].</i>\\n🔗 <a href='http://127.0.0.1:1880/survey-console.html'>Open Mission Console</a>\",\n  \"parseMode\": \"HTML\"\n}",
+        "options": {}
+      },
+      "name": "Broadcast to Telegram Robot Channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        320
+      ],
+      "id": "node_telegram_dispatch"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO public.surveys (ref_no, vessel_name, imo_number, survey_type, status, port, berth, client_name, cargo_description, total_weight_kg)\nVALUES (\n  'SRV-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || SUBSTRING(MD5(RANDOM()::TEXT), 1, 4),\n  '{{ $json.vessel_name }}',\n  '{{ $json.imo_number || '1072842' }}',\n  'DISCHARGING SURVEY',\n  'AWAITING_REVIEW',\n  '{{ $json.port || 'PORT OF CONSTANTA SUD' }}',\n  '{{ $json.berth || 'Berth 120' }}',\n  '{{ $json.client_name }}',\n  '{{ $json.cargo_description }}',\n  {{ ($json.total_tonnage_mt || 11) * 1000 }}\n)\nON CONFLICT DO NOTHING;"
+      },
+      "name": "Sync to Supabase PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [
+        1140,
+        240
+      ],
+      "id": "node_supabase_sync"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger (New Survey Nominations)": {
+      "main": [
+        [
+          {
+            "node": "NVIDIA Nemotron / OpenAI Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NVIDIA Nemotron / OpenAI Parser": {
+      "main": [
+        [
+          {
+            "node": "Filter: Is Discharge Order?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Is Discharge Order?": {
+      "main": [
+        [
+          {
+            "node": "Push to Web Interface Kanban",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Broadcast to Telegram Robot Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push to Web Interface Kanban": {
+      "main": [
+        [
+          {
+            "node": "Sync to Supabase PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

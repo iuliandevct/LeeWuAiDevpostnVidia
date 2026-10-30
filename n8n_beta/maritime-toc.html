@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Loading Surveyor - Table of Contents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-container {
+            width: 595px;
+            min-height: 842px;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 100%);
+            padding: 50px 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .logo-small {
+            width: 35px;
+            height: 35px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-small::before {
+            content: '';
+            width: 17px;
+            height: 17px;
+            background: #1a3a52;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ref-number {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 11px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .toc-section {
+            margin-bottom: 35px;
+        }
+
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .toc-item::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 0;
+            right: 0;
+            border-bottom: 1px dotted #dee2e6;
+            z-index: 0;
+        }
+
+        .toc-number {
+            font-weight: 600;
+            color: #1a3a52;
+            font-size: 14px;
+            background: white;
+            padding-right: 8px;
+            position: relative;
+            z-index: 1;
+            min-width: 30px;
+        }
+
+        .toc-title {
+            font-size: 13px;
+            color: #495057;
+            background: white;
+            padding-right: 8px;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            font-weight: 400;
+        }
+
+        .toc-page {
+            font-size: 13px;
+            color: #6c757d;
+            font-weight: 500;
+            background: white;
+            padding-left: 8px;
+            position: relative;
+            z-index: 1;
+            min-width: 25px;
+            text-align: right;
+        }
+
+        .toc-sub-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+            margin-left: 40px;
+            position: relative;
+            padding-bottom: 6px;
+        }
+
+        .toc-sub-item::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            right: 0;
+            border-bottom: 1px dotted #e9ecef;
+            z-index: 0;
+        }
+
+        .toc-sub-number {
+            font-weight: 500;
+            color: #2d5a7b;
+            font-size: 12px;
+            background: white;
+            padding-right: 8px;
+            position: relative;
+            z-index: 1;
+            min-width: 45px;
+        }
+
+        .toc-sub-title {
+            font-size: 12px;
+            color: #6c757d;
+            background: white;
+            padding-right: 8px;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            font-weight: 400;
+        }
+
+        .toc-sub-page {
+            font-size: 12px;
+            color: #868e96;
+            font-weight: 500;
+            background: white;
+            padding-left: 8px;
+            position: relative;
+            z-index: 1;
+            min-width: 25px;
+            text-align: right;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, #1a3a52 0%, transparent 100%);
+            margin: 30px 0;
+            opacity: 0.3;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 50px;
+            right: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: #adb5bd;
+        }
+
+        .page-number {
+            font-weight: 500;
+            color: #1a3a52;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .page-container {
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+
+        /* Hover effects */
+        .toc-item:hover .toc-title,
+        .toc-sub-item:hover .toc-sub-title {
+            color: #1a3a52;
+            transition: color 0.2s ease;
+        }
+
+        /* Editable styles */
+        [contenteditable="true"] {
+            outline: none;
+            position: relative;
+        }
+
+        [contenteditable="true"]:focus {
+            background: rgba(26, 58, 82, 0.05);
+            border-radius: 2px;
+            padding: 0 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="logo-small"></div>
+            <h1 class="header-title">TABLE OF CONTENTS</h1>
+            <div class="ref-number">LOADING SURVEY Ref. No. AIG.1390.1_2024</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Main Sections -->
+            <div class="toc-section">
+                <div class="toc-item">
+                    <span class="toc-number">1.</span>
+                    <span class="toc-title">EXECUTIVE SUMMARY</span>
+                    <span class="toc-page">4</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">2.</span>
+                    <span class="toc-title">SCOPE OF SURVEY</span>
+                    <span class="toc-page">4</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">3.</span>
+                    <span class="toc-title">COMPANIES / PERSONNEL INVOLVED</span>
+                    <span class="toc-page">4</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">4.</span>
+                    <span class="toc-title">CARGO DETAILS</span>
+                    <span class="toc-page">5</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">4.1.</span>
+                    <span class="toc-sub-title">Description of goods</span>
+                    <span class="toc-sub-page">5</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">4.2.</span>
+                    <span class="toc-sub-title">Marks and numbers</span>
+                    <span class="toc-sub-page">7</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">4.3.</span>
+                    <span class="toc-sub-title">Packaging</span>
+                    <span class="toc-sub-page">7</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">5.</span>
+                    <span class="toc-title">RIVER BARGE PARTICULARS</span>
+                    <span class="toc-page">7</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">5.1.</span>
+                    <span class="toc-sub-title">Barges suitability condition</span>
+                    <span class="toc-sub-page">7</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">6.</span>
+                    <span class="toc-title">STORAGE AFFORDED TO GOODS BEFORE LOADING</span>
+                    <span class="toc-page">7</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">7.</span>
+                    <span class="toc-title">PRE-LOAD CONDITION SURVEY</span>
+                    <span class="toc-page">7</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">7.1.</span>
+                    <span class="toc-sub-title">Cargo condition survey findings</span>
+                    <span class="toc-sub-page">7</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="toc-item">
+                    <span class="toc-number">8.</span>
+                    <span class="toc-title">CARGO OPERATION</span>
+                    <span class="toc-page">8</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">8.1.</span>
+                    <span class="toc-sub-title">Cargo Operation Description</span>
+                    <span class="toc-sub-page">8</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">8.2.</span>
+                    <span class="toc-sub-title">Cargo Lifting Gear</span>
+                    <span class="toc-sub-page">8</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">8.3.</span>
+                    <span class="toc-sub-title">Underhook Rigging</span>
+                    <span class="toc-sub-page">8</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">8.4.</span>
+                    <span class="toc-sub-title">Lifting Operation</span>
+                    <span class="toc-sub-page">8</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">8.5.</span>
+                    <span class="toc-sub-title">Stowage, dunnaging and securing</span>
+                    <span class="toc-sub-page">9</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">9.</span>
+                    <span class="toc-title">TIME AND ACTIVITY LOG</span>
+                    <span class="toc-page">9</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">9.1.</span>
+                    <span class="toc-sub-title">Time and activity log</span>
+                    <span class="toc-sub-page">9</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">9.2.</span>
+                    <span class="toc-sub-title">Loading Sequences</span>
+                    <span class="toc-sub-page">10</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">9.3.</span>
+                    <span class="toc-sub-title">Safety incidents</span>
+                    <span class="toc-sub-page">12</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">9.4.</span>
+                    <span class="toc-sub-title">Surveyor's summary on cargo handing</span>
+                    <span class="toc-sub-page">12</span>
+                </div>
+
+                <div class="toc-item">
+                    <span class="toc-number">10.</span>
+                    <span class="toc-title">PHOTOGRAPHS INDEX</span>
+                    <span class="toc-page">12</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="toc-item">
+                    <span class="toc-number">11.</span>
+                    <span class="toc-title">ENCLOSURES</span>
+                    <span class="toc-page">45</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">11.1.</span>
+                    <span class="toc-sub-title">Bill of Lading</span>
+                    <span class="toc-sub-page">45</span>
+                </div>
+
+                <div class="toc-sub-item">
+                    <span class="toc-sub-number">11.2.</span>
+                    <span class="toc-sub-title">Mate's Receipt</span>
+                    <span class="toc-sub-page">45</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span contenteditable="true">geodrinal | www.our-address</span>
+            <span class="page-number">Page 2</span>
+        </div>
+    </div>
+</body>
+</html>

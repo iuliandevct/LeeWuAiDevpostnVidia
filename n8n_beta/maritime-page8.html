@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Loading Surveyor - Cargo Operation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-container {
+            width: 595px;
+            min-height: 842px;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1a3a52 0%, #2d5a7b 100%);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .logo-mini {
+            width: 28px;
+            height: 28px;
+            background: #1a3a52;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mini::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .ref-info {
+            text-align: right;
+            font-size: 9px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .ref-info strong {
+            color: #1a3a52;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a3a52;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-number {
+            min-width: 30px;
+            color: #2d5a7b;
+        }
+
+        .subsection-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a3a52;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+
+        .section-content {
+            font-size: 10px;
+            color: #495057;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .section-content p {
+            margin-bottom: 8px;
+        }
+
+        .equipment-list {
+            background: #f8f9fa;
+            border-left: 3px solid #2d5a7b;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-radius: 2px;
+        }
+
+        .equipment-title {
+            font-weight: 600;
+            color: #1a3a52;
+            margin-bottom: 6px;
+            font-size: 10px;
+        }
+
+        .equipment-list ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .equipment-list li {
+            margin-bottom: 4px;
+            font-size: 9.5px;
+            line-height: 1.5;
+            color: #495057;
+        }
+
+        .exception-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin-top: 12px;
+            border-radius: 2px;
+        }
+
+        .exception-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 6px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exception-content {
+            font-size: 9.5px;
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .highlight-package {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: #adb5bd;
+        }
+
+        .page-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .page-container {
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+
+        [contenteditable="true"] {
+            outline: none;
+        }
+
+        [contenteditable="true"]:focus {
+            background: rgba(26, 58, 82, 0.03);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header-bar"></div>
+
+        <div class="page-header">
+            <div class="logo-mini"></div>
+            <div class="ref-info">
+                <div><strong>LOADING SURVEY</strong></div>
+                <div>Ref. No. <strong>AIG.1390.1_2024</strong></div>
+            </div>
+        </div>
+
+        <!-- Section 8: Cargo Operation -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-number">8.</span>
+                <span>CARGO OPERATION</span>
+            </h2>
+
+            <h3 class="subsection-title" contenteditable="true">8.1. Cargo Operation Description</h3>
+            <div class="section-content" contenteditable="true">
+                <p>The 'TRANSFORMER BODY' cargo units were loaded from stevedores open concrete platform adjacent to berth 120 by harbor mobile crane and rigging equipment provided by the stevedores.</p>
+                <p>The wooden cases and 'TRANSFORMER OIL TANK' cargo units were conveyed to the quayside alongside berth 119 by trailers and safely loaded onboard the on-carrying river barge.</p>
+            </div>
+
+            <h3 class="subsection-title" contenteditable="true">8.2. Cargo Lifting Gear</h3>
+            <div class="section-content">
+                <div class="equipment-title">Stevedore's lifting appliances:</div>
+                <ul style="padding-left: 18px; margin-top: 8px;">
+                    <li contenteditable="true">Harbor mobile crane SWL104[t] range 5-42[m] used for light packages</li>
+                    <li contenteditable="true">Harbor mobile crane SWL125[t] range 5-53.5[m] used for transformer body</li>
+                </ul>
+            </div>
+
+            <h3 class="subsection-title" contenteditable="true">8.3. Underhook Rigging</h3>
+            <div class="section-content" contenteditable="true">
+                <p>Underhook rigging equipment supplied by stevedores, consist of:</p>
+            </div>
+
+            <div class="equipment-list">
+                <div class="equipment-title">TRANSFORMER BODY:</div>
+                <ul contenteditable="true">
+                    <li>4xWLL30[t] length 10[m] polyester round slings</li>
+                </ul>
+            </div>
+
+            <div class="equipment-list">
+                <div class="equipment-title">TRANSFORMER OIL TANKS</div>
+                <ul contenteditable="true">
+                    <li>4xWLL5[t] length 7.2[m] polyester flat slings</li>
+                    <li>4xWLL8[t] connection shackles</li>
+                </ul>
+            </div>
+
+            <div class="equipment-list">
+                <div class="equipment-title">Wooden cases</div>
+                <ul contenteditable="true">
+                    <li>4xWLL5[t] length 7.2[m] polyester flat slings (folded in double)</li>
+                    <li>4xWLL8[t] connection shackles</li>
+                    <li>4xWLL5[t] length 7.2[m] polyester flat slings</li>
+                    <li>2xWLL6[t] lifting hooks</li>
+                </ul>
+            </div>
+
+            <div class="section-content" contenteditable="true" style="margin-top: 12px;">
+                <p>Pre-lift cursory visual inspection to underhook rigging equipment and configuration was conducted with satisfactory results.</p>
+            </div>
+
+            <h3 class="subsection-title" contenteditable="true">8.4. Lifting Operation</h3>
+            <div class="section-content" contenteditable="true">
+                <p>The lifting operation was smooth with limited lifting, luffing and slewing speed; no rough handling or uneven lifting resulting in cargo tilt was noted throughout lifting operations.</p>
+                <p>The following exception was noted:</p>
+            </div>
+
+            <div class="exception-box">
+                <div class="exception-title">Exception:</div>
+                <div class="exception-content" contenteditable="true">
+                    Wooden case side planks locally broken during handling by forklift (overturned to one side) – package no. <span class="highlight-package">35/93</span> – additional inspection is recommended at the receiver premises, upon wooden case opening
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>MS 'ARETA'</span>
+            <span class="page-number">Page 8 of 45</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: Supabase Postgres
+    uid: supabase-postgres
+    type: postgres
+    access: proxy
+    url: supabase-db:5432
+    user: ${SUPABASE_DB_USER}
+    jsonData:
+      database: ${SUPABASE_DB_NAME}
+      sslmode: disable
+      postgresVersion: 1500
+      timescaledb: false
+    secureJsonData:
+      password: ${SUPABASE_DB_PASSWORD}

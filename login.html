@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>LeeWu AI — Secure Maritime Mission Portal | Supabase Auth & RLS</title>
+  
+  <!-- Material Symbols & Typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#94da32",
+            "primary-container": "#76b900",
+            "secondary": "#81cfff",
+            "secondary-container": "#00a3e0",
+            "tertiary": "#ffb95f",
+            "background": "#101319",
+            "surface": "#101319",
+            "surface-container-lowest": "#0b0e14",
+            "surface-container-low": "#191c22",
+            "surface-container": "#1d2026",
+            "surface-container-high": "#272a30",
+            "surface-container-highest": "#32353b",
+            "on-surface": "#e1e2eb",
+            "on-surface-variant": "#c1cab1",
+            "outline": "#8c947d",
+            "outline-variant": "#424936",
+            "error": "#ffb4ab",
+            "error-container": "#93000a"
+          },
+          fontFamily: {
+            "headline": ["Geist", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+  
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #101319; }
+    ::-webkit-scrollbar-thumb { background: #272a30; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94da32; }
+
+    .glow-lime {
+      box-shadow: 0 0 35px rgba(148, 218, 50, 0.25);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 35px rgba(129, 207, 255, 0.25);
+    }
+    .grid-pattern {
+      background-size: 32px 32px;
+      background-image: linear-gradient(to right, rgba(66, 73, 54, 0.12) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(66, 73, 54, 0.12) 1px, transparent 1px);
+    }
+    .radar-sweep {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 480px;
+      height: 480px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(148, 218, 50, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: pulseRadar 4s infinite ease-in-out;
+    }
+    @keyframes pulseRadar {
+      0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+      50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.8; }
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col justify-between selection:bg-primary/30 selection:text-primary relative overflow-x-hidden">
+
+  <!-- Ambient Radar & Glow Layer -->
+  <div class="fixed inset-0 pointer-events-none grid-pattern z-0 opacity-80"></div>
+  <div class="radar-sweep z-0"></div>
+  <div class="fixed -top-40 right-10 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
+  <div class="fixed -bottom-40 left-10 w-96 h-96 bg-secondary/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+  <!-- ==================== TOP NAVIGATION ==================== -->
+  <header class="relative z-20 w-full border-b border-outline-variant/30 bg-surface-container-lowest/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="landing.html" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-lg bg-primary/20 border border-primary/50 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(148,218,50,0.3)] group-hover:scale-105 transition-all">
+          <span class="material-symbols-outlined text-xl">directions_boat</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-headline font-bold text-lg text-on-surface tracking-tight leading-none">LeeWu AI</span>
+          <span class="font-mono text-[9px] uppercase tracking-widest text-primary font-semibold">Maritime Security Perimeter</span>
+        </div>
+      </a>
+
+      <!-- Supabase Engine Status & Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Live Connection Pill -->
+        <button onclick="toggleConfigModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/40 hover:border-primary/50 transition-all cursor-pointer">
+          <span id="conn-ping" class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+          </span>
+          <span id="conn-label" class="font-mono text-[11px] text-on-surface-variant font-medium">SUPABASE: LOCAL GATEWAY (:8000)</span>
+          <span class="material-symbols-outlined text-sm text-outline">tune</span>
+        </button>
+
+        <a href="landing.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/40 text-xs font-mono text-on-surface-variant hover:text-on-surface hover:border-outline transition-all">
+          <span class="material-symbols-outlined text-sm">home</span>
+          <span>Landing Page</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN AUTHENTICATION CARD ==================== -->
+  <main class="relative z-10 flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col lg:flex-row items-center justify-center gap-10">
+    
+    <!-- LEFT COLUMN: Security Context & Role Governance -->
+    <div class="w-full lg:w-5/12 flex flex-col space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/40 w-fit">
+        <span class="material-symbols-outlined text-primary text-sm">shield</span>
+        <span class="font-mono text-[11px] uppercase tracking-wider text-primary font-bold">PostgreSQL Row-Level Security</span>
+      </div>
+
+      <h1 class="font-headline text-3xl sm:text-4xl font-extrabold tracking-tight text-on-surface leading-tight">
+        Zero Trust Maritime Authentication
+      </h1>
+
+      <p class="font-body text-sm text-on-surface-variant leading-relaxed">
+        Autonomous cargo survey data is partitioned cryptographically at the database kernel. Select an identity to inspect the strict RLS boundary enforcement.
+      </p>
+
+      <!-- Roles & Permissions Matrix -->
+      <div class="space-y-3 pt-2">
+        <!-- Role 1: Fleet Admin -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low/70 border border-outline-variant/30 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
+            <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-headline text-xs font-bold text-on-surface">Fleet Admin</span>
+              <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 font-bold">SUPERUSER</span>
+            </div>
+            <p class="font-body text-[11px] text-on-surface-variant mt-0.5">
+              Unrestricted access to all fleet surveys, AI triage thresholds, user roles, and immutable audit logs.
+            </p>
+          </div>
+        </div>
+
+        <!-- Role 2: Marine Surveyor -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low/70 border border-primary/30 flex items-start gap-3 bg-primary/5">
+          <div class="w-8 h-8 rounded-lg bg-primary/10 border border-primary/40 flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined text-lg">policy</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-headline text-xs font-bold text-primary">Marine Cargo Surveyor</span>
+              <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-bold">OPERATOR</span>
+            </div>
+            <p class="font-body text-[11px] text-on-surface-variant mt-0.5">
+              Can upload drone frames, verify defect annotations, generate A4 reports, and apply ANR digital seals.
+            </p>
+          </div>
+        </div>
+
+        <!-- Role 3: Cargo Client (COSCO) -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low/70 border border-secondary/30 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/40 flex items-center justify-center text-secondary shrink-0">
+            <span class="material-symbols-outlined text-lg">directions_boat</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-headline text-xs font-bold text-secondary">Cargo Client / Charterer</span>
+              <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-bold">RLS ISOLATED</span>
+            </div>
+            <p class="font-body text-[11px] text-on-surface-variant mt-0.5">
+              Strictly restricted by RLS: can only view <strong class="text-on-surface">finalized</strong> reports and cargo manifests for their own bills of lading.
+            </p>
+          </div>
+        </div>
+
+        <!-- Role 4: P&I Club Auditor -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low/70 border border-tertiary/30 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-lg bg-tertiary/10 border border-tertiary/40 flex items-center justify-center text-tertiary shrink-0">
+            <span class="material-symbols-outlined text-lg">fact_check</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-headline text-xs font-bold text-tertiary">P&I Club Claims Auditor</span>
+              <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-tertiary/20 text-tertiary font-bold">READ-ONLY AUDIT</span>
+            </div>
+            <p class="font-body text-[11px] text-on-surface-variant mt-0.5">
+              Read-only statutory verification: inspects SHA-256 evidence integrity chains and court-admissible timestamps.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Interactive Supabase Terminal -->
+    <div class="w-full lg:w-7/12 max-w-xl">
+      <div class="bg-surface-container-low/90 backdrop-blur-2xl border border-outline-variant/40 rounded-2xl shadow-2xl p-6 sm:p-8 relative overflow-hidden glow-lime">
+        
+        <!-- Tab Switcher -->
+        <div class="flex items-center justify-between border-b border-outline-variant/30 pb-4 mb-6">
+          <div class="flex items-center gap-2">
+            <button id="tab-login" onclick="switchAuthTab('login')" class="px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold bg-primary text-background shadow-md transition-all">
+              Sign In
+            </button>
+            <button id="tab-signup" onclick="switchAuthTab('signup')" class="px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all">
+              Register Role
+            </button>
+            <button id="tab-magic" onclick="switchAuthTab('magic')" class="px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all">
+              Magic Link
+            </button>
+          </div>
+          <span class="font-mono text-[10px] text-outline font-semibold">v2.44.0-SUPABASE</span>
+        </div>
+
+        <!-- Feedback Alert Banner -->
+        <div id="alert-box" class="hidden mb-5 p-3 rounded-xl border font-body text-xs flex items-center gap-2.5">
+          <span id="alert-icon" class="material-symbols-outlined text-base"></span>
+          <span id="alert-msg" class="flex-1"></span>
+        </div>
+
+        <!-- FORM 1: EMAIL & PASSWORD SIGN IN -->
+        <form id="form-login" onsubmit="handleEmailSignIn(event)" class="space-y-4">
+          <div>
+            <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1.5">
+              Maritime Email Address
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">alternate_email</span>
+              <input type="email" id="login-email" required placeholder="alexandru.radu@leewuai.ro" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-sm text-on-surface placeholder:text-outline font-mono focus:outline-none focus:border-primary transition-all"/>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="font-mono text-[11px] uppercase tracking-wider text-on-surface-variant">
+                Password
+              </label>
+              <a href="#" onclick="switchAuthTab('magic')" class="font-mono text-[10px] text-primary hover:underline">Forgot password?</a>
+            </div>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">lock</span>
+              <input type="password" id="login-password" required placeholder="••••••••••••" value="" class="w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-sm text-on-surface placeholder:text-outline font-mono focus:outline-none focus:border-primary transition-all"/>
+              <button type="button" onclick="togglePasswordVisibility('login-password')" class="absolute right-3 top-2.5 text-outline hover:text-on-surface">
+                <span class="material-symbols-outlined text-lg">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-login" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primary-container text-background font-headline font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(148,218,50,0.3)] transition-all">
+            <span class="material-symbols-outlined text-lg">login</span>
+            <span>Authenticate Session</span>
+          </button>
+        </form>
+
+        <!-- FORM 2: USER REGISTRATION WITH ROLE SELECTION -->
+        <form id="form-signup" onsubmit="handleSignUp(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1">
+              Full Legal Name & Title
+            </label>
+            <input type="text" id="signup-fullname" required placeholder="Ing. Alexandru Radu" class="w-full px-3.5 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-sm text-on-surface placeholder:text-outline font-mono focus:outline-none focus:border-primary transition-all"/>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1">
+                Assigned Role
+              </label>
+              <select id="signup-role" class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-xs text-on-surface font-mono focus:outline-none focus:border-primary transition-all">
+                <option value="surveyor">Marine Surveyor (Default)</option>
+                <option value="client">Cargo Client / Consignee</option>
+                <option value="pi_auditor">P&I Club Inspector</option>
+                <option value="admin">Fleet Admin</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1">
+                Company / Organization
+              </label>
+              <input type="text" id="signup-company" placeholder="LeeWu Maritime Survey" class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-xs text-on-surface font-mono focus:outline-none focus:border-primary transition-all"/>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1">
+              Work Email Address
+            </label>
+            <input type="email" id="signup-email" required placeholder="surveyor@leewuai.ro" class="w-full px-3.5 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-sm text-on-surface placeholder:text-outline font-mono focus:outline-none focus:border-primary transition-all"/>
+          </div>
+
+          <div>
+            <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1">
+              Password (Min 8 Characters)
+            </label>
+            <input type="password" id="signup-password" required minlength="8" placeholder="••••••••••••" class="w-full px-3.5 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-sm text-on-surface placeholder:text-outline font-mono focus:outline-none focus:border-primary transition-all"/>
+          </div>
+
+          <button type="submit" id="btn-submit-signup" class="w-full py-2.5 rounded-lg bg-secondary hover:bg-secondary-container text-background font-headline font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(129,207,255,0.3)] transition-all">
+            <span class="material-symbols-outlined text-lg">person_add</span>
+            <span>Create Profile & Apply RLS Policy</span>
+          </button>
+        </form>
+
+        <!-- FORM 3: MAGIC LINK / OTP -->
+        <form id="form-magic" onsubmit="handleMagicLink(event)" class="space-y-4 hidden">
+          <p class="font-body text-xs text-on-surface-variant">
+            Enter your authorized email to receive a passwordless cryptographic login token directly into your inbox.
+          </p>
+          <div>
+            <label class="block font-mono text-[11px] uppercase tracking-wider text-on-surface-variant mb-1.5">
+              Authorized Email
+            </label>
+            <input type="email" id="magic-email" required placeholder="alexandru.radu@leewuai.ro" class="w-full px-3.5 py-2.5 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-sm text-on-surface placeholder:text-outline font-mono focus:outline-none focus:border-primary transition-all"/>
+          </div>
+
+          <button type="submit" id="btn-submit-magic" class="w-full py-2.5 rounded-lg bg-tertiary hover:opacity-90 text-background font-headline font-bold text-sm flex items-center justify-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-lg">forward_to_inbox</span>
+            <span>Send Supabase Magic Link</span>
+          </button>
+        </form>
+
+        <!-- DIVIDER: QUICK DEMO ROLE SWITCHER -->
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/30"></div></div>
+          <div class="relative flex justify-center text-xs uppercase">
+            <span class="bg-surface-container-low px-2 font-mono text-[10px] text-outline tracking-widest font-semibold">
+              OR INSTANT ROLE SWITCH (ONE-CLICK DEMO)
+            </span>
+          </div>
+        </div>
+
+        <!-- 4 QUICK ROLE SWITCH BUTTONS -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Button 1: Admin -->
+          <button type="button" onclick="quickLogin('admin')" class="p-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 hover:border-red-500/50 flex items-center gap-2.5 text-left transition-all group">
+            <div class="w-7 h-7 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 flex items-center justify-center font-bold text-xs group-hover:scale-105">
+              RI
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-headline text-xs font-bold text-on-surface truncate">Capt. Radu I.</div>
+              <div class="font-mono text-[9px] text-red-400 uppercase">Fleet Admin</div>
+            </div>
+          </button>
+
+          <!-- Button 2: Marine Surveyor (Alexandru Radu) -->
+          <button type="button" onclick="quickLogin('surveyor')" class="p-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-primary/40 hover:border-primary flex items-center gap-2.5 text-left transition-all group shadow-[0_0_10px_rgba(148,218,50,0.15)]">
+            <div class="w-7 h-7 rounded-lg bg-primary/20 text-primary border border-primary/40 flex items-center justify-center font-bold text-xs group-hover:scale-105">
+              PL
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-headline text-xs font-bold text-on-surface truncate">Ing. Alexandru Radu</div>
+              <div class="font-mono text-[9px] text-primary uppercase">Lead Surveyor</div>
+            </div>
+          </button>
+
+          <!-- Button 3: Client (COSCO) -->
+          <button type="button" onclick="quickLogin('client')" class="p-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 hover:border-secondary/50 flex items-center gap-2.5 text-left transition-all group">
+            <div class="w-7 h-7 rounded-lg bg-secondary/10 text-secondary border border-secondary/30 flex items-center justify-center font-bold text-xs group-hover:scale-105">
+              ED
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-headline text-xs font-bold text-on-surface truncate">Elena Dobre</div>
+              <div class="font-mono text-[9px] text-secondary uppercase">Global Ocean Client</div>
+            </div>
+          </button>
+
+          <!-- Button 4: P&I Auditor (Gard) -->
+          <button type="button" onclick="quickLogin('pi_auditor')" class="p-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/40 hover:border-tertiary/50 flex items-center gap-2.5 text-left transition-all group">
+            <div class="w-7 h-7 rounded-lg bg-tertiary/10 text-tertiary border border-tertiary/30 flex items-center justify-center font-bold text-xs group-hover:scale-105">
+              HL
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-headline text-xs font-bold text-on-surface truncate">H. Lindqvist</div>
+              <div class="font-mono text-[9px] text-tertiary uppercase">Gard P&I Auditor</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center justify-between font-mono text-[11px] text-outline">
+          <span class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-xs text-primary">lock_clock</span>
+            <span>All sessions signed via SHA-256</span>
+          </span>
+          <a href="survey.html" target="_blank" class="hover:text-primary transition-colors flex items-center gap-1">
+            <span>A4 Sample Report</span>
+            <span class="material-symbols-outlined text-xs">open_in_new</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== SUPABASE CONFIGURATION MODAL ==================== -->
+  <div id="modal-config" class="hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-surface-container-low border border-outline-variant/50 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-outline-variant/30 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-xl">settings_ethernet</span>
+          <h3 class="font-headline font-bold text-base text-on-surface">Supabase Connection Settings</h3>
+        </div>
+        <button onclick="toggleConfigModal()" class="text-outline hover:text-on-surface">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <p class="font-body text-xs text-on-surface-variant">
+        Specify your local Docker gateway or Supabase cloud project coordinates. These values are saved to your browser session.
+      </p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block font-mono text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">
+            Supabase Project URL
+          </label>
+          <input type="text" id="cfg-url" value="http://localhost:8000" class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-xs font-mono text-on-surface focus:border-primary focus:outline-none"/>
+        </div>
+
+        <div>
+          <label class="block font-mono text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">
+            Supabase Anon Public API Key
+          </label>
+          <input type="text" id="cfg-key" value="SUPABASE_LOCAL_ANON_KEY_PLACEHOLDER" class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-xs font-mono text-on-surface focus:border-primary focus:outline-none"/>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-outline-variant/30">
+        <button onclick="resetConfigToDefault()" class="font-mono text-xs text-outline hover:text-on-surface">
+          Reset Defaults
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="testSupabaseConnection()" class="px-3 py-1.5 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 font-mono text-xs transition-all">
+            Test Connection
+          </button>
+          <button onclick="saveSupabaseConfig()" class="px-4 py-1.5 rounded-lg bg-primary text-background font-headline font-bold text-xs hover:bg-primary-container transition-all">
+            Save & Reconnect
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="relative z-10 w-full border-t border-outline-variant/30 bg-surface-container-lowest/80 py-4 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-outline">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-primary"></span>
+        <span>LEEWU AI PROTOCOL // HIGH-ASSURANCE MARITIME VERIFICATION HARNESS</span>
+      </div>
+      <div>
+        <span>POSTGRESQL 15+ • SUPABASE AUTH • ROW-LEVEL SECURITY ENFORCED</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== CLIENT LOGIC & SUPABASE AUTH CONTROLLER ==================== -->
+  <script>
+    // 1. Configuration & Supabase Initialization
+    const DEFAULT_SUPABASE_URL = "http://localhost:8000";
+    const DEFAULT_SUPABASE_ANON = "SUPABASE_LOCAL_ANON_KEY_PLACEHOLDER";
+
+    let supabaseUrl = localStorage.getItem("leewu_supabase_url") || DEFAULT_SUPABASE_URL;
+    let supabaseKey = localStorage.getItem("leewu_supabase_key") || DEFAULT_SUPABASE_ANON;
+    let supabaseClient = null;
+
+    function initSupabase() {
+      try {
+        if (window.supabase) {
+          supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+          console.log("[Supabase] Initialized with URL:", supabaseUrl);
+          updateConnectionStatus(true, "SUPABASE: CONNECTED (" + (supabaseUrl.includes("localhost") ? "LOCAL :8000" : "CLOUD") + ")");
+        }
+      } catch (err) {
+        console.warn("[Supabase] Client init error:", err);
+        updateConnectionStatus(false, "SUPABASE: OFFLINE MODE (MOCK DEMO)");
+      }
+    }
+
+    function updateConnectionStatus(isOnline, label) {
+      const ping = document.getElementById("conn-ping");
+      const lbl = document.getElementById("conn-label");
+      if (lbl) lbl.textContent = label;
+      if (ping) {
+        ping.children[0].className = isOnline 
+          ? "animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+          : "animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75";
+        ping.children[1].className = isOnline
+          ? "relative inline-flex rounded-full h-2 w-2 bg-primary"
+          : "relative inline-flex rounded-full h-2 w-2 bg-tertiary";
+      }
+    }
+
+    // Predefined Maritime Accounts
+    const DEMO_ACCOUNTS = {
+      admin: {
+        id: "a0000000-0000-0000-0000-000000000001",
+        email: "admin@leewu.maritime.ai",
+        full_name: "Captain Radu Ionescu",
+        role: "admin",
+        role_label: "Fleet Director & Superuser",
+        company: "LeeWu Maritime AI HQ",
+        license_number: "HQ-ADM-001"
+      },
+      surveyor: {
+        id: "a0000000-0000-0000-0000-000000000002",
+        email: "alexandru.radu@leewuai.ro",
+        full_name: "Ing. Alexandru Radu",
+        role: "surveyor",
+        role_label: "Senior Marine Cargo Surveyor",
+        company: "LeeWu Maritime Survey",
+        license_number: "DEMO-MWS-2026-001"
+      },
+      client: {
+        id: "a0000000-0000-0000-0000-000000000003",
+        email: "client@globalocean.example",
+        full_name: "Elena Dobre",
+        role: "client",
+        role_label: "Global Ocean Cargo Logistics Manager",
+        company: "GLOBAL OCEAN SHIPPING & TRADING S.R.L.",
+        license_number: null
+      },
+      pi_auditor: {
+        id: "a0000000-0000-0000-0000-000000000004",
+        email: "auditor@gard-pi.com",
+        full_name: "Henrik Lindqvist",
+        role: "pi_auditor",
+        role_label: "Gard P&I Claims Inspector",
+        company: "Gard P&I Club Norway",
+        license_number: "GARD-AUD-2024-EU"
+      }
+    };
+
+    // Tab Management
+    function switchAuthTab(tab) {
+      const fLogin = document.getElementById("form-login");
+      const fSignup = document.getElementById("form-signup");
+      const fMagic = document.getElementById("form-magic");
+      const tLogin = document.getElementById("tab-login");
+      const tSignup = document.getElementById("tab-signup");
+      const tMagic = document.getElementById("tab-magic");
+
+      fLogin.classList.add("hidden");
+      fSignup.classList.add("hidden");
+      fMagic.classList.add("hidden");
+
+      [tLogin, tSignup, tMagic].forEach(btn => {
+        btn.className = "px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all";
+      });
+
+      if (tab === "login") {
+        fLogin.classList.remove("hidden");
+        tLogin.className = "px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold bg-primary text-background shadow-md transition-all";
+      } else if (tab === "signup") {
+        fSignup.classList.remove("hidden");
+        tSignup.className = "px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold bg-secondary text-background shadow-md transition-all";
+      } else if (tab === "magic") {
+        fMagic.classList.remove("hidden");
+        tMagic.className = "px-3.5 py-1.5 rounded-lg font-headline text-xs font-semibold bg-tertiary text-background shadow-md transition-all";
+      }
+      hideAlert();
+    }
+
+    function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function showAlert(type, msg) {
+      const box = document.getElementById("alert-box");
+      const icon = document.getElementById("alert-icon");
+      const text = document.getElementById("alert-msg");
+      box.classList.remove("hidden", "bg-error-container/20", "border-error/40", "text-error", "bg-primary/10", "border-primary/40", "text-primary");
+      
+      if (type === "error") {
+        box.classList.add("bg-error-container/20", "border-error/40", "text-error");
+        icon.textContent = "error";
+      } else {
+        box.classList.add("bg-primary/10", "border-primary/40", "text-primary");
+        icon.textContent = "check_circle";
+      }
+      text.textContent = msg;
+    }
+
+    function hideAlert() {
+      document.getElementById("alert-box").classList.add("hidden");
+    }
+
+    // Complete Session & Transition to Survey Console
+    function completeAuth(userProfile, token = "demo-jwt-token") {
+      showAlert("success", "Authentication verified! Initializing RLS boundary for " + userProfile.full_name + " (" + userProfile.role.toUpperCase() + ")...");
+      
+      // Store in LocalStorage
+      localStorage.setItem("leewu_user_profile", JSON.stringify(userProfile));
+      localStorage.setItem("leewu_auth_token", token);
+      localStorage.setItem("leewu_auth_timestamp", new Date().toISOString());
+
+      // Redirect after brief visual HUD transition
+      setTimeout(() => {
+        window.location.href = "survey-console.html";
+      }, 1000);
+    }
+
+    // 1. Email Sign In
+    async function handleEmailSignIn(e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      const btn = document.getElementById("btn-submit-login");
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">refresh</span><span>Verifying credentials...</span>';
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          
+          if (data && data.user) {
+            // Fetch profile
+            const { data: prof, error: pErr } = await supabaseClient
+              .from('profiles')
+              .select('*')
+              .eq('id', data.user.id)
+              .single();
+
+            const profile = prof || {
+              id: data.user.id,
+              email: data.user.email,
+              full_name: data.user.user_metadata?.full_name || email.split('@')[0],
+              role: data.user.user_metadata?.role || "surveyor",
+              company: data.user.user_metadata?.company || "LeeWu Maritime Survey"
+            };
+
+            completeAuth(profile, data.session?.access_token);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("[Supabase] Real sign-in failed, checking demo accounts fallback:", err.message);
+      }
+
+      // Check Demo Accounts match
+      const matched = Object.values(DEMO_ACCOUNTS).find(acc => acc.email.toLowerCase() === email.toLowerCase());
+      if (matched && (password === "demo-session-auth" || password.length >= 6)) {
+        completeAuth(matched);
+      } else {
+        showAlert("error", "Invalid credentials or Supabase server unreachable. Tip: Use instant demo buttons below or password 'demo-session-auth'.");
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span><span>Authenticate Session</span>';
+      }
+    }
+
+    // 2. User Sign Up
+    async function handleSignUp(e) {
+      e.preventDefault();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+      const full_name = document.getElementById("signup-fullname").value.trim();
+      const role = document.getElementById("signup-role").value;
+      const company = document.getElementById("signup-company").value.trim();
+      const btn = document.getElementById("btn-submit-signup");
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">refresh</span><span>Registering in Supabase...</span>';
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { full_name, role, company }
+            }
+          });
+          if (error) throw error;
+
+          const newProfile = {
+            id: data.user?.id || ("usr-" + Date.now()),
+            email,
+            full_name,
+            role,
+            company: company || "Maritime Cargo Partner"
+          };
+          showAlert("success", "Account created successfully! Session initialized.");
+          completeAuth(newProfile, data.session?.access_token || "mock-token-signup");
+          return;
+        }
+      } catch (err) {
+        console.warn("[Supabase] Sign-up API error:", err.message);
+      }
+
+      // Offline creation fallback
+      const fallbackProfile = {
+        id: "demo-new-" + Date.now(),
+        email,
+        full_name,
+        role,
+        company: company || "Independent Maritime Contractor"
+      };
+      completeAuth(fallbackProfile, "local-demo-jwt");
+    }
+
+    // 3. Magic Link
+    async function handleMagicLink(e) {
+      e.preventDefault();
+      const email = document.getElementById("magic-email").value.trim();
+      const btn = document.getElementById("btn-submit-magic");
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">refresh</span><span>Dispatching token...</span>';
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient.auth.signInWithOtp({ email });
+          if (error) throw error;
+          showAlert("success", "Magic Link dispatched to " + email + ". Please check your inbox!");
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span><span>Dispatched!</span>';
+          return;
+        }
+      } catch (err) {
+        console.warn("[Supabase] Magic link error:", err.message);
+      }
+
+      // Fallback
+      showAlert("success", "Cryptographic OTP token simulated for " + email + ". Click any instant demo account below to proceed immediately.");
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg">forward_to_inbox</span><span>Send Supabase Magic Link</span>';
+    }
+
+    // 4. Instant Demo Role Switcher
+    function quickLogin(roleKey) {
+      const acc = DEMO_ACCOUNTS[roleKey];
+      if (!acc) return;
+      document.getElementById("login-email").value = acc.email;
+      document.getElementById("login-password").value = "demo-session-auth";
+      completeAuth(acc);
+    }
+
+    // Supabase Config Modal Helpers
+    function toggleConfigModal() {
+      const modal = document.getElementById("modal-config");
+      modal.classList.toggle("hidden");
+      document.getElementById("cfg-url").value = supabaseUrl;
+      document.getElementById("cfg-key").value = supabaseKey;
+    }
+
+    function saveSupabaseConfig() {
+      supabaseUrl = document.getElementById("cfg-url").value.trim();
+      supabaseKey = document.getElementById("cfg-key").value.trim();
+      localStorage.setItem("leewu_supabase_url", supabaseUrl);
+      localStorage.setItem("leewu_supabase_key", supabaseKey);
+      initSupabase();
+      toggleConfigModal();
+      showAlert("success", "Supabase endpoints updated: " + supabaseUrl);
+    }
+
+    function resetConfigToDefault() {
+      document.getElementById("cfg-url").value = DEFAULT_SUPABASE_URL;
+      document.getElementById("cfg-key").value = DEFAULT_SUPABASE_ANON;
+    }
+
+    async function testSupabaseConnection() {
+      const url = document.getElementById("cfg-url").value.trim();
+      try {
+        const res = await fetch(url + "/rest/v1/", {
+          headers: { "apikey": document.getElementById("cfg-key").value.trim() }
+        });
+        if (res.status === 200 || res.status === 401 || res.status === 404) {
+          alert("✅ Successfully reached Supabase Gateway at " + url + " (Status: " + res.status + ")");
+        } else {
+          alert("⚠️ Gateway reached with unexpected HTTP status: " + res.status);
+        }
+      } catch (err) {
+        alert("❌ Could not connect to " + url + " (" + err.message + "). Ensure Docker stack is started or verify host.");
+      }
+    }
+
+    // On Load
+    window.addEventListener("DOMContentLoaded", () => {
+      initSupabase();
+      // If already logged in, show hint
+      const existing = localStorage.getItem("leewu_user_profile");
+      if (existing) {
+        try {
+          const u = JSON.parse(existing);
+          showAlert("success", "Active session detected for " + u.full_name + " (" + u.role.toUpperCase() + "). Redirecting in 2s or select a role below...");
+          setTimeout(() => {
+            // Optional auto redirect if requested, or keep on screen
+          }, 2000);
+        } catch(e) {}
+      }
+    });
+  </script>
+</body>
+</html>

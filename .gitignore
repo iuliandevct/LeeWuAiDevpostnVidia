@@ -1,0 +1,16 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+auth.json
+*.dump
+*.backup
+*.bak
+backups/
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+supabase/.temp/
+**/supabase/.temp/

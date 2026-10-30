@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Loading Surveyor - Final Cargo & Pre-Load Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-container {
+            width: 595px;
+            min-height: 842px;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1a3a52 0%, #2d5a7b 100%);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .logo-mini {
+            width: 28px;
+            height: 28px;
+            background: #1a3a52;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mini::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .ref-info {
+            text-align: right;
+            font-size: 9px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .ref-info strong {
+            color: #1a3a52;
+            font-weight: 600;
+        }
+
+        .cargo-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+            margin-bottom: 20px;
+        }
+
+        .cargo-table thead {
+            background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 100%);
+            color: white;
+        }
+
+        .cargo-table th {
+            padding: 8px 5px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #1a3a52;
+            font-size: 7.5px;
+        }
+
+        .cargo-table td {
+            padding: 6px 5px;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        .cargo-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .case-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .weight-column {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .dimension-column {
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .section {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a3a52;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-number {
+            min-width: 30px;
+            color: #2d5a7b;
+        }
+
+        .subsection-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1a3a52;
+            margin-bottom: 6px;
+            margin-top: 10px;
+        }
+
+        .section-content {
+            font-size: 10px;
+            color: #495057;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .exception-list {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-radius: 2px;
+        }
+
+        .exception-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 6px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exception-list ol {
+            margin: 0;
+            padding-left: 18px;
+            color: #856404;
+        }
+
+        .exception-list li {
+            margin-bottom: 4px;
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+        .vessel-name {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: #adb5bd;
+        }
+
+        .page-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .page-container {
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+
+        [contenteditable="true"] {
+            outline: none;
+        }
+
+        [contenteditable="true"]:focus {
+            background: rgba(26, 58, 82, 0.03);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header-bar"></div>
+
+        <div class="page-header">
+            <div class="logo-mini"></div>
+            <div class="ref-info">
+                <div><strong>LOADING SURVEY</strong></div>
+                <div>Ref. No. <strong>AIG.1390.1_2024</strong></div>
+            </div>
+        </div>
+
+        <!-- Final Cargo Table Entries -->
+        <table class="cargo-table">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Case no.</th>
+                    <th style="width: 35%;">Description</th>
+                    <th style="width: 10%;">Net [kg]</th>
+                    <th style="width: 10%;">Gross [kg]</th>
+                    <th style="width: 8%;">L [cm]</th>
+                    <th style="width: 8%;">W [cm]</th>
+                    <th style="width: 8%;">H [cm]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="case-number">M005-73-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-74-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-75-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-76-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-77-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-78-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-79-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-80-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">228</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-81-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">228</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-82-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">92</td>
+                    <td class="dimension-column">188</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-83-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">92</td>
+                    <td class="dimension-column">188</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-84-93</td>
+                    <td>Accessories</td>
+                    <td class="weight-column">450</td>
+                    <td class="weight-column">600</td>
+                    <td class="dimension-column">262</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-85-93</td>
+                    <td>Pipe</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">412</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-86-93</td>
+                    <td>Cabine Feet</td>
+                    <td class="weight-column">1000</td>
+                    <td class="weight-column">1200</td>
+                    <td class="dimension-column">332</td>
+                    <td class="dimension-column">112</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-87-93</td>
+                    <td>stents</td>
+                    <td class="weight-column">200</td>
+                    <td class="weight-column">300</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">112</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-88-93</td>
+                    <td>High pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">262</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-89-93</td>
+                    <td>High pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">282</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-90-93</td>
+                    <td>Low pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">262</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-91-93</td>
+                    <td>Low pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">282</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-92-93</td>
+                    <td>Return pipe</td>
+                    <td class="weight-column">450</td>
+                    <td class="weight-column">600</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">182</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-93-93</td>
+                    <td>stents</td>
+                    <td class="weight-column">250</td>
+                    <td class="weight-column">400</td>
+                    <td class="dimension-column">332</td>
+                    <td class="dimension-column">152</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Section 4.2 -->
+        <div class="section">
+            <h3 class="subsection-title" contenteditable="true">4.2. Marks and numbers</h3>
+            <div class="section-content" contenteditable="true">
+                <p>The shipping marks were found to be in line with the relevant packing list.</p>
+            </div>
+        </div>
+
+        <!-- Section 4.3 -->
+        <div class="section">
+            <h3 class="subsection-title" contenteditable="true">4.3. Packaging:</h3>
+            <div class="section-content" contenteditable="true">
+                <p>The cargo units were presented for discharging with the following packaging pattern:</p>
+                <p style="margin-top: 8px;">'TRANSFORMER BODY' cargo units were presented as nude. 'TRANSFORMER OIL TANKS' cargo units were presented as steel skid. Accessories were loaded on wooden case.</p>
+            </div>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-number">5.</span>
+                <span>RIVER BARGE PARTICULARS</span>
+            </h2>
+            <div class="section-content" contenteditable="true">
+                <p>Particulars of the on-carrying river barge were not made available; however, the following information was obtained:</p>
+                <p style="margin-top: 8px;"><span class="vessel-name">MS 'ARETA'</span> is a self-propelled river barge sailing under the flag of SLOVAKIA. Its LOA is 104.98[m] and breadth 11.38[m], hold dimensions: 74.5x9.17x4[m].</p>
+            </div>
+
+            <h3 class="subsection-title" contenteditable="true">5.1. Barges suitability condition</h3>
+            <div class="section-content" contenteditable="true">
+                <p>Condition suitability inspection to on-carrying self-propelled river barge 'ARETA' was limited to cleanliness condition which was found in apparent good order.</p>
+            </div>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-number">6.</span>
+                <span>STORAGE AFFORDED TO GOODS BEFORE LOADING</span>
+            </h2>
+            <div class="section-content" contenteditable="true">
+                <p>The packages subject to inspection were found stored onto stevedore's open concrete platform adjacent to berth 120.</p>
+            </div>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="section">
+            <h2 class="section-title">
+                <span class="section-number">7.</span>
+                <span>PRE-LOAD CONDITION SURVEY</span>
+            </h2>
+
+            <h3 class="subsection-title" contenteditable="true">7.1. Cargo condition survey findings</h3>
+            <div class="section-content" contenteditable="true">
+                <p>The cargo units were visually inspected onto stevedore's storage place as far as practically possible and throughout entire loading operation and found in apparent good condition with the exceptions listed below:</p>
+            </div>
+
+            <div class="exception-list">
+                <div class="exception-title">Exceptions:</div>
+                <ol contenteditable="true">
+                    <li>Partly covered by dust</li>
+                    <li>Scores, scratches, chips locally apparent on surface coating of the transformer oil tanks and transformer body units; bare steel surface rust stained</li>
+                    <li>Oil tank locally dented in one location – packages nos:. 54/93 and 55/93</li>
+                    <li>Wooden case packing partly moldy, weathered</li>
+                    <li>Wooden case lid panel and/or side wall planks locally disconnected – packages no.: 7/93, 26/93</li>
+                    <li>Wooden case lid panel and/or bottom wooden pallet planks locally broken – packages nos.: 38/93, 47/93, 66/93.</li>
+                    <li>Inner condition unknown</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>MS 'ARETA'</span>
+            <span class="page-number">Page 7 of 45</span>
+        </div>
+    </div>
+</body>
+</html>

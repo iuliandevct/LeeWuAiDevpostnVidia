@@ -1,0 +1,328 @@
+name: ai-containers-stack
+
+services:
+  influxdb:
+    image: influxdb:2.7
+    container_name: stack-influxdb
+    restart: unless-stopped
+    ports:
+      - "${INFLUXDB_PORT:-8086}:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - observability
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: stack-grafana
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      INFLUXDB_ORG: ${INFLUXDB_ORG}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
+      SUPABASE_DB_NAME: ${SUPABASE_DB_NAME}
+      SUPABASE_DB_USER: ${SUPABASE_DB_USER}
+      SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - observability
+
+  telegraf:
+    image: telegraf:1.31
+    container_name: stack-telegraf
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    environment:
+      INFLUXDB_ORG: ${INFLUXDB_ORG}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    networks:
+      - observability
+
+  wordpress-db:
+    image: mariadb:11
+    container_name: stack-wordpress-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME}
+      MARIADB_USER: ${WORDPRESS_DB_USER}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${WORDPRESS_DB_ROOT_PASSWORD}
+    volumes:
+      - wordpress-db-data:/var/lib/mysql
+    networks:
+      - webapps
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    container_name: stack-wordpress
+    restart: unless-stopped
+    depends_on:
+      - wordpress-db
+    ports:
+      - "${WORDPRESS_PORT:-8081}:80"
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    volumes:
+      - wordpress-data:/var/www/html
+    networks:
+      - webapps
+
+  supabase-db:
+    image: supabase/postgres:15.8.1.060
+    container_name: stack-supabase-db
+    restart: unless-stopped
+    ports:
+      - "${SUPABASE_DB_PORT:-54322}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      POSTGRES_DB: ${SUPABASE_DB_NAME}
+      POSTGRES_USER: ${SUPABASE_DB_USER}
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      - ./supabase/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - supabase
+
+  supabase-studio:
+    image: supabase/studio:latest
+    container_name: stack-supabase-studio
+    restart: unless-stopped
+    depends_on:
+      - supabase-db
+    ports:
+      - "${SUPABASE_STUDIO_PORT:-54323}:3000"
+    environment:
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+      SUPABASE_URL: http://localhost:${SUPABASE_KONG_PORT:-54321}
+      SUPABASE_PUBLIC_URL: http://localhost:${SUPABASE_KONG_PORT:-54321}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      DEFAULT_ORGANIZATION_NAME: ${SUPABASE_ORG_NAME}
+      DEFAULT_PROJECT_NAME: ${SUPABASE_PROJECT_NAME}
+    networks:
+      - supabase
+
+  supabase-meta:
+    image: supabase/postgres-meta:v0.96.6
+    container_name: stack-supabase-meta
+    restart: unless-stopped
+    depends_on:
+      - supabase-db
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: supabase-db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: ${SUPABASE_DB_NAME}
+      PG_META_DB_USER: ${SUPABASE_DB_USER}
+      PG_META_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+    networks:
+      - supabase
+
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: stack-hermes
+    restart: unless-stopped
+    command: gateway run
+    ports:
+      - "${HERMES_GATEWAY_PORT:-8642}:8642"
+      - "${HERMES_DASHBOARD_PORT:-9119}:9119"
+    environment:
+      HERMES_DASHBOARD: "1"
+      HERMES_DASHBOARD_BASIC_AUTH_USERNAME: ${HERMES_DASHBOARD_USER}
+      HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GOOGLE_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      - hermes-data:/opt/data
+    networks:
+      - agents
+
+  openclaw:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: stack-openclaw
+    restart: unless-stopped
+    command: ["node", "/app/openclaw.mjs", "gateway", "run", "--allow-unconfigured", "--bind", "lan", "--port", "18789", "--auth", "token"]
+    ports:
+      - "${OPENCLAW_PORT:-18789}:18789"
+    environment:
+      HOME: /home/node
+      OPENCLAW_HOME: /home/node
+      OPENCLAW_GATEWAY_MODE: local
+      OPENCLAW_GATEWAY_BIND: lan
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+    volumes:
+      - openclaw-home:/home/node/.openclaw
+      - openclaw-workspace:/home/node/.openclaw/workspace
+      - openclaw-secrets:/home/node/.config/openclaw
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - agents
+
+  automaton:
+    build:
+      context: ./automaton-src
+      dockerfile: Dockerfile.local
+    container_name: stack-automaton
+    restart: unless-stopped
+    environment:
+      HOME: /home/node
+      CONWAY_API_KEY: ${CONWAY_API_KEY:-}
+    volumes:
+      - automaton-data:/home/node/.automaton
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - automaton
+
+  automaton-supabase-bridge:
+    image: supabase/postgres:15.8.1.060
+    container_name: stack-automaton-supabase-bridge
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+      automaton:
+        condition: service_started
+    environment:
+      PGPASSWORD: ${SUPABASE_DB_PASSWORD}
+      SUPABASE_DB_NAME: ${SUPABASE_DB_NAME}
+      SUPABASE_DB_USER: ${SUPABASE_DB_USER}
+    volumes:
+      - ./automaton-bridge/publish-heartbeat.sh:/usr/local/bin/publish-heartbeat:ro
+    command: ["/bin/sh", "/usr/local/bin/publish-heartbeat"]
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - automaton
+      - supabase
+
+  vibe-trading:
+    build:
+      context: ./vibe-trading
+    container_name: stack-vibe-trading
+    restart: unless-stopped
+    ports:
+      - "${VIBE_TRADING_PORT:-8899}:8899"
+    environment:
+      VIBE_TRADING_HOME: /data
+      API_AUTH_KEY: ${VIBE_TRADING_API_AUTH_KEY:-}
+      LANGCHAIN_PROVIDER: ${VIBE_TRADING_LANGCHAIN_PROVIDER:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      - vibe-trading-data:/data
+    networks:
+      - agents
+
+  vibe-trading-ui:
+    image: node:20-slim
+    container_name: stack-vibe-trading-ui
+    restart: unless-stopped
+    depends_on:
+      - vibe-trading
+    working_dir: /app
+    ports:
+      - "${VIBE_TRADING_UI_PORT:-5899}:5899"
+    environment:
+      VITE_API_URL: http://localhost:${VIBE_TRADING_PORT:-8899}
+    volumes:
+      - ./vibe-trading-src/frontend:/app
+    command: sh -c "npm install --include=dev && npm run dev -- --host 0.0.0.0 --port 5899"
+    networks:
+      - agents
+
+  obsidian-graph:
+    image: nginx:1.27-alpine
+    container_name: stack-obsidian-graph
+    restart: unless-stopped
+    ports:
+      - "${OBSIDIAN_GRAPH_PORT:-8090}:80"
+    volumes:
+      - ./obsidian-graph:/usr/share/nginx/html:ro
+    networks:
+      - webapps
+
+  graph-api:
+    build:
+      context: ./graph-api
+    container_name: stack-graph-api
+    restart: unless-stopped
+    ports:
+      - "${GRAPH_API_PORT:-8091}:8091"
+    environment:
+      DOCKER_SOCKET: /var/run/docker.sock
+    volumes:
+      - /Users/iulian/.docker/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - observability
+      - webapps
+      - supabase
+      - agents
+
+networks:
+  observability:
+  webapps:
+  supabase:
+  agents:
+  automaton:
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  grafana-data:
+  wordpress-db-data:
+  wordpress-data:
+  supabase-db-data:
+  hermes-data:
+  openclaw-home:
+  openclaw-workspace:
+  openclaw-secrets:
+  vibe-trading-data:
+  automaton-data:

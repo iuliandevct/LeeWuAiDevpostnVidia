@@ -1,0 +1,7953 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Bine ati venit la LeeWu Maritime Surveyor si Logistica Cargo",
+        "formDescription": "Vă rugăm să completați formularul de mai jos pentru a solicita un raport de inspecție sau servicii logistice. Informațiile furnizate vor fi utilizate pentru generarea automată a documentației aferente și pentru procesarea rapidă a solicitării dumneavoastră.\n\nAsigurați-vă că toate câmpurile sunt completate corect și complet. După trimitere, datele vor fi verificate și înregistrate în sistem, iar un raport unic va fi generat pe baza informațiilor introduse.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Raport nou",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Raport nou"
+                  },
+                  {
+                    "option": "Editeaza Raport"
+                  },
+                  {
+                    "option": "Lista Rapoarte (Arhiva)"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -12224,
+        -2768
+      ],
+      "id": "e1a3077e-ab76-4395-9770-a3f34ab53514",
+      "name": "On form submission",
+      "webhookId": "24ec5dff-0a36-4ede-94fd-973013949134"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "833d16d9-7328-40e3-b397-7250daa6068e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "893dc270-b494-4dcb-a02a-73b461b4c9b8",
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b529390f-1764-4773-8748-18d35f41b936",
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -12000,
+        -2784
+      ],
+      "id": "47263eb8-8158-4851-9e76-f973ff73c516",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3f5a9088-62f1-446e-9154-d7bd69f670ff",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -11328,
+        -1184
+      ],
+      "id": "7adfd64e-a3bc-49b2-b733-3aa1381b8d51",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -10880,
+        -1664
+      ],
+      "id": "d0036562-81b6-4ae2-af9a-3c18221220b0",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -10880,
+        -800
+      ],
+      "id": "98b4a0bb-0122-4c95-b8b6-861b9877641f",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -10432,
+        -1304
+      ],
+      "id": "dc836ae2-7d7a-474d-83af-3a57a5023687",
+      "name": "Send a text message",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -11328,
+        -3056
+      ],
+      "id": "e3c0cd87-16f5-4178-9ba9-f0b7c111630d",
+      "name": "Send a text message1",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -10656,
+        -1664
+      ],
+      "id": "b56f077b-d6f7-472a-98d8-27d906cfa309",
+      "name": "Send a text message2",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "template"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -10432,
+        -704
+      ],
+      "id": "20ab1adc-49b1-4467-8ffe-ad19f3ef2bd7",
+      "name": "Create a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -11776,
+        -2960
+      ],
+      "id": "36b3fe41-d971-455d-82e0-23564bbd87ae",
+      "name": "Create Survey",
+      "webhookId": "4bb54228-6fc3-4658-ad8b-1c7b87a0b8fb"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -11552,
+        -2960
+      ],
+      "id": "3d8b1266-a6d1-4a10-b809-44b812a5ae85",
+      "name": "Get_surveyID",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -11104,
+        -1664
+      ],
+      "id": "63d04057-936c-4677-b075-bf49cbe9a4ef",
+      "name": "if_newSurveyID",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -11104,
+        -800
+      ],
+      "id": "c08eaafc-9cd2-43d2-bc2b-107eee0a06ff",
+      "name": "existing_surveyID",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -10656,
+        -800
+      ],
+      "id": "904ea0e4-834a-4424-9d29-c9a8455aa833",
+      "name": "getShipID",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -9984,
+        -1760
+      ],
+      "id": "f10ce0da-47ec-4fb5-831b-efd25c9cea1f",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -9984,
+        -1568
+      ],
+      "id": "3608d205-40d2-4f92-bbfa-69be49b49e50",
+      "name": "Update a document1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -9984,
+        -2192
+      ],
+      "id": "8792a456-2ce3-4219-a619-ba22f245e3cb",
+      "name": "Update a document2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -2840
+      ],
+      "id": "f75d5102-0544-4da5-93e7-ed4b1e96035d",
+      "name": "Update a document3",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -9984,
+        -1376
+      ],
+      "id": "06e1edb7-824e-4415-955a-1531b59d68e3",
+      "name": "Update a document4",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -9984,
+        -1184
+      ],
+      "id": "6f7f3c09-1a1a-4272-ba7c-fd5c9ec3703b",
+      "name": "Update a document5",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -9760,
+        -1760
+      ],
+      "id": "fb8c10c8-092e-4ec8-9b56-f2b47421d7a9",
+      "name": "Send a text message3",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -9760,
+        -1568
+      ],
+      "id": "13aa3379-de5e-41d1-8974-92f1ed3b8b1b",
+      "name": "Send a text message4",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -9760,
+        -2408
+      ],
+      "id": "28e14c48-d46d-43d8-b20a-59aa5c4cd1ca",
+      "name": "Send a text message5",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -2816
+      ],
+      "id": "280c256f-eaa5-467f-b816-66e732068d81",
+      "name": "Send a text message6",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -9760,
+        -1376
+      ],
+      "id": "83aefc45-cad9-488a-a8f3-b57b1d790871",
+      "name": "Send a text message7",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -9760,
+        -1184
+      ],
+      "id": "25bda0e8-e9e8-4fbc-a605-dd04335c584b",
+      "name": "Send a text message8",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -10208,
+        -1664
+      ],
+      "id": "db56a58a-74f2-4c5e-888b-8ec1c32416d5",
+      "name": "Form",
+      "webhookId": "45b7581b-a652-4e84-848a-efd15207e172"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -9536,
+        -3152
+      ],
+      "id": "60b32be1-b246-4cd3-8024-4d778ed9d023",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -9312,
+        -4424
+      ],
+      "id": "ff4b3d31-e459-4e97-bf4b-75a371077dc2",
+      "name": "Form3",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -9312,
+        -2480
+      ],
+      "id": "566b51b4-deac-4e58-bfeb-b3c165fe6325",
+      "name": "Send a text message9",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -9088,
+        -4424
+      ],
+      "id": "6173d3b2-3234-493b-91b8-710f579734c0",
+      "name": "get_shipID",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ed8f6586-251f-482e-be6e-d1708539804e",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -8864,
+        -4424
+      ],
+      "id": "54d760b9-dff5-457f-b9da-7e1bc825a096",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8640,
+        -5096
+      ],
+      "id": "cf2c4c36-f24c-49e4-83a7-78bd0a08362a",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8640,
+        -3704
+      ],
+      "id": "51bc9db9-0526-4ed5-9a14-6a6956d13e31",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -8416,
+        -4640
+      ],
+      "id": "add3cf46-3074-4946-8573-a9670863cff4",
+      "name": "Send a text message10",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -8416,
+        -5096
+      ],
+      "id": "393cc6fa-55fe-4a5b-bad7-32cd1f49979f",
+      "name": "Send a text message11",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "template"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -8416,
+        -3608
+      ],
+      "id": "235d5e0d-5fd5-412c-a5b9-a86b54512cce",
+      "name": "Create a document1",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -5312
+      ],
+      "id": "4dcb6ce0-222f-4700-ac92-2b813636fc27",
+      "name": "Update a document6",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -5120
+      ],
+      "id": "5b413361-036f-416d-8e4f-3523cd14f636",
+      "name": "Update a document7",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -4928
+      ],
+      "id": "c5a91ff3-865e-4996-87d9-f73e01d363f2",
+      "name": "Update a document8",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -4736
+      ],
+      "id": "1cac33cf-974d-410c-99d0-965b645c2632",
+      "name": "Update a document9",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -4544
+      ],
+      "id": "a8bedf29-97e0-41b1-9a6c-db4bcbc7b6cf",
+      "name": "Update a document10",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -4352
+      ],
+      "id": "5c6cbcf8-d8c2-47cc-b1b9-904050026ed3",
+      "name": "Update a document11",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -5312
+      ],
+      "id": "f70be2c4-31a0-484b-b4ed-ad4e16a5a0f0",
+      "name": "Send a text message12",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -5120
+      ],
+      "id": "e80650e5-42ac-442d-afb0-e58b7bbeb55a",
+      "name": "Send a text message13",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -4928
+      ],
+      "id": "605b2d38-bb26-40a9-a21a-63e1145b5d9f",
+      "name": "Send a text message14",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -4736
+      ],
+      "id": "d233962a-447a-4d98-99f8-c84e2b5fc8cb",
+      "name": "Send a text message15",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -4544
+      ],
+      "id": "60908eb5-5f0f-4b22-b004-a86cb543c540",
+      "name": "Send a text message16",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -4352
+      ],
+      "id": "09ed68d6-bc9f-406e-a749-a399bfd73f3e",
+      "name": "Send a text message17",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -8192,
+        -5096
+      ],
+      "id": "466cf42e-c594-46fd-85a9-fc5f55ec5f5b",
+      "name": "Form4",
+      "webhookId": "45b7581b-a652-4e84-848a-efd15207e172"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -7520,
+        -4304
+      ],
+      "id": "8f7dc1fb-3684-4209-a65b-7b8d9b383ecd",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7296,
+        -4208
+      ],
+      "id": "f29b6802-a904-4e6a-a52e-c4ae49864a17",
+      "name": "Send a text message18",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -3680
+      ],
+      "id": "ebd3df2e-c87d-4a7c-8942-1afacdae1322",
+      "name": "Update a document12",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -3488
+      ],
+      "id": "e9c216cd-ac61-47a8-b261-2ac63e18f1aa",
+      "name": "Update a document13",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -3104
+      ],
+      "id": "b3b93a96-c3d6-43e2-9ab9-527ccacdfc09",
+      "name": "Update a document14",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -2648
+      ],
+      "id": "fd934022-7c66-4b06-99dc-f787a7b3fbd4",
+      "name": "Update a document15",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -2456
+      ],
+      "id": "1bafe98f-e6b0-4c60-be81-ba5b08b36a63",
+      "name": "Update a document16",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -2264
+      ],
+      "id": "f79fdeaf-ef01-483d-b4dc-6009c1a7ebf3",
+      "name": "Update a document17",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -3680
+      ],
+      "id": "98f16337-9df7-4b7f-9d8e-953533f2ee82",
+      "name": "Send a text message19",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -3488
+      ],
+      "id": "1f4f5316-aeb4-4ff5-9d79-d1b0279687d0",
+      "name": "Send a text message20",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -3104
+      ],
+      "id": "7538e6c9-2d25-455c-a063-2b47f2755a53",
+      "name": "Send a text message21",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -2624
+      ],
+      "id": "73d07f48-d965-4be1-9a8f-0908d6687b4e",
+      "name": "Send a text message22",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -2432
+      ],
+      "id": "794841ca-aeac-43d9-8600-afef9d6fc0a1",
+      "name": "Send a text message23",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -7744,
+        -2240
+      ],
+      "id": "ac73b599-4ae3-4b62-b7ab-3509388b36fa",
+      "name": "Send a text message24",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -12224,
+        224
+      ],
+      "id": "fc20e782-8ddd-4bb9-bca4-35a1e5e9fc04",
+      "name": "Claude Sonnet7",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -12224,
+        2352
+      ],
+      "id": "fd43f7cb-bcaa-4d19-8d81-64ee7f45feda",
+      "name": "Claude Sonnet9",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        -3616
+      ],
+      "id": "38ed6925-8dda-498f-a1ff-6a7c529d769a",
+      "name": "Claude Sonnet11",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a document layout engine.\n\nYour task is to generate the CERTIFICATION AND CARGO DETAILS page\nfor a maritime loading survey report.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT invent, infer, explain, summarize, or rephrase any content.\n- Preserve wording, capitalization, and sequence exactly.\n- If any field is missing or null, output \"N/A\".\n- Output plain text only. No markdown. No commentary.\n- Repeat cargo parcel blocks exactly in the same structure for each entry.\n\nOUTPUT FORMAT (exact):\n\nTHIS IS TO CERTIFY THAT the undersigned surveyor did\nat the request and in pursuance of the instructions of\n{CLIENT_NAME}\nattend on board\n{VESSEL_NAME}\nwhile afloat at\n{PORT_WHILE_AFLOAT}\nat location\n{LOCATION_DETAILS}\nduring period\n{SURVEY_PERIOD}\nfor the purpose of conducting\n{SURVEY_TYPE}\nto the following cargo parcels\n\nBill of Lading\nDescription of goods declared quantity shipper\nconsignee\nnotify\n\n{CARGO_BLOCKS}\n\nPort of loading Port of discharging\n{PORT_OF_LOADING} {PORT_OF_DISCHARGING}\n\nCARGO BLOCK FORMAT (repeat for each cargo parcel, separated by a blank line):\n\nBill of Lading\n{BL_NUMBER}, dated {BL_DATE}\n{CARGO_DESCRIPTION}\n{QUANTITY}\n{SHIPPER}\n{CONSIGNEE}\n{NOTIFY}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -12168,
+        2128
+      ],
+      "id": "e2457c76-c7ec-4b11-922c-0ec39791df5c",
+      "name": "This is to certify that"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -12224,
+        864
+      ],
+      "id": "95fa5fb7-e3b4-41c4-86ff-2ae356a7a32c",
+      "name": "Claude Sonnet18",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3672,
+        -3408
+      ],
+      "id": "193ee874-dd47-4d01-afb4-7a0fcc9b79ab",
+      "name": "Claude Sonnet22",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -12168,
+        1280
+      ],
+      "id": "d879f71c-6be2-42ce-9483-7f23ec84bd49",
+      "name": "Enclosures"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -4880
+      ],
+      "id": "7dcc7a12-b410-44f7-a368-8c74f4b614f5",
+      "name": "Claude Sonnet24",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -4272
+      ],
+      "id": "4776ddc2-241a-44e5-b361-b6898732d2ed",
+      "name": "Claude Sonnet25",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -3664
+      ],
+      "id": "687a22ca-0b10-470f-a20c-c4850e52bfc1",
+      "name": "Claude Sonnet26",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -3056
+      ],
+      "id": "fa48abcc-7224-4dbb-8f96-cbd0e6cc7ceb",
+      "name": "Claude Sonnet27",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -2448
+      ],
+      "id": "d170c1b3-01e7-4f4e-808b-e9806a3cb22a",
+      "name": "Claude Sonnet28",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -1840
+      ],
+      "id": "bf1410ad-e920-44bc-8f64-f7ef9884c1ca",
+      "name": "Claude Sonnet29",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -1232
+      ],
+      "id": "30a3aed9-5a63-41dd-bea5-00ca981679d2",
+      "name": "Claude Sonnet30",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a document layout engine.\n\nYour task is to generate the TABLE OF CONTENTS page.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT reorder, rename, or renumber sections.\n- Preserve numbering exactly.\n- Output plain text only.\n- Use dot leaders exactly as shown.\n- No explanations.\n\nOUTPUT FORMAT:\n\nTABLE OF CONTENTS\n\n{TOC_LINES}\n\nTOC LINE FORMAT:\n{SECTION}{DOTS}{PAGE}\n\nDOTS RULE:\n- Use dot leaders to align page numbers to the right, matching the example style.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -12168,
+        0
+      ],
+      "id": "15e1795e-c588-4060-acaa-c77f75fa9c84",
+      "name": "3.Table of Contents"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 3 – COMPANIES / PERSONNEL INVOLVED.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT infer or rearrange roles.\n- Preserve wording and capitalization.\n- Output plain text only.\n- No markdown. No explanations.\n- If any value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n3. COMPANIES / PERSONNEL INVOLVED\n\n{ROLE_1}        {ENTITY_1}\n{ROLE_2}        {ENTITY_2}\n{ROLE_3}        {ENTITY_3}\n{ROLE_4}        {ENTITY_4}\n\nAttending surveyors on behalf of {ON_BEHALF_OF}\n{SURVEY_COMPANY}\n{PERSON_1}\n{PERSON_2}\n{PERSON_3}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        232,
+        -3024
+      ],
+      "id": "e1419f61-f017-4b7b-a76b-4afb7aa03f00",
+      "name": "6.Companies/ Personell Involved"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 5 – RIVER BARGE PARTICULARS, including subsection 5.1.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT add assumptions, interpretations, or conclusions.\n- Do NOT rephrase sentences.\n- Preserve exact section numbering and wording.\n- Output plain text only.\n- No markdown. No explanations.\n- If any field is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n5. RIVER BARGE PARTICULARS\n\nParticulars of the on-carrying river barge were {PARTICULARS_AVAILABILITY}; however, the following information was obtained:\nMS ‘{VESSEL_NAME}’ is a {VESSEL_TYPE} sailing under the flag of {FLAG}. Its LOA is {LOA_M}[m] and breadth {BREADTH_M}[m].\n\n5.1. Barges suitability condition\n\nCondition suitability inspection to on-carrying self-propelled river barge ‘{VESSEL_NAME}’ was limited to {INSPECTION_SCOPE} which was {INSPECTION_RESULT}.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        232,
+        -3840
+      ],
+      "id": "a3192ee4-f25f-4feb-8835-ff018fd2e6c0",
+      "name": "8.River Barge Particulars"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -12168,
+        640
+      ],
+      "id": "c07918f2-578b-41ed-aaf1-2d7bf581f989",
+      "name": "9. Storage Afforded to goods before loading"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 7 – PRE-LOAD CONDITION SURVEY, including subsection 7.1.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, interpret, or summarize.\n- Preserve exact wording, numbering, and punctuation.\n- Preserve section numbering.\n- Output plain text only.\n- No markdown. No explanations.\n- If any value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n7. PRE-LOAD CONDITION SURVEY\n\n7.1. Cargo condition survey findings\n\n{INSPECTION_STATEMENT}\n\nExceptions:\nMS ‘{VESSEL_NAME}’\n{PAGE_REFERENCE}\n\nBL no. {BL_NO_1} - ‘{CARGO_NAME_1}’\n1. {ITEM_1}\n2. {ITEM_2}\n3. {ITEM_3}\n4. {ITEM_4}\n5. {ITEM_5}\n6. {ITEM_6}\n7. {ITEM_7}\n8. {ITEM_8}\n\nBLs nos. {BL_NO_2} – ‘{CARGO_NAME_2}’\n1. {ITEM_1}\n2. {ITEM_2}\n3. {ITEM_3}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1976,
+        -3632
+      ],
+      "id": "2a60d72e-a134-426d-8217-4842f4d4d36a",
+      "name": "10.Pre-load conditions"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3664,
+        -3632
+      ],
+      "id": "8b5b8a7c-f454-4d65-89b5-dc3f8b475432",
+      "name": "11Cargo Operations"
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_enclosures"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -12096,
+        1504
+      ],
+      "id": "c46ec4a4-61f9-4a85-a059-48cd74659411",
+      "name": "n8n_enclosures",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_table_of_context"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -12096,
+        224
+      ],
+      "id": "f2183f70-9da9-4e38-9d8a-4f9852ce9ceb",
+      "name": "n8n_table_of_context",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_storage_afforded"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -12096,
+        864
+      ],
+      "id": "2cdc2ab9-3d80-4cb8-a76b-b7c1064c22f2",
+      "name": "n8n_storage_afforded",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_barge_particulars"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        -3616
+      ],
+      "id": "0e21990d-261b-4de5-bb55-52135ad44449",
+      "name": "n8n_barge_particulars",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_preload_conditions"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        2048,
+        -3408
+      ],
+      "id": "0fb4f4cc-642a-4d62-ab4c-6112059960b5",
+      "name": "n8n_preload_conditions",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_companies_involved"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        -2800
+      ],
+      "id": "ccb2cebe-b4fb-49f0-a608-3a15f5aac16f",
+      "name": "n8n_companies_involved",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_certification"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -12096,
+        2352
+      ],
+      "id": "6a6682a3-a983-4367-8587-fdd587e61b64",
+      "name": "n8n_certification",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_cargo_operations"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        3800,
+        -3408
+      ],
+      "id": "c61c8669-878e-4733-9553-ac821d6952b2",
+      "name": "n8n_cargo_operations",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_cargo_details"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1440,
+        -3408
+      ],
+      "id": "a6facdf8-19d8-4f98-9011-53e34bdd92a3",
+      "name": "n8n_cargo_details",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.1 Cargo Operation Description"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -4896
+      ],
+      "id": "9ff429d7-cec3-4442-b53b-bb076f3e0e26",
+      "name": "Convert HTML to PDF11",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.2 Cargo Lifting Gear"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -4288
+      ],
+      "id": "a7a91b9f-910c-49e0-9eaa-a8b39c07e229",
+      "name": "Convert HTML to PDF12",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.3 Underhook Rigging"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -3680
+      ],
+      "id": "3c70d66c-bf4b-4ce7-9cbc-1dec779453c0",
+      "name": "Convert HTML to PDF13",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.4 Lifting Operation"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -3072
+      ],
+      "id": "5df6e673-2493-4898-b192-767ccdc631aa",
+      "name": "Convert HTML to PDF14",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.5 Stowage Dunnaging and Securing"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -2464
+      ],
+      "id": "a8887e1c-0c26-44f1-a9c3-941cb9d671ad",
+      "name": "Convert HTML to PDF15",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.6 Time and Activity Log"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -1856
+      ],
+      "id": "5655e93f-30f3-4ccd-ae7d-50b084d71f60",
+      "name": "Convert HTML to PDF16",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.7 Loading Sequences"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -1248
+      ],
+      "id": "8218e6a8-cbcf-4c12-a980-9db6313531cc",
+      "name": "Convert HTML to PDF17",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 11.8 Safety Incidents"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4640,
+        -640
+      ],
+      "id": "b9291ebd-2236-4d80-a72a-f7dbe23dd618",
+      "name": "Convert HTML to PDF18",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "??",
+        "tableName": {
+          "__rl": true,
+          "value": "reports",
+          "mode": "list",
+          "cachedResultName": "reports"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -11968,
+        224
+      ],
+      "id": "85f03870-7f6a-4921-aca4-33857d5935d1",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "tableName": {
+          "__rl": true,
+          "value": "v_surveys",
+          "mode": "list",
+          "cachedResultName": "v_surveys"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        -3616
+      ],
+      "id": "4160fc14-2c6b-4cc2-b07d-fd3353a31615",
+      "name": "Supabase Vector Store4",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -11968,
+        2352
+      ],
+      "id": "e5ca9a75-f0da-4d3e-b15d-b258e9b00974",
+      "name": "Supabase Vector Store6",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        -2800
+      ],
+      "id": "6b6efc6f-4921-4f7d-a57d-ba255c6a81bf",
+      "name": "Supabase Vector Store8",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -11968,
+        1504
+      ],
+      "id": "d7e3dc37-1ee1-45f6-8d90-0bcfdf474e31",
+      "name": "Supabase Vector Store9",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -416
+      ],
+      "id": "e6e2a381-dddd-449b-9b02-91d3e7bb178e",
+      "name": "Supabase Vector Store10",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -1232
+      ],
+      "id": "bcff3e03-03ab-4297-964f-39f5ab9f4c9d",
+      "name": "Supabase Vector Store11",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -1840
+      ],
+      "id": "0aeb0061-ddc4-441b-bce3-c7932ab73150",
+      "name": "Supabase Vector Store12",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -2448
+      ],
+      "id": "3d09d5aa-dadf-4ba5-b188-227e91727f19",
+      "name": "Supabase Vector Store13",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -3056
+      ],
+      "id": "0bd75bbd-18d0-4cd7-ab80-67f25484bb60",
+      "name": "Supabase Vector Store14",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -3664
+      ],
+      "id": "02ba9f3b-b6a1-46bb-aa48-75b411e5ccfc",
+      "name": "Supabase Vector Store15",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -4272
+      ],
+      "id": "3aef5e68-9222-4658-bdf1-f1c2c5adeffc",
+      "name": "Supabase Vector Store16",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Vector store",
+        "tableName": {
+          "__rl": true,
+          "value": "v_surveys",
+          "mode": "list",
+          "cachedResultName": "v_surveys"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4272,
+        -4880
+      ],
+      "id": "3f817e46-4354-4293-9896-d87738d0575f",
+      "name": "Supabase Vector Store17",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_cargo_lifting_gear"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -4880
+      ],
+      "id": "8d73998d-f1c3-41a7-8d76-75224598caf4",
+      "name": "n8n_cargo_lifting_gear",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_underhook_rigging"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -4272
+      ],
+      "id": "ca1fff5d-8a45-42fa-a7e4-6ac8f9304538",
+      "name": "n8n_underhook_rigging",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_lifting_operation"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -3664
+      ],
+      "id": "c6744487-14ae-4a4d-aa60-ccde70674be9",
+      "name": "n8n_lifting_operation",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_stowage_dunnaging"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -3056
+      ],
+      "id": "79d0558c-2f7b-4dcf-a3dc-d199a452cecb",
+      "name": "n8n_stowage_dunnaging",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_time_activity_log"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -2448
+      ],
+      "id": "48fd4129-43db-4b64-8ed3-b91cfdcc1ce8",
+      "name": "n8n_time_activity_log",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_loading_sequences"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -1840
+      ],
+      "id": "90df22dc-dbf1-4799-bcd5-fa3cf9617946",
+      "name": "n8n_loading_sequences",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_safety_incidents"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -1232
+      ],
+      "id": "f5b92612-0a10-4309-b9cd-019483b4f29a",
+      "name": "n8n_safety_incidents",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_safety_incidents_2"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4144,
+        -416
+      ],
+      "id": "cb14991d-2a5a-4e17-a553-5a1acf91dd4f",
+      "name": "n8n_safety_incidents_2",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -5104
+      ],
+      "id": "d97c288a-8eef-4dd2-b108-fca560ed71cd",
+      "name": "11.1 Cargo Operation Description"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -4496
+      ],
+      "id": "31eeacd8-015a-4241-a9b9-af71c296082e",
+      "name": "11.2 Cargo Lifting Gear"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -3888
+      ],
+      "id": "e6a0df2f-06b6-40c3-a48f-6fb80b30372b",
+      "name": "11.3 Underhook Rigging"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -3280
+      ],
+      "id": "3c2e5543-c4f8-490e-8663-d05182a437d6",
+      "name": "11.4 Lifting Operation"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -2672
+      ],
+      "id": "1bd66f7c-fef2-4067-830a-822044ddb9cf",
+      "name": "11.5 Stowage, dunnaging and securing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -2064
+      ],
+      "id": "b7c62f53-337e-46d0-9c00-930052d57f75",
+      "name": "11.6 Time and activity log"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -1456
+      ],
+      "id": "eed1bdf1-4abb-4bcf-800a-b71f51cd1ab9",
+      "name": "11.7 Loading Sequences"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4072,
+        -640
+      ],
+      "id": "b74d1f03-2130-4883-b3e2-9bacc942aab0",
+      "name": "11.8 Safety incidents"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -11376,
+        208
+      ],
+      "id": "4c049a46-8af7-45c9-a85f-6afcdbc1699a",
+      "name": "Upload table of content",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -11376,
+        848
+      ],
+      "id": "97d471f6-b3a9-4ea7-8b4c-06c1ce8e5a85",
+      "name": "Upload Storage afford",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -11968,
+        864
+      ],
+      "id": "c200442a-85bf-4a5f-ab18-5814e651543d",
+      "name": "Supabase Vector Store3",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -640
+      ],
+      "id": "1883ef80-852d-446a-b185-d135aa8f7e85",
+      "name": "Upload Safety Incidents",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -1248
+      ],
+      "id": "2ea1fef9-33bd-43e2-a2ec-774cd772c273",
+      "name": "Upload Loading",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -1856
+      ],
+      "id": "a571aedf-7c4c-4555-82ae-a00e2568ce87",
+      "name": "Upload Activity Log",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -2464
+      ],
+      "id": "93fe44bd-0804-4bf9-b1dd-7e580edff88f",
+      "name": "Upload Stowage",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -3072
+      ],
+      "id": "01fa9785-2a66-4d06-9f18-f78ad5b19532",
+      "name": "Upload Lifting and Operations",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -3680
+      ],
+      "id": "0e2fd04a-2126-4729-803c-830ac1aa851d",
+      "name": "Upload Underhook",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -4288
+      ],
+      "id": "8c50ca4d-4083-4b25-be60-4c7be58dab76",
+      "name": "Upload Cargo Lifting Gear",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4864,
+        -4896
+      ],
+      "id": "6460c561-49b0-44d3-a19b-82fe7bd61282",
+      "name": "Upload Cargo Operations",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -1312,
+        -3408
+      ],
+      "id": "63879be1-7e21-44a2-a40f-251dd5576590",
+      "name": "Supabase Vector Store18",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – Table of Contents"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -11600,
+        208
+      ],
+      "id": "b868791c-37b0-459d-a7ef-7b4051d327b6",
+      "name": "Convert_HTML_PDF – Table_of_Contents",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 9. Storage Afforded Before Loading"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -11600,
+        848
+      ],
+      "id": "75a2648c-3dcb-4da1-a56d-93c7a7bff23a",
+      "name": "Convert_HTML_PDF – 9_Storage_Before_Loading",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -4672
+      ],
+      "id": "826ae3b4-3467-4518-b630-aec2b3f50b7d",
+      "name": "Embeddings HuggingFace Inference",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -11888,
+        432
+      ],
+      "id": "def356e2-957d-42f6-8886-610e0dff1cbb",
+      "name": "Embeddings HuggingFace Supabase Vector Store",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -3408
+      ],
+      "id": "086db7af-e7f2-4681-a15d-f7533fa1147e",
+      "name": "Embeddings HuggingFace Supabase Vector Store4",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -11888,
+        2560
+      ],
+      "id": "2c296e92-c03e-49e6-b25d-3582de5a3d21",
+      "name": "Embeddings HuggingFace Supabase Vector Store6",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        512,
+        -2592
+      ],
+      "id": "3e36fab0-551c-4412-bece-2eed25b62a47",
+      "name": "Embeddings HuggingFace Supabase Vector Store8",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -11888,
+        1712
+      ],
+      "id": "d9689a61-0cc0-4671-ba76-5ac04daf495c",
+      "name": "Embeddings HuggingFace Supabase Vector Store9",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -208
+      ],
+      "id": "b29182e6-6629-47fe-a28a-223948b7bab8",
+      "name": "Embeddings HuggingFace Supabase Vector Store10",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -1024
+      ],
+      "id": "589c15f1-4057-4c48-b659-4c0f522bcc4a",
+      "name": "Embeddings HuggingFace Supabase Vector Store11",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -1632
+      ],
+      "id": "3097bee5-3c4e-4005-b872-a76421bf28df",
+      "name": "Embeddings HuggingFace Supabase Vector Store12",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -2240
+      ],
+      "id": "9a707730-c1c6-4cca-b32b-e25de63ad9dd",
+      "name": "Embeddings HuggingFace Supabase Vector Store13",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -2848
+      ],
+      "id": "44819c63-6f6d-4db9-9498-6743ad1d50cf",
+      "name": "Embeddings HuggingFace Supabase Vector Store14",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -3456
+      ],
+      "id": "38c3a9e4-5c5f-43b5-8d62-731c619a61c6",
+      "name": "Embeddings HuggingFace Supabase Vector Store15",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4352,
+        -4064
+      ],
+      "id": "8c0de6f2-5da5-474b-a907-b7b2c6e77b21",
+      "name": "Embeddings HuggingFace Supabase Vector Store16",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -11888,
+        1072
+      ],
+      "id": "e6216ac8-8856-43b1-8ce4-22f162d2530a",
+      "name": "Embeddings HuggingFace Supabase Vector Store3",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        -3200
+      ],
+      "id": "f3e22390-51b9-49be-a011-cbf9e9d215b5",
+      "name": "Embeddings HuggingFace Supabase Vector Store18",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -12224,
+        1504
+      ],
+      "id": "d3d9637d-371b-41c8-bcab-c49f41407eb1",
+      "name": "Anthropic Chat Model4",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        -2800
+      ],
+      "id": "cb32c6e3-dbb4-43e5-b51d-bd41a985e447",
+      "name": "Anthropic Chat Model5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1920,
+        -3408
+      ],
+      "id": "5ba63461-4836-4dcb-a7eb-78818f5b876d",
+      "name": "Anthropic Chat Model6",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "q",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2176,
+        -3408
+      ],
+      "id": "8a266b91-7261-4954-9bdb-dad7a6b028a4",
+      "name": "Supabase Vector Store7",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        2256,
+        -3200
+      ],
+      "id": "73753b26-b2ee-41d0-8028-1a10a544a982",
+      "name": "Embeddings HuggingFace Inference2",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1568,
+        -3408
+      ],
+      "id": "d36b79b2-c933-4b9c-ac87-17a1442a43f9",
+      "name": "Anthropic Chat Model7",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        4016,
+        -416
+      ],
+      "id": "d84045b2-77bc-4094-ad03-a5f5e3e82010",
+      "name": "Anthropic Chat Model8",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -7296,
+        -4400
+      ],
+      "id": "0f79f376-1e6c-466f-a036-458aa7861d99",
+      "name": "Form3 - Chat cu AI Manager",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -7072,
+        -4176
+      ],
+      "id": "0a112691-b39e-4c73-a780-55aa9768e4a1",
+      "name": "Claude Sonnet12",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_executive_summaries"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -6944,
+        -4176
+      ],
+      "id": "dabf0362-51bd-483e-b154-9e3349ce3f86",
+      "name": "n8n_executive_summaries",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -6816,
+        -4176
+      ],
+      "id": "8e17342a-a01c-44b5-afd8-f370ca7766f4",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -6736,
+        -3968
+      ],
+      "id": "6c0f7fd7-a76d-4a34-8592-91f9540f9a9f",
+      "name": "Embeddings HuggingFace Supabase Vector Store1",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -6224,
+        -4400
+      ],
+      "id": "ef3a8abe-ac51-44d5-b330-08b5bf077de1",
+      "name": "Update a document18",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "Executive Summary Updated",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6000,
+        -4400
+      ],
+      "id": "edd2c806-1d96-4018-9574-4bca3150d317",
+      "name": "Send a text message25",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5776,
+        -4400
+      ],
+      "id": "34220813-fc89-493b-b1b7-5885c7ba8851",
+      "name": "If18"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -5552,
+        -4304
+      ],
+      "id": "81d7e94a-9d0c-4407-843c-37cafba06f77",
+      "name": "Send a text message26",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -5552,
+        -4496
+      ],
+      "id": "f43aa379-9539-47ca-b4d0-a0435a94ef0d",
+      "name": "Form3 - Chat cu AI Manager1",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -5328,
+        -4272
+      ],
+      "id": "e9d72ecd-28cc-4750-a159-96b24f335716",
+      "name": "Claude Sonnet",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_scope_of_survey"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -5200,
+        -4272
+      ],
+      "id": "2db28332-f024-4073-b8a1-fecafe052cd2",
+      "name": "n8n_scope_of_survey1",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -5072,
+        -4272
+      ],
+      "id": "40a65058-9454-49aa-a477-2d88382fd1b8",
+      "name": "Supabase Vector Store5",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -4992,
+        -4064
+      ],
+      "id": "6d302fa3-9a32-4a0f-891a-3bdd5fb295b8",
+      "name": "Embeddings HuggingFace Supabase Vector Store5",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -4480,
+        -4496
+      ],
+      "id": "15ea7184-42a0-4c2c-b7a1-327741f26771",
+      "name": "Update a document19",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -4256,
+        -4496
+      ],
+      "id": "05eb7289-3fb7-4657-ba90-b840eddf139e",
+      "name": "Send a text message27",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4032,
+        -4496
+      ],
+      "id": "8dba1d7b-662c-4fda-b404-8dc9f43eb221",
+      "name": "If19"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3808,
+        -4400
+      ],
+      "id": "77390f71-0907-4c45-80ee-f093679f7ae6",
+      "name": "Send a text message28",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -3808,
+        -4592
+      ],
+      "id": "95580b00-2073-4001-ad69-a092774aebce",
+      "name": "For53 - GetDBCompanies",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -1792,
+        -3632
+      ],
+      "id": "f12171da-8871-41f1-9e39-c88c6a88030d",
+      "name": "For53 - GetDBCompanies1",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        -3632
+      ],
+      "id": "837c4545-ad77-44fc-ac35-778062e27059",
+      "name": "Update a document21",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        -3632
+      ],
+      "id": "fd720905-e8f7-4a94-b0b4-fa17e1e0e601",
+      "name": "Send a text message31",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -272,
+        -3632
+      ],
+      "id": "8d71ad14-ddca-4aae-adeb-499e4626e48f",
+      "name": "If21"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        -3440
+      ],
+      "id": "8647b5f5-6df8-4c5e-9766-7576782d3c3f",
+      "name": "Send a text message32",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -48,
+        -3632
+      ],
+      "id": "b413a5b3-d579-475d-928e-2baaf8ddd532",
+      "name": "For53 - GetDBCompanies2",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -3632
+      ],
+      "id": "d4045112-7541-42ff-b9f7-383ab08b3d64",
+      "name": "Update a document22",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        -3632
+      ],
+      "id": "3d0dfa64-544e-40da-88d8-ad0fe67b15df",
+      "name": "Send a text message33",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "operation": "get"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        800,
+        -3632
+      ],
+      "id": "5d174f77-b004-4d18-b365-5c0d1cfbfcb0",
+      "name": "Get a row23",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        -3632
+      ],
+      "id": "dbd9ef15-c370-48ad-8b47-933d598e7cb2",
+      "name": "If22"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1696,
+        -3440
+      ],
+      "id": "c2f9e82c-339c-413b-aaf0-6ace8aa31b44",
+      "name": "Send a text message34",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1696,
+        -3632
+      ],
+      "id": "d40e1791-299a-45ac-ad26-624ba81a9171",
+      "name": "For53 - GetDBCompanies3",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2768,
+        -3632
+      ],
+      "id": "328bcd4e-3e62-41c4-8cc9-dd3519414753",
+      "name": "Update a document23",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2992,
+        -3632
+      ],
+      "id": "bc7f12d7-58ae-48db-ad58-a55d8e125d56",
+      "name": "Send a text message35",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "operation": "get"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2544,
+        -3632
+      ],
+      "id": "942e48dc-ff48-4c14-8abc-c02da801be1b",
+      "name": "Get a row24",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3216,
+        -3632
+      ],
+      "id": "c5344f71-210e-407d-830e-0fd164703bc4",
+      "name": "If23"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3440,
+        -3440
+      ],
+      "id": "674e79a0-bfef-45af-a07c-ca85da9a5a86",
+      "name": "Send a text message36",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        3440,
+        -3632
+      ],
+      "id": "071f08fa-636e-413e-b34e-9fd4b538d51c",
+      "name": "For53 - GetDBCompanies4",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -11776,
+        -2768
+      ],
+      "id": "e04840bf-4683-4de4-b37d-8c5ba88d807a",
+      "name": "ListSurvey",
+      "webhookId": "4bb54228-6fc3-4658-ad8b-1c7b87a0b8fb"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -11776,
+        -2576
+      ],
+      "id": "0949ad15-7f8a-4b16-a61c-7968845768e9",
+      "name": "EditSurvey",
+      "webhookId": "4bb54228-6fc3-4658-ad8b-1c7b87a0b8fb"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -10208,
+        -800
+      ],
+      "id": "7c2df8dc-089e-41a6-b1be-5ac09fa8d8ef",
+      "name": "VaselName",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -10208,
+        -608
+      ],
+      "id": "3ea4818e-986b-4807-919c-59f837d61e22",
+      "name": "PortName",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -3584
+      ],
+      "id": "070f350b-9ffa-450b-b13e-a13ea68e6408",
+      "name": "DateFromTo",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -2912
+      ],
+      "id": "fd188bd6-ac35-4599-b84b-33c65a2df421",
+      "name": "SurveyType",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -10208,
+        -416
+      ],
+      "id": "9fe1cdc1-7beb-44e2-b9e6-8ff60049eeec",
+      "name": "ReffNumber",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -10208,
+        -224
+      ],
+      "id": "f36f1e1c-7d2a-4fd3-a7cd-f6aa4f0b86d0",
+      "name": "RequestedBy",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "Template_copy"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -10432,
+        -1664
+      ],
+      "id": "7966e517-e269-47c7-822a-e4e210c80ce2",
+      "name": "Create a document2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -4544
+      ],
+      "id": "2bff1d71-ac02-4a77-b089-b44a2ef07e2d",
+      "name": "REQUESTED_BY",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -4352
+      ],
+      "id": "bfe88406-edff-461e-926c-189b4c4f3339",
+      "name": "VESSEL_NAME",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -4160
+      ],
+      "id": "64fd36a5-ee97-4e73-83bf-f521eae732f1",
+      "name": "port.country",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -1760
+      ],
+      "id": "02786f12-324e-4092-965a-80c5b373fe0a",
+      "name": "berth",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -3968
+      ],
+      "id": "a5477614-33b7-4705-8528-1253bd896554",
+      "name": "Loading/Unloading",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "bills_of_lading"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -3776
+      ],
+      "id": "b2e62de1-7fab-4cfe-9ace-3a0f1a42c378",
+      "name": "BL NoDate",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -3392
+      ],
+      "id": "be14d7cd-f4d6-46ef-a62c-debac35e0b9d",
+      "name": "CargoDescription",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -2648
+      ],
+      "id": "94594886-ad01-4b95-9cbc-8a5f941aa3a9",
+      "name": "PackageCount/Weight",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -2456
+      ],
+      "id": "753c9c44-06be-47d0-a877-55048f49ba1a",
+      "name": "Shipper",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -8192,
+        -2264
+      ],
+      "id": "347db00e-e57e-44dd-9ec2-0f6c815e065a",
+      "name": "Consignee",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate the EXECUTIVE SUMMARY section.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT add opinions, assumptions, or interpretations.\n- Do NOT change sentence structure.\n- Do NOT paraphrase.\n- If any field is missing or null, output \"N/A\".\n- Output plain text only.\n- No markdown. No explanations.\n\nOUTPUT FORMAT (exact):\n\nEXECUTIVE SUMMARY\n\nThe {OPERATION_TYPE} operation related to the {CARGO_DESCRIPTION} consist of {OPERATION_SCOPE_LIST} from {LOADING_FROM} to the {LOADING_TO} has been {OPERATION_RESULT} {INCIDENT_STATUS} to {AFFECTED_OBJECTS}.\n\nRULES:\n- OPERATION_SCOPE_LIST must be comma-separated, with \"and\" before the last item.\n- Preserve British spelling and maritime terminology.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -7016,
+        -4400
+      ],
+      "id": "f1f51c84-8745-4049-bf8e-86602c52a556",
+      "name": "1.Executive Summary"
+    },
+    {
+      "parameters": {
+        "tableId": "containers"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -6448,
+        -4400
+      ],
+      "id": "6e40177f-db9d-4c30-8da4-7b59765b0101",
+      "name": "ExecutiveSummary",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a maritime survey report generator.\n\nYour task is to generate section 2 – SCOPE OF SURVEY.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT add, remove, or rephrase any item.\n- Preserve exact wording and bullet formatting.\n- If any item is missing, output \"N/A\".\n- Output plain text only.\n- No markdown. No explanations.\n\nOUTPUT FORMAT (exact):\n\n2. SCOPE OF SURVEY\n\nThe scope of the survey was expressly limited to:\n- {SCOPE_ITEM_1}\n- {SCOPE_ITEM_2}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -5272,
+        -4496
+      ],
+      "id": "0829b505-b071-4124-90e4-c08326ceb68c",
+      "name": "2.Scope of Survey1"
+    },
+    {
+      "parameters": {
+        "tableId": "containers"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -4704,
+        -4496
+      ],
+      "id": "a98d514a-9e58-4ac0-bf9f-e92e271ed8db",
+      "name": "ScopeOfSurvey",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 4 – CARGO DETAILS, including subsections 4.1, 4.2, and 4.3.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT add, infer, summarize, or rephrase.\n- Preserve exact wording and section numbering.\n- Preserve layout and line order.\n- Output plain text only.\n- No markdown. No explanations.\n- If any field is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\nCARGO DETAILS\n\n4.1. Description of goods\n\nThe cargo subject to survey as tabulated below:\n\nLOADING SURVEY Ref. No. {REPORT_REF}\n\nBL no.\n{BL_NUMBERS_LINE}\n\nDescription of goods\n{DESCRIPTIONS_LINE}\n\nPacking Packages\n{PACKING_PACKAGES_LINE}\n\nGross[mt]\n{GROSS_LINE}\n\n4.2. Marks and numbers\n\n{MARKS_STATEMENT}\n\n4.3. Packaging:\n\nThe subject cargo lots were presented for loading with the following packaging pattern:\n{PACKAGING_BLOCKS}\n\nRULES:\n- BL_NUMBERS_LINE, DESCRIPTIONS_LINE, PACKING_PACKAGES_LINE and GROSS_LINE must follow the order of cargo_items.\n- Values must be space-separated, not comma-separated.\n- PACKING_PACKAGES_LINE format:\n  {PACKING_TYPE} {PACKAGES}\n- PACKAGING_BLOCK format (repeat per item):\n\nBL no. {BL_NO} – “{CARGO_NAME}”\n{TEXT}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1512,
+        -3632
+      ],
+      "id": "7e49bbfc-ed10-4e2c-8cba-e5aa9c559b9d",
+      "name": "4.Cargo Details"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3360,
+        -4688
+      ],
+      "id": "b4095eb7-b37c-4af4-ab65-bdb04a5136a1",
+      "name": "Create folder1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3360,
+        -3824
+      ],
+      "id": "aaceb9f5-d4ed-4a78-b4bb-708ed77ddb6b",
+      "name": "Search files and folders1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2912,
+        -3824
+      ],
+      "id": "7719d756-b330-4adb-99d4-e14972fbed8e",
+      "name": "Send a text message29",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3136,
+        -4688
+      ],
+      "id": "18ec316b-a1b9-463a-ac93-b06bf23f5609",
+      "name": "Send a text message30",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "template"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2912,
+        -3632
+      ],
+      "id": "addffaaa-c994-430c-8e5e-0d6488899ede",
+      "name": "Create a document3",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3584,
+        -4688
+      ],
+      "id": "4f52499a-e231-476f-a6b1-55e5a97e314f",
+      "name": "if_newSurveyID1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "clients"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3584,
+        -3824
+      ],
+      "id": "df09f2ce-a426-4d78-8b30-85a79593b4fe",
+      "name": "existing_surveyID1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3136,
+        -3824
+      ],
+      "id": "9c68b1c3-d401-4823-a7be-3365e0d5711a",
+      "name": "getShipID1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2464,
+        -3728
+      ],
+      "id": "f7b2770c-8a5c-4d2e-92f9-1bc5b9722f4e",
+      "name": "Update a document20",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2464,
+        -3536
+      ],
+      "id": "9d31112e-aa4c-4394-82f9-df856a7c07e0",
+      "name": "Update a document24",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2464,
+        -3344
+      ],
+      "id": "a85b3139-eaa2-4a7f-a35b-b708981fabf1",
+      "name": "Update a document25",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create a document2').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2464,
+        -3152
+      ],
+      "id": "d6dfcc6d-f1b9-4bb4-ae4b-c8859ffeab79",
+      "name": "Update a document26",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        -3728
+      ],
+      "id": "b5d9a4ef-5eb9-4210-9d09-8183ccd9ba1e",
+      "name": "Send a text message37",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        -3536
+      ],
+      "id": "5f054032-3acf-4117-94ad-5e30d92c900f",
+      "name": "Send a text message38",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        -3344
+      ],
+      "id": "a4aa909c-13ff-4b16-b188-76b46eb6237c",
+      "name": "Send a text message39",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        -3152
+      ],
+      "id": "d2f6b5a9-213b-43df-b577-20b016cc7398",
+      "name": "Send a text message40",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2016,
+        -3632
+      ],
+      "id": "aea7df42-bf40-4ae9-9087-b01e7db81150",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2688,
+        -3728
+      ],
+      "id": "9f6ee635-717a-4563-b912-b906bbf7af71",
+      "name": "SuperVisor",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2688,
+        -3536
+      ],
+      "id": "976e26b6-c57e-4966-ac0e-5a9a836ca611",
+      "name": "SteveDoring",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2688,
+        -3344
+      ],
+      "id": "655e9d14-a1f6-43d4-a2c3-eb5ae11bccd0",
+      "name": "AttendingSurveyor",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2688,
+        -3152
+      ],
+      "id": "38401866-5698-4081-a7b9-5c8dd148b03a",
+      "name": "OthersInAttendance",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "containers"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        -3632
+      ],
+      "id": "f245457e-9988-4d0e-9c58-d44d180ed514",
+      "name": "Create a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Create Survey",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ListSurvey",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EditSurvey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "if_newSurveyID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "existing_surveyID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "getShipID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Survey": {
+      "main": [
+        [
+          {
+            "node": "Get_surveyID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_surveyID": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if_newSurveyID": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "existing_surveyID": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getShipID": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "VaselName",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PortName",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DateFromTo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SurveyType",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ReffNumber",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RequestedBy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document2": {
+      "main": [
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document3": {
+      "main": [
+        [
+          {
+            "node": "Send a text message6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document4": {
+      "main": [
+        [
+          {
+            "node": "Send a text message7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document5": {
+      "main": [
+        [
+          {
+            "node": "Send a text message8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        [
+          {
+            "node": "Create a document2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message4": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message5": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message6": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message7": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message8": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Form3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form3": {
+      "main": [
+        [
+          {
+            "node": "get_shipID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_shipID": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message11": {
+      "main": [
+        [
+          {
+            "node": "Form4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document1": {
+      "main": [
+        [
+          {
+            "node": "REQUESTED_BY",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "VESSEL_NAME",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "port.country",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loading/Unloading",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "BL NoDate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CargoDescription",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PackageCount/Weight",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Shipper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Consignee",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DateFromTo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SurveyType",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document6": {
+      "main": [
+        [
+          {
+            "node": "Send a text message12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document7": {
+      "main": [
+        [
+          {
+            "node": "Send a text message13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document8": {
+      "main": [
+        [
+          {
+            "node": "Send a text message14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document9": {
+      "main": [
+        [
+          {
+            "node": "Send a text message15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document10": {
+      "main": [
+        [
+          {
+            "node": "Send a text message16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document11": {
+      "main": [
+        [
+          {
+            "node": "Send a text message17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message12": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message13": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message14": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message15": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message16": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message17": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form4": {
+      "main": [
+        [
+          {
+            "node": "Update a document6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document7",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document8",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document9",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document10",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Form3 - Chat cu AI Manager",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Send a text message11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "Send a text message10",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document12": {
+      "main": [
+        [
+          {
+            "node": "Send a text message19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document13": {
+      "main": [
+        [
+          {
+            "node": "Send a text message20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document14": {
+      "main": [
+        [
+          {
+            "node": "Send a text message21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document15": {
+      "main": [
+        [
+          {
+            "node": "Send a text message22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document16": {
+      "main": [
+        [
+          {
+            "node": "Send a text message23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document17": {
+      "main": [
+        [
+          {
+            "node": "Send a text message24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message19": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message20": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message21": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message22": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message23": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message24": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "3.Table of Contents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet9": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet11": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "8.River Barge Particulars",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "This is to certify that": {
+      "main": [
+        []
+      ]
+    },
+    "Claude Sonnet18": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet22": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11Cargo Operations",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enclosures": {
+      "main": [
+        []
+      ]
+    },
+    "Claude Sonnet24": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet25": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet26": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet27": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet28": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet29": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.6 Time and activity log",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet30": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3.Table of Contents": {
+      "main": [
+        [
+          {
+            "node": "Convert_HTML_PDF – Table_of_Contents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6.Companies/ Personell Involved": {
+      "main": [
+        [
+          {
+            "node": "Get a row23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8.River Barge Particulars": {
+      "main": [
+        [
+          {
+            "node": "Get a row23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. Storage Afforded to goods before loading": {
+      "main": [
+        [
+          {
+            "node": "Convert_HTML_PDF – 9_Storage_Before_Loading",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10.Pre-load conditions": {
+      "main": [
+        [
+          {
+            "node": "Get a row24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11Cargo Operations": {
+      "main": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.6 Time and activity log",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.8 Safety incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_enclosures": {
+      "ai_memory": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_table_of_context": {
+      "ai_memory": [
+        [
+          {
+            "node": "3.Table of Contents",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_storage_afforded": {
+      "ai_memory": [
+        [
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_barge_particulars": {
+      "ai_memory": [
+        [
+          {
+            "node": "8.River Barge Particulars",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_preload_conditions": {
+      "ai_memory": [
+        [
+          {
+            "node": "10.Pre-load conditions",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_companies_involved": {
+      "ai_memory": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_certification": {
+      "ai_memory": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_cargo_operations": {
+      "ai_memory": [
+        [
+          {
+            "node": "11Cargo Operations",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_cargo_details": {
+      "ai_memory": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF11": {
+      "main": [
+        [
+          {
+            "node": "Upload Cargo Operations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF12": {
+      "main": [
+        [
+          {
+            "node": "Upload Cargo Lifting Gear",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF13": {
+      "main": [
+        [
+          {
+            "node": "Upload Underhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF14": {
+      "main": [
+        [
+          {
+            "node": "Upload Lifting and Operations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF15": {
+      "main": [
+        [
+          {
+            "node": "Upload Stowage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF16": {
+      "main": [
+        [
+          {
+            "node": "Upload Activity Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF17": {
+      "main": [
+        [
+          {
+            "node": "Upload Loading",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF18": {
+      "main": [
+        [
+          {
+            "node": "Upload Safety Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "3.Table of Contents",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store4": {
+      "ai_tool": [
+        [
+          {
+            "node": "8.River Barge Particulars",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store6": {
+      "ai_tool": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store8": {
+      "ai_tool": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store9": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store10": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.8 Safety incidents",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store11": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store12": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.6 Time and activity log",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store13": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store14": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store15": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store16": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store17": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_cargo_lifting_gear": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_underhook_rigging": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_lifting_operation": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_stowage_dunnaging": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_time_activity_log": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_loading_sequences": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.6 Time and activity log",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_safety_incidents": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_safety_incidents_2": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.8 Safety incidents",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.1 Cargo Operation Description": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.2 Cargo Lifting Gear": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.3 Underhook Rigging": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.4 Lifting Operation": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.5 Stowage, dunnaging and securing": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.6 Time and activity log": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.7 Loading Sequences": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.8 Safety incidents": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store18": {
+      "ai_tool": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert_HTML_PDF – Table_of_Contents": {
+      "main": [
+        [
+          {
+            "node": "Upload table of content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert_HTML_PDF – 9_Storage_Before_Loading": {
+      "main": [
+        [
+          {
+            "node": "Upload Storage afford",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store17",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store4": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store4",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store6": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store6",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store8": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store8",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store9": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store9",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store10": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store10",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store11": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store11",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store12": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store12",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store13": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store13",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store14": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store14",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store15": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store15",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store16": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store16",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store18": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store18",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "10.Pre-load conditions",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store7": {
+      "ai_tool": [
+        [
+          {
+            "node": "10.Pre-load conditions",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store7",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model8": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.8 Safety incidents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet12": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_executive_summaries": {
+      "ai_memory": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form3 - Chat cu AI Manager": {
+      "main": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document18": {
+      "main": [
+        [
+          {
+            "node": "Send a text message25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If18": {
+      "main": [
+        [
+          {
+            "node": "Form3 - Chat cu AI Manager1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message26",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message25": {
+      "main": [
+        [
+          {
+            "node": "If18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_scope_of_survey1": {
+      "ai_memory": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store5": {
+      "ai_tool": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store5": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store5",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form3 - Chat cu AI Manager1": {
+      "main": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document19": {
+      "main": [
+        [
+          {
+            "node": "Send a text message27",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If19": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message28",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message27": {
+      "main": [
+        [
+          {
+            "node": "If19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies1": {
+      "main": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document21": {
+      "main": [
+        [
+          {
+            "node": "Send a text message31",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message31": {
+      "main": [
+        [
+          {
+            "node": "If21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If21": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message32",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document22": {
+      "main": [
+        [
+          {
+            "node": "Send a text message33",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message33": {
+      "main": [
+        [
+          {
+            "node": "If22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row23": {
+      "main": [
+        [
+          {
+            "node": "Update a document22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If22": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message34",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies2": {
+      "main": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "8.River Barge Particulars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies3": {
+      "main": [
+        [
+          {
+            "node": "10.Pre-load conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document23": {
+      "main": [
+        [
+          {
+            "node": "Send a text message35",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message35": {
+      "main": [
+        [
+          {
+            "node": "If23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row24": {
+      "main": [
+        [
+          {
+            "node": "Update a document23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If23": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message36",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies": {
+      "main": [
+        [
+          {
+            "node": "if_newSurveyID1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "existing_surveyID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies4": {
+      "main": [
+        [
+          {
+            "node": "11Cargo Operations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VaselName": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PortName": {
+      "main": [
+        [
+          {
+            "node": "Update a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DateFromTo": {
+      "main": [
+        [
+          {
+            "node": "Update a document2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SurveyType": {
+      "main": [
+        [
+          {
+            "node": "Update a document3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update a document11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReffNumber": {
+      "main": [
+        [
+          {
+            "node": "Update a document4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RequestedBy": {
+      "main": [
+        [
+          {
+            "node": "Update a document5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document2": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "REQUESTED_BY": {
+      "main": [
+        [
+          {
+            "node": "Update a document6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VESSEL_NAME": {
+      "main": [
+        [
+          {
+            "node": "Update a document7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "port.country": {
+      "main": [
+        [
+          {
+            "node": "Update a document8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "berth": {
+      "main": [
+        [
+          {
+            "node": "Update a document9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loading/Unloading": {
+      "main": [
+        [
+          {
+            "node": "Update a document12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BL NoDate": {
+      "main": [
+        [
+          {
+            "node": "Update a document13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CargoDescription": {
+      "main": [
+        [
+          {
+            "node": "Update a document14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PackageCount/Weight": {
+      "main": [
+        [
+          {
+            "node": "Update a document15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shipper": {
+      "main": [
+        [
+          {
+            "node": "Update a document16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consignee": {
+      "main": [
+        [
+          {
+            "node": "Update a document17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1.Executive Summary": {
+      "main": [
+        [
+          {
+            "node": "ExecutiveSummary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExecutiveSummary": {
+      "main": [
+        [
+          {
+            "node": "Update a document18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.Scope of Survey1": {
+      "main": [
+        [
+          {
+            "node": "ScopeOfSurvey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ScopeOfSurvey": {
+      "main": [
+        [
+          {
+            "node": "Update a document19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4.Cargo Details": {
+      "main": [
+        [
+          {
+            "node": "Create a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message30",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders1": {
+      "main": [
+        [
+          {
+            "node": "getShipID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document3": {
+      "main": [
+        [
+          {
+            "node": "SuperVisor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SteveDoring",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AttendingSurveyor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "OthersInAttendance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if_newSurveyID1": {
+      "main": [
+        [
+          {
+            "node": "Create folder1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "existing_surveyID1": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getShipID1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message29",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a document3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document20": {
+      "main": [
+        [
+          {
+            "node": "Send a text message37",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document24": {
+      "main": [
+        [
+          {
+            "node": "Send a text message38",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document25": {
+      "main": [
+        [
+          {
+            "node": "Send a text message39",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document26": {
+      "main": [
+        [
+          {
+            "node": "Send a text message40",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message37": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message38": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message39": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message40": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "SuperVisor": {
+      "main": [
+        [
+          {
+            "node": "Update a document20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SteveDoring": {
+      "main": [
+        [
+          {
+            "node": "Update a document24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AttendingSurveyor": {
+      "main": [
+        [
+          {
+            "node": "Update a document25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OthersInAttendance": {
+      "main": [
+        [
+          {
+            "node": "Update a document26",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row1": {
+      "main": [
+        [
+          {
+            "node": "Update a document21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c7a14f7b-0dbb-4e66-b5e8-25095b4a929f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54f7d9fd6db4fe693b5fa1f71ae8be72261a3408f2c2915bf1c7d7549acd7235"
+  },
+  "id": "JG4FSG64bdFcD8Bw",
+  "tags": []
+}

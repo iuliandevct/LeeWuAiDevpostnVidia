@@ -1,0 +1,6897 @@
+{
+  "name": "My workflow de verificat",
+  "nodes": [
+    {
+      "parameters": {
+        "tableId": "ships_registry2",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -11552,
+        4240
+      ],
+      "id": "a11d34c0-beca-46e2-9373-f4996484e59f",
+      "name": "Get_surveyID",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -9744,
+        4816
+      ],
+      "id": "521a3bcd-f6f6-45a5-8731-17de9e301c65",
+      "name": "Claude Sonnet7",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        5056,
+        6016
+      ],
+      "id": "1a61dd8d-6446-4a0e-a51a-8ee02ab7adbd",
+      "name": "Claude Sonnet9",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a document layout engine.\n\nYour task is to generate the CERTIFICATION AND CARGO DETAILS page\nfor a maritime loading survey report.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT invent, infer, explain, summarize, or rephrase any content.\n- Preserve wording, capitalization, and sequence exactly.\n- If any field is missing or null, output \"N/A\".\n- Output plain text only. No markdown. No commentary.\n- Repeat cargo parcel blocks exactly in the same structure for each entry.\n\nOUTPUT FORMAT (exact):\n\nTHIS IS TO CERTIFY THAT the undersigned surveyor did\nat the request and in pursuance of the instructions of\n{CLIENT_NAME}\nattend on board\n{VESSEL_NAME}\nwhile afloat at\n{PORT_WHILE_AFLOAT}\nat location\n{LOCATION_DETAILS}\nduring period\n{SURVEY_PERIOD}\nfor the purpose of conducting\n{SURVEY_TYPE}\nto the following cargo parcels\n\nBill of Lading\nDescription of goods declared quantity shipper\nconsignee\nnotify\n\n{CARGO_BLOCKS}\n\nPort of loading Port of discharging\n{PORT_OF_LOADING} {PORT_OF_DISCHARGING}\n\nCARGO BLOCK FORMAT (repeat for each cargo parcel, separated by a blank line):\n\nBill of Lading\n{BL_NUMBER}, dated {BL_DATE}\n{CARGO_DESCRIPTION}\n{QUANTITY}\n{SHIPPER}\n{CONSIGNEE}\n{NOTIFY}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        5120,
+        5792
+      ],
+      "id": "8a426df5-c5de-437f-bfe5-4f5682305095",
+      "name": "This is to certify that"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3360,
+        6016
+      ],
+      "id": "a41e70dd-6c6e-4aba-9b99-784240ff9a1d",
+      "name": "Claude Sonnet18",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        432,
+        4208
+      ],
+      "id": "ec310d29-49e1-435e-92e7-7e7d0fe9f915",
+      "name": "Claude Sonnet22",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        5120,
+        4976
+      ],
+      "id": "5454cd55-404c-41d7-adae-05a1957ae3da",
+      "name": "Enclosures"
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        5520
+      ],
+      "id": "93c5b1ce-3567-4ae6-a86a-1dfccbca617b",
+      "name": "Claude Sonnet30",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a document layout engine.\n\nYour task is to generate the TABLE OF CONTENTS page.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT reorder, rename, or renumber sections.\n- Preserve numbering exactly.\n- Output plain text only.\n- Use dot leaders exactly as shown.\n- No explanations.\n\nOUTPUT FORMAT:\n\nTABLE OF CONTENTS\n\n{TOC_LINES}\n\nTOC LINE FORMAT:\n{SECTION}{DOTS}{PAGE}\n\nDOTS RULE:\n- Use dot leaders to align page numbers to the right, matching the example style.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -9696,
+        4592
+      ],
+      "id": "6e85e58d-2b50-40ce-b8f7-851a78fee0b7",
+      "name": "3.Table of Contents"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 3 – COMPANIES / PERSONNEL INVOLVED.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT infer or rearrange roles.\n- Preserve wording and capitalization.\n- Output plain text only.\n- No markdown. No explanations.\n- If any value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n3. COMPANIES / PERSONNEL INVOLVED\n\n{ROLE_1}        {ENTITY_1}\n{ROLE_2}        {ENTITY_2}\n{ROLE_3}        {ENTITY_3}\n{ROLE_4}        {ENTITY_4}\n\nAttending surveyors on behalf of {ON_BEHALF_OF}\n{SURVEY_COMPANY}\n{PERSON_1}\n{PERSON_2}\n{PERSON_3}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -3024,
+        5408
+      ],
+      "id": "038389c4-9380-4295-9990-1d85d02d0e3b",
+      "name": "6.Companies/ Personell Involved"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3424,
+        5792
+      ],
+      "id": "cde31be6-d8e1-49dd-b027-d6daadc8e076",
+      "name": "9. Storage Afforded to goods before loading"
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_enclosures"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        5184,
+        5200
+      ],
+      "id": "d2f5271d-ad9b-4a2e-aecf-193626d6af59",
+      "name": "n8n_enclosures",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_table_of_context"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -9616,
+        4816
+      ],
+      "id": "436aadb8-6ecc-4aae-93a6-fce22a1f2638",
+      "name": "n8n_table_of_context",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_storage_afforded"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        3488,
+        6016
+      ],
+      "id": "0d1300b3-d79f-44c6-bdb7-72e1097626b8",
+      "name": "n8n_storage_afforded",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_barge_particulars"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -2944,
+        4816
+      ],
+      "id": "5dbb2e27-c5dc-4c98-accf-d9a981738022",
+      "name": "n8n_barge_particulars",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_preload_conditions"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1424,
+        5328
+      ],
+      "id": "45a93b3b-b799-4db9-91ac-1dcb5e780803",
+      "name": "n8n_preload_conditions",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_companies_involved"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -2944,
+        5632
+      ],
+      "id": "a99c8159-4476-4fc2-b4f2-84c4742db089",
+      "name": "n8n_companies_involved",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_certification"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        5184,
+        6016
+      ],
+      "id": "0738f184-345d-4115-92da-240798f940a1",
+      "name": "n8n_certification",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_cargo_operations"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        4208
+      ],
+      "id": "a5f281ee-ffda-438c-8511-a3d2a7f4ff86",
+      "name": "n8n_cargo_operations",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_cargo_details"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -5008,
+        4448
+      ],
+      "id": "71f6bbd3-3ed3-42c0-8b0e-f08e3b991df1",
+      "name": "n8n_cargo_details",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "reports",
+          "mode": "list",
+          "cachedResultName": "reports"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -9488,
+        4816
+      ],
+      "id": "c13686b3-7433-42c9-a0fa-a2620c32e80a",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "a",
+        "tableName": {
+          "__rl": true,
+          "value": "v_surveys",
+          "mode": "list",
+          "cachedResultName": "v_surveys"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -2816,
+        4816
+      ],
+      "id": "f7d30789-4629-4bff-a5c1-bbc381cb9f5e",
+      "name": "Supabase Vector Store4",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        5312,
+        6016
+      ],
+      "id": "31b51282-9436-4b3b-868b-989be06cfb2f",
+      "name": "Supabase Vector Store6",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -2816,
+        5632
+      ],
+      "id": "d7083a39-27f8-465b-8686-65c50534e5a7",
+      "name": "Supabase Vector Store8",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        5312,
+        5200
+      ],
+      "id": "62acf3ca-df02-415e-9e5f-90976a54409e",
+      "name": "Supabase Vector Store9",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        6128
+      ],
+      "id": "ab75ef41-d6d9-471c-976d-ca71e540b26f",
+      "name": "Supabase Vector Store10",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        5520
+      ],
+      "id": "19a73ba4-bdef-44a5-9e37-39857eed04cb",
+      "name": "Supabase Vector Store11",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        4912
+      ],
+      "id": "4283aedc-dca8-4dfa-a3bf-85e696ed1518",
+      "name": "Supabase Vector Store12",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        4304
+      ],
+      "id": "c46e9fca-c6cb-4423-80bb-8029f54289d6",
+      "name": "Supabase Vector Store13",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        3696
+      ],
+      "id": "c9b725a8-462a-4dfe-9908-2cd0f8c3cc18",
+      "name": "Supabase Vector Store14",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        3088
+      ],
+      "id": "05c1122b-d38a-4d27-9039-9adb17b38fb5",
+      "name": "Supabase Vector Store15",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        2480
+      ],
+      "id": "dbaf0fbf-2580-457d-8eb3-5b034f80863d",
+      "name": "Supabase Vector Store16",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "v_surveys",
+          "mode": "list",
+          "cachedResultName": "v_surveys"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        1872
+      ],
+      "id": "b35acf5f-b327-4c56-b075-df3b3163c2fe",
+      "name": "Supabase Vector Store17",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_cargo_lifting_gear"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        1872
+      ],
+      "id": "e464b6af-77bd-4c20-b7d2-e1c5e76a5430",
+      "name": "n8n_cargo_lifting_gear",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_underhook_rigging"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        2480
+      ],
+      "id": "d1b0d8ec-ca6d-463d-9be9-b4e647d4ebfa",
+      "name": "n8n_underhook_rigging",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_lifting_operation"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        3088
+      ],
+      "id": "5df7baeb-153f-43c5-b49a-0c514bd4333d",
+      "name": "n8n_lifting_operation",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_stowage_dunnaging"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        3696
+      ],
+      "id": "6ea4b828-04da-43b3-a7d9-1c0fb8d93513",
+      "name": "n8n_stowage_dunnaging",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_time_activity_log"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        4304
+      ],
+      "id": "15902fcb-8d70-4715-8116-289c2f66dc82",
+      "name": "n8n_time_activity_log",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_loading_sequences"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        4912
+      ],
+      "id": "254d7c07-dec2-4350-a158-e9d060dd1e0a",
+      "name": "n8n_loading_sequences",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_safety_incidents"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        5520
+      ],
+      "id": "6ceaf3c8-11e2-471e-9802-c869b926696d",
+      "name": "n8n_safety_incidents",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_safety_incidents_2"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        896,
+        6128
+      ],
+      "id": "e5e982c3-fb94-4de9-af0a-651ba45abfbb",
+      "name": "n8n_safety_incidents_2",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        1648
+      ],
+      "id": "1b501596-8ec3-4363-92b6-607bc95e0eb0",
+      "name": "11.1 Cargo Operation Description"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        2256
+      ],
+      "id": "8f11f404-8ca1-4a5b-beda-9381e18ea2aa",
+      "name": "11.2 Cargo Lifting Gear"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        2864
+      ],
+      "id": "b1cedbc4-ebae-4fa6-a7d4-f8d83d503892",
+      "name": "11.3 Underhook Rigging"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        3472
+      ],
+      "id": "a51105ae-ee45-473c-a038-cad209299e17",
+      "name": "11.4 Lifting Operation"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        4080
+      ],
+      "id": "64772acc-d37e-4043-a8bd-02db962f2e1a",
+      "name": "11.5 Stowage, dunnaging and securing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        4688
+      ],
+      "id": "79e00deb-666f-4239-94fe-6b9905f6851d",
+      "name": "11.6 Time and activity log"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        5296
+      ],
+      "id": "beba6b5d-dfbd-4e99-80f3-4490f6072bd6",
+      "name": "11.7 Loading Sequences"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 6 – STORAGE AFFORDED TO GOODS BEFORE LOADING.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, summarize, or interpret.\n- Preserve exact wording and punctuation.\n- Output plain text only.\n- No markdown. No explanations.\n- If the value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n6. STORAGE AFFORDED TO GOODS BEFORE LOADING\n\n{STORAGE_DESCRIPTION}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        5904
+      ],
+      "id": "c1033211-9d6b-4927-a584-317526f5ab4b",
+      "name": "11.8 Safety incidents"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -8896,
+        4592
+      ],
+      "id": "66acad43-3117-4987-b45e-b1ec1280cb84",
+      "name": "Upload table of content",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4208,
+        5792
+      ],
+      "id": "e256f6a6-fb9a-428f-b945-7ea1c5a55df7",
+      "name": "Upload Storage afford",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        3616,
+        6016
+      ],
+      "id": "33514c49-74e4-4b43-bafb-84201415dbd0",
+      "name": "Supabase Vector Store3",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "v_surveys",
+          "mode": "list",
+          "cachedResultName": "v_surveys"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -4880,
+        4448
+      ],
+      "id": "5ca33544-4592-4fdc-a883-8e2cbcf348ca",
+      "name": "Supabase Vector Store18",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – Table of Contents"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -9120,
+        4592
+      ],
+      "id": "6a55bd81-c8ee-4b57-b617-15b930bcbfe7",
+      "name": "Convert_HTML_PDF – Table_of_Contents",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "={{ $('Parse și Validare Date').item.json.nume_nava }} – {{ $('Parse și Validare Date').item.json.numar_proiect }} – 9. Storage Afforded Before Loading"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        3984,
+        5792
+      ],
+      "id": "a73d1937-c752-46ae-9788-5c0d1e3769c7",
+      "name": "Convert_HTML_PDF – 9_Storage_Before_Loading",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        2080
+      ],
+      "id": "e86d77ca-a094-42d1-9d9d-e908ace7f186",
+      "name": "Embeddings HuggingFace Inference",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -9408,
+        5024
+      ],
+      "id": "8913df1a-f687-4fb2-b547-5b23249bc984",
+      "name": "Embeddings HuggingFace Supabase Vector Store",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -2736,
+        5024
+      ],
+      "id": "3106dd66-9c3a-46bc-838a-a10ddfb73e86",
+      "name": "Embeddings HuggingFace Supabase Vector Store4",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        5392,
+        6224
+      ],
+      "id": "0ab6cd8f-3375-4779-a2a8-feec237bd621",
+      "name": "Embeddings HuggingFace Supabase Vector Store6",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -2736,
+        5840
+      ],
+      "id": "260849c5-8b81-4d30-915a-a89630cb5364",
+      "name": "Embeddings HuggingFace Supabase Vector Store8",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        5392,
+        5408
+      ],
+      "id": "71135f1b-1376-40d9-9f09-d67245c6c3a3",
+      "name": "Embeddings HuggingFace Supabase Vector Store9",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        6336
+      ],
+      "id": "34ae5fbf-af56-4446-9108-e66c4c5534bb",
+      "name": "Embeddings HuggingFace Supabase Vector Store10",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        5728
+      ],
+      "id": "efe4dbc6-c6b9-405c-bf4e-d7c17da37cbe",
+      "name": "Embeddings HuggingFace Supabase Vector Store11",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        5120
+      ],
+      "id": "1f570c26-58e2-45fc-9a47-0afebdfdaeab",
+      "name": "Embeddings HuggingFace Supabase Vector Store12",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        4512
+      ],
+      "id": "76d254e9-eb51-48b3-b9bd-d19bef24f400",
+      "name": "Embeddings HuggingFace Supabase Vector Store13",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        3904
+      ],
+      "id": "7b4a9d56-e055-4773-90a9-b7fc76f22905",
+      "name": "Embeddings HuggingFace Supabase Vector Store14",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        3296
+      ],
+      "id": "72828bd9-07e9-4e34-8159-27ff8c50fc1d",
+      "name": "Embeddings HuggingFace Supabase Vector Store15",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        2688
+      ],
+      "id": "38a73553-30f1-4921-912a-817b7f725783",
+      "name": "Embeddings HuggingFace Supabase Vector Store16",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        6224
+      ],
+      "id": "17729017-568a-41a2-ad78-8f0eee5c75c9",
+      "name": "Embeddings HuggingFace Supabase Vector Store3",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -4800,
+        4656
+      ],
+      "id": "28067a38-f8e1-465d-bd3e-a65bfce07094",
+      "name": "Embeddings HuggingFace Supabase Vector Store18",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -3616,
+        4752
+      ],
+      "id": "07ef7646-fb91-4c76-a775-bfa923649a46",
+      "name": "Anthropic Chat Model5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1552,
+        5328
+      ],
+      "id": "60c8010c-7495-4997-916c-974d3fcdfdee",
+      "name": "Anthropic Chat Model6",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -1296,
+        5328
+      ],
+      "id": "9b467afb-07ea-46da-b3dd-a0fe232c5186",
+      "name": "Supabase Vector Store7",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        5536
+      ],
+      "id": "49b2dc2d-6343-49e0-aabb-9656635037d7",
+      "name": "Embeddings HuggingFace Inference2",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -5136,
+        4448
+      ],
+      "id": "db8158c1-de1e-4431-b233-c8b05d76fac3",
+      "name": "Anthropic Chat Model7",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Um9fHElrOXb1Po99",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "executive_summary"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -10272,
+        4640
+      ],
+      "id": "337179e8-b508-4e3c-9ec0-af37da817e36",
+      "name": "n8n_executive_summaries",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -10112,
+        4640
+      ],
+      "id": "39b1b444-3381-4cea-b2bf-09033cc8adf7",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -10032,
+        4848
+      ],
+      "id": "8ae0d0cc-360c-499f-8665-ff2cccf30017",
+      "name": "Embeddings HuggingFace Supabase Vector Store1",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -8448,
+        4416
+      ],
+      "id": "92ceb4e0-234e-4d0c-ba45-87834e425e3a",
+      "name": "If18"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -8224,
+        4320
+      ],
+      "id": "9a4d398f-ebff-4d92-8336-1dbec0095476",
+      "name": "Form3 - Chat cu AI Manager1",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_scope_of_survey"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -7872,
+        4544
+      ],
+      "id": "6509d0b1-7673-4012-9037-88f368733f7d",
+      "name": "n8n_scope_of_survey1",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -7744,
+        4544
+      ],
+      "id": "587ebabd-4001-437e-be29-6a61550808db",
+      "name": "Supabase Vector Store5",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        -7664,
+        4752
+      ],
+      "id": "297c7b11-e1ba-447e-9fa1-9c2fb4358615",
+      "name": "Embeddings HuggingFace Supabase Vector Store5",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bdfc68d2-1425-4c18-9e01-fb9f3af0984c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -6704,
+        4320
+      ],
+      "id": "34779389-b660-4887-bd72-62f8234997da",
+      "name": "If19"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -5936,
+        5104
+      ],
+      "id": "ad0c117c-9186-4b12-b68e-eef3452aac3f",
+      "name": "For53 - GetDBCompanies",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -4816,
+        5104
+      ],
+      "id": "908956eb-d983-4862-84b6-62fb679d193a",
+      "name": "For53 - GetDBCompanies1",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -3296,
+        5104
+      ],
+      "id": "b4d26f0c-8d13-4568-b905-ce4d60866591",
+      "name": "For53 - GetDBCompanies2",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "containers"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2448,
+        5104
+      ],
+      "id": "75e2362c-1311-4f3c-888b-0343830c7832",
+      "name": "Get a row23",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -1776,
+        5104
+      ],
+      "id": "5afbaac9-0d1c-4de9-961e-88ba8b0c0143",
+      "name": "For53 - GetDBCompanies3",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        5104
+      ],
+      "id": "2a8f8af6-96ff-4dfe-bf29-a4a19f4d7ee8",
+      "name": "Get a row24",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        192,
+        3984
+      ],
+      "id": "b2ff2594-4207-49df-a57e-49ee5e14a6d1",
+      "name": "For53 - GetDBCompanies4",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -12208,
+        4352
+      ],
+      "id": "12cf8a13-0ade-446a-8316-af8bb295516d",
+      "name": "ListSurvey",
+      "webhookId": "4bb54228-6fc3-4658-ad8b-1c7b87a0b8fb"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -12208,
+        4544
+      ],
+      "id": "2de2d279-d3ac-47e5-9a37-120b22d77850",
+      "name": "EditSurvey",
+      "webhookId": "4bb54228-6fc3-4658-ad8b-1c7b87a0b8fb"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate the EXECUTIVE SUMMARY section.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT add opinions, assumptions, or interpretations.\n- Do NOT change sentence structure.\n- Do NOT paraphrase.\n- If any field is missing or null, output \"N/A\".\n- Output plain text only.\n- No markdown. No explanations.\n\nOUTPUT FORMAT (exact):\n\nEXECUTIVE SUMMARY\n\nThe {OPERATION_TYPE} operation related to the {CARGO_DESCRIPTION} consist of {OPERATION_SCOPE_LIST} from {LOADING_FROM} to the {LOADING_TO} has been {OPERATION_RESULT} {INCIDENT_STATUS} to {AFFECTED_OBJECTS}.\n\nRULES:\n- OPERATION_SCOPE_LIST must be comma-separated, with \"and\" before the last item.\n- Preserve British spelling and maritime terminology.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -10320,
+        4416
+      ],
+      "id": "ebfacf9d-04b9-4acf-9e1f-4c25fef4964f",
+      "name": "1.Executive Summary"
+    },
+    {
+      "parameters": {
+        "tableId": "executive_summary",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -9120,
+        4240
+      ],
+      "id": "15659933-8a8c-4e90-88d2-50d811ce5fca",
+      "name": "ExecutiveSummary",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a maritime survey report generator.\n\nYour task is to generate section 2 – SCOPE OF SURVEY.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT add, remove, or rephrase any item.\n- Preserve exact wording and bullet formatting.\n- If any item is missing, output \"N/A\".\n- Output plain text only.\n- No markdown. No explanations.\n\nOUTPUT FORMAT (exact):\n\n2. SCOPE OF SURVEY\n\nThe scope of the survey was expressly limited to:\n- {SCOPE_ITEM_1}\n- {SCOPE_ITEM_2}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -7952,
+        4320
+      ],
+      "id": "1b372ad8-effa-48a2-ab84-f2026745cd1b",
+      "name": "2.Scope of Survey1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "reports",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "survey_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get_surveyID').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "content_md",
+              "fieldValue": "={{ $('ExecutiveSummary').item.json.content_md + '\\n\\n' + $('2.Scope of Survey1').item.json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -7376,
+        4320
+      ],
+      "id": "12e8c531-35ad-4c3c-815b-9ed39c755f0c",
+      "name": "ScopeOfSurvey",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 4 – CARGO DETAILS, including subsections 4.1, 4.2, and 4.3.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT add, infer, summarize, or rephrase.\n- Preserve exact wording and section numbering.\n- Preserve layout and line order.\n- Output plain text only.\n- No markdown. No explanations.\n- If any field is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\nCARGO DETAILS\n\n4.1. Description of goods\n\nThe cargo subject to survey as tabulated below:\n\nLOADING SURVEY Ref. No. {REPORT_REF}\n\nBL no.\n{BL_NUMBERS_LINE}\n\nDescription of goods\n{DESCRIPTIONS_LINE}\n\nPacking Packages\n{PACKING_PACKAGES_LINE}\n\nGross[mt]\n{GROSS_LINE}\n\n4.2. Marks and numbers\n\n{MARKS_STATEMENT}\n\n4.3. Packaging:\n\nThe subject cargo lots were presented for loading with the following packaging pattern:\n{PACKAGING_BLOCKS}\n\nRULES:\n- BL_NUMBERS_LINE, DESCRIPTIONS_LINE, PACKING_PACKAGES_LINE and GROSS_LINE must follow the order of cargo_items.\n- Values must be space-separated, not comma-separated.\n- PACKING_PACKAGES_LINE format:\n  {PACKING_TYPE} {PACKAGES}\n- PACKAGING_BLOCK format (repeat per item):\n\nBL no. {BL_NO} – “{CARGO_NAME}”\n{TEXT}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -4544,
+        5104
+      ],
+      "id": "9ce88269-b878-4a7e-a959-71d8aed9a143",
+      "name": "4.Cargo Details"
+    },
+    {
+      "parameters": {
+        "tableId": "bill_of_lading",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "survey_id",
+              "fieldValue": "={{ $('Get_surveyID').item.json.id }}"
+            },
+            {
+              "fieldId": "bl_number",
+              "fieldValue": "={{ $('Pag2').item.json['BL no. / dated'].split('/')[0].trim() }}"
+            },
+            {
+              "fieldId": "vessel_name",
+              "fieldValue": "={{ $('FORM: Survey Data Input').item.json.VESSEL_NAME }}"
+            },
+            {
+              "fieldId": "port_loading",
+              "fieldValue": "={{ $('Pag2').item.json['port of loading'] }}"
+            },
+            {
+              "fieldId": "port_discharge",
+              "fieldValue": "={{ $('Pag2').item.json['port of discharge'] }}"
+            },
+            {
+              "fieldId": "shipper",
+              "fieldValue": "={{ $('Pag2').item.json['shipper'] }}"
+            },
+            {
+              "fieldId": "consignee",
+              "fieldValue": "={{ $('Pag2').item.json['consignee'] }}"
+            },
+            {
+              "fieldId": "notify_party",
+              "fieldValue": "={{ $('Pag2').item.json['notify'] }}"
+            },
+            {
+              "fieldId": "report_ref",
+              "fieldValue": "={{ $('FORM: Survey Data Input').item.json.REPORT_REF }}"
+            },
+            {
+              "fieldId": "customer_ref",
+              "fieldValue": "={{ $('FORM: Survey Data Input').item.json.CUSTOMER_REF }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "in_progress"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3968,
+        5104
+      ],
+      "id": "b4420b3c-2bd7-40a4-8a9d-5159f845e4cc",
+      "name": "Create a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Port of Loading"
+            },
+            {
+              "fieldLabel": "Country"
+            },
+            {
+              "fieldLabel": "Port of Discharging "
+            },
+            {
+              "fieldLabel": "Country Discharging"
+            },
+            {
+              "fieldLabel": "BL Number"
+            },
+            {
+              "fieldLabel": "BL Date"
+            },
+            {
+              "fieldLabel": "Cargo Description"
+            },
+            {
+              "fieldLabel": "Packages Count"
+            },
+            {
+              "fieldLabel": "Total Weight KG"
+            },
+            {
+              "fieldLabel": "Shipper Name"
+            },
+            {
+              "fieldLabel": "Consignee Name"
+            },
+            {
+              "fieldLabel": "Notify Party"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -10736,
+        4160
+      ],
+      "id": "6d605939-1a6d-4fa6-b3b3-0873f9431d7d",
+      "name": "Pag2",
+      "webhookId": "45b7581b-a652-4e84-848a-efd15207e172"
+    },
+    {
+      "parameters": {
+        "formTitle": "Bine ati venit la LeeWu Maritime Surveyor si Logistica Cargo",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Raport nou",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Raport nou"
+                  },
+                  {
+                    "option": "Editeaza Raport"
+                  },
+                  {
+                    "option": "Lista Rapoarte (Arhiva)"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e6d835ee-8366-4503-816a-1e6555c7ad4e",
+      "name": "FORM: Main Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -12656,
+        4352
+      ],
+      "webhookId": "c02dd14d-35ba-4c26-ba17-e94241582023"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "Raport nou",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "Lista Rapoarte (Arhiva)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "Editeaza Raport",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f37a6d6b-6741-4d16-8007-4003252a61da",
+      "name": "SWITCH: Route Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -12432,
+        4336
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ new Date().toISOString() }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+          "mode": "list",
+          "cachedResultName": "LeeWu Maritime Survey",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV"
+        },
+        "options": {}
+      },
+      "id": "67701ef7-939a-4be7-a666-b304f582cc3f",
+      "name": "DRIVE: Create Survey Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -12208,
+        4160
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV",
+        "title": "cop6"
+      },
+      "id": "648ec300-9ce2-45de-96ed-31fb7a968013",
+      "name": "DOCS: Create Template Copy",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -11984,
+        4160
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "VESSEL_NAME"
+            },
+            {
+              "fieldLabel": "PORT"
+            },
+            {
+              "fieldLabel": "COUNTRY"
+            },
+            {
+              "fieldLabel": "DATE_FROM"
+            },
+            {
+              "fieldLabel": "DATE_TO"
+            },
+            {
+              "fieldLabel": "YEAR"
+            },
+            {
+              "fieldLabel": "SURVEY_TYPE"
+            },
+            {
+              "fieldLabel": "REPORT_REF"
+            },
+            {
+              "fieldLabel": "REQUESTED_BY"
+            },
+            {
+              "fieldLabel": "CUSTOMER_REF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "be15d92d-b13f-43c8-9471-81d23fc8363a",
+      "name": "FORM: Survey Data Input",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -11776,
+        4240
+      ],
+      "webhookId": "9d6aae4c-b696-4767-b917-2ac3552e4d5f"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Get_surveyID').item.json.client_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -5712,
+        5104
+      ],
+      "id": "41ae5bfb-a675-43dd-87c4-21ef15277d98",
+      "name": "GetCompanyInvolved",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "name",
+              "keyValue": "={{ $('FORM: Survey Data Input').item.json.VESSEL_NAME }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -5264,
+        5104
+      ],
+      "id": "874640f3-889e-4207-a41e-103447ab3541",
+      "name": "UpdateCompanyInvolved",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 5 – RIVER BARGE PARTICULARS, including subsection 5.1.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT add assumptions, interpretations, or conclusions.\n- Do NOT rephrase sentences.\n- Preserve exact section numbering and wording.\n- Output plain text only.\n- No markdown. No explanations.\n- If any field is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n5. RIVER BARGE PARTICULARS\n\nParticulars of the on-carrying river barge were {PARTICULARS_AVAILABILITY}; however, the following information was obtained:\nMS ‘{VESSEL_NAME}’ is a {VESSEL_TYPE} sailing under the flag of {FLAG}. Its LOA is {LOA_M}[m] and breadth {BREADTH_M}[m].\n\n5.1. Barges suitability condition\n\nCondition suitability inspection to on-carrying self-propelled river barge ‘{VESSEL_NAME}’ was limited to {INSPECTION_SCOPE} which was {INSPECTION_RESULT}.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -3024,
+        4592
+      ],
+      "id": "1b1979d6-7ae0-4cee-99d6-e55389e676ba",
+      "name": "5. Pre-carrying Particulars"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate section 7 – PRE-LOAD CONDITION SURVEY, including subsection 7.1.\n\nSTRICT RULES:\n- Use ONLY the input JSON.\n- Do NOT rephrase, interpret, or summarize.\n- Preserve exact wording, numbering, and punctuation.\n- Preserve section numbering.\n- Output plain text only.\n- No markdown. No explanations.\n- If any value is missing, output \"N/A\".\n\nOUTPUT FORMAT (exact):\n\n7. PRE-LOAD CONDITION SURVEY\n\n7.1. Cargo condition survey findings\n\n{INSPECTION_STATEMENT}\n\nExceptions:\nMS ‘{VESSEL_NAME}’\n{PAGE_REFERENCE}\n\nBL no. {BL_NO_1} - ‘{CARGO_NAME_1}’\n1. {ITEM_1}\n2. {ITEM_2}\n3. {ITEM_3}\n4. {ITEM_4}\n5. {ITEM_5}\n6. {ITEM_6}\n7. {ITEM_7}\n8. {ITEM_8}\n\nBLs nos. {BL_NO_2} – ‘{CARGO_NAME_2}’\n1. {ITEM_1}\n2. {ITEM_2}\n3. {ITEM_3}\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1504,
+        5104
+      ],
+      "id": "c20b3403-1ab6-47a2-9c08-170f3742ca90",
+      "name": "6. Storage Afforded"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        3984
+      ],
+      "id": "ac73692c-adeb-4272-833b-83257a5d8a78",
+      "name": "7. Pre-discharge conditions"
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "=🚢 Vessel Report\n\nVessel Name: {{$json[\"VESSEL_NAME\"]}}\nPort: {{$json[\"PORT\"]}}\nCountry: {{$json[\"COUNTRY\"]}}\nDate From: {{$json[\"DATE_FROM\"]}}\nDate To: {{$json[\"DATE_TO\"]}}\nYear: {{$json[\"YEAR\"]}}\nSurvey Type: {{$json[\"SURVEY_TYPE\"]}}\nReport Ref: {{$json[\"REPORT_REF\"]}}\nRequested By: {{$json[\"REQUESTED_BY\"]}}\nCustomer Ref: {{$json[\"CUSTOMER_REF\"]}}\nSubmitted At: {{$json[\"submittedAt\"]}}\nForm Mode: {{$json[\"formMode\"]}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -11312,
+        4160
+      ],
+      "id": "327556ff-86f8-4b8b-822e-175efe2254ae",
+      "name": "First page updated",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "clients2"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -10544,
+        4160
+      ],
+      "id": "00d0ee68-193c-4db4-a98e-3e3d1013ddfd",
+      "name": "Get_surveyID1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "=New Survey Report Created:\n\nVessel Name: {{$json.vessel_name}}\nPort: {{$json.port}}\nCountry: {{$json.country}}\nSurvey Type: {{$json.survey_type}}\nRequested By: {{$json.requested_by}}\nCustomer Ref: {{$json.customer_reference}}\nReport Ref: {{$json.report_ref}}\nDate From: {{$json.date_from}}\nDate To: {{$json.date_to}}\nYear: {{$json.year}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -10368,
+        4160
+      ],
+      "id": "07b9283e-c0cc-40c6-a677-db738651c3ef",
+      "name": "First page updated1",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "height": 688,
+        "width": 2836
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        4576
+      ],
+      "typeVersion": 1,
+      "id": "fb6eadc2-ac49-4cb2-a825-b7673a4709cd",
+      "name": "Sticky Note7",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "height": 688,
+        "width": 3524
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2544,
+        4784
+      ],
+      "typeVersion": 1,
+      "id": "7e03bc2c-58e3-44da-8b46-21a49e2d1f7c",
+      "name": "Sticky Note8",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "numberInputs": 9
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1616,
+        3872
+      ],
+      "id": "af424046-d13f-462f-9e12-df5c11916d46",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Surveyor's Time Schedule"
+            },
+            {
+              "fieldLabel": "Stevedore's working hours / meal hours"
+            },
+            {
+              "fieldLabel": "Working"
+            },
+            {
+              "fieldLabel": "Meal breaks "
+            },
+            {
+              "fieldLabel": "Stevedores' shift changes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1840,
+        3984
+      ],
+      "id": "358e015e-d013-46af-9ff2-73ce5c5b8c49",
+      "name": "TimeActivityLog",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "user_settings",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "role",
+              "keyValue": "surveyor"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        3984
+      ],
+      "id": "20ca129a-3b3c-4196-af3d-bb0bd1dbdf5a",
+      "name": "GetSurveyorSchedule",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "==⏱️ 8. Time and Activity Log ✅\\n\\nProgram lucru: {{ $('TimeActivityLog').item.json[\"Working\"] }}\\nPauze masă: {{ $('TimeActivityLog').item.json[\"Meal breaks \"] }}\\nSchimburi stevedori: {{ $('TimeActivityLog').item.json[\"Stevedores' shift changes\"] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2512,
+        5488
+      ],
+      "id": "c5a140a9-11f0-4b9a-839d-29dcb5869d01",
+      "name": "CheckSurveyorSchedule",
+      "webhookId": "858df93d-dbf0-4467-b15d-ef0461800a1c",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_enclosures"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        2864,
+        5712
+      ],
+      "id": "370e6acb-90c0-4a29-a882-eab8e09231e8",
+      "name": "n8n_enclosures1",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2992,
+        5712
+      ],
+      "id": "4087b627-2c7e-41b8-9029-bbbcc985a20f",
+      "name": "Supabase Vector Store19",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        5920
+      ],
+      "id": "e7c284cd-6d0c-4250-b68c-31b3249e2b84",
+      "name": "Embeddings HuggingFace Supabase Vector Store17",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2800,
+        5488
+      ],
+      "id": "871b7376-ea8b-44ab-9d71-224ef194bfb4",
+      "name": "9. PhotograpIndex"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1_G2whIcL2ojOr4E2p8eYwhuwThVDX7y7",
+          "mode": "list",
+          "cachedResultName": "__about__.py",
+          "cachedResultUrl": "https://drive.google.com/file/d/1_G2whIcL2ojOr4E2p8eYwhuwThVDX7y7/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3568,
+        5184
+      ],
+      "id": "7fed4001-858d-42da-87cc-2fd66e5aa433",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "packing_item_photos"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3984,
+        5184
+      ],
+      "id": "df94fe43-e0de-45f6-b8c2-874beabd23ca",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "8143220589",
+        "action": "record_video"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4640,
+        5184
+      ],
+      "id": "bdc4454c-e9c7-4f31-9d9f-2f792d91d562",
+      "name": "Send a chat action",
+      "webhookId": "cf7644ae-57f1-485f-920d-0049b91e4718",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "packing_item_photos"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        5680,
+        5184
+      ],
+      "id": "1c21b0c4-884d-422a-9dd9-bf172dd89936",
+      "name": "Get a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1",
+        "text": "1",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6128,
+        5184
+      ],
+      "id": "0ecf9bca-9086-4c5e-80aa-6b13412e4668",
+      "name": "Send a text message",
+      "webhookId": "0d781666-e783-454c-9a86-a8436f6bbe6f",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -7152,
+        4320
+      ],
+      "id": "76b2c37f-3d2a-420f-a19c-61bba5dfa7d1",
+      "name": "Update a document3",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -5488,
+        5104
+      ],
+      "id": "52a02eaf-3303-4a99-bf3f-973b2e334913",
+      "name": "Update a document4",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -3744,
+        5104
+      ],
+      "id": "4c1ff93d-79e4-4f12-a258-f117ce261615",
+      "name": "Update a document5",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2224,
+        5104
+      ],
+      "id": "02520bbe-7af6-4224-ac85-aa7215a3135d",
+      "name": "Update a document6",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        5104
+      ],
+      "id": "f022c984-2368-4cad-ba1b-ef19297f1508",
+      "name": "Update a document7",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        1856
+      ],
+      "id": "a6e00790-ff67-48ef-9bc0-61d435c2741d",
+      "name": "Update a document8",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        2464
+      ],
+      "id": "60d522ca-6620-4fcc-8558-0b6fc4161cc0",
+      "name": "Update a document9",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        3072
+      ],
+      "id": "b0c63098-1c77-4ebc-933d-6c16cff45c08",
+      "name": "Update a document10",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar-deep-research",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        1872
+      ],
+      "id": "c2a950f0-53c4-4815-8d39-bf1c78cb54d0",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        2480
+      ],
+      "id": "be106fde-eed0-4bb5-8586-d6e7a851979a",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        3088
+      ],
+      "id": "9a547bbe-d19c-479a-a427-610e80e53e17",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        3680
+      ],
+      "id": "eb080e6f-463b-4a00-820c-260dbe28153b",
+      "name": "Update a document11",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        3696
+      ],
+      "id": "249dc6b8-8068-4244-a4eb-0d64d39ac069",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        4304
+      ],
+      "id": "c07b77fd-48b0-4eee-95d8-d6d6f39a823d",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        4288
+      ],
+      "id": "98a3c9cf-1f52-41a8-8a52-dfd04db761eb",
+      "name": "Update a document12",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        4896
+      ],
+      "id": "16833dfd-f694-4a21-a21b-cb80cb0f5b1b",
+      "name": "Update a document13",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        5504
+      ],
+      "id": "fcff6105-d680-4c28-921e-486e2cce84e9",
+      "name": "Update a document14",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        6112
+      ],
+      "id": "ff7428ca-62c5-4b50-a791-548c254942ff",
+      "name": "Update a document15",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        6128
+      ],
+      "id": "aae9f3dc-8d77-4af8-86e7-da2d49b5c39f",
+      "name": "OpenRouter Chat Model5",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        768,
+        4912
+      ],
+      "id": "0173427e-e8d0-4bdf-a384-55cbe578c5f1",
+      "name": "OpenRouter Chat Model6",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('DOCS: Create Template Copy').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{SURVEYOR_NAME}}",
+              "replaceText": "={{ $('GetSurveyorSchedule').item.json.full_name ?? $('GetSurveyorSchedule').item.json.name ?? 'N/A' }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SURVEY_TYPE_PLAIN}}",
+              "replaceText": "={{ $('FORM: Survey Data Input').item.json.SURVEY_TYPE }}",
+              "matchCase": true
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        3984
+      ],
+      "id": "57e56f78-47e3-425c-ab35-11fa9327a0c9",
+      "name": "Update a document16",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4208,
+        5184
+      ],
+      "id": "0578798a-ce46-4a19-a11f-86fa476b2ee6",
+      "name": "Update a document17",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        5904,
+        5184
+      ],
+      "id": "119584d1-c3a2-4411-9701-abe0bc54d854",
+      "name": "Update a document18",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        5056,
+        5200
+      ],
+      "id": "d5838062-857d-486b-90ba-f6c49c2902c0",
+      "name": "OpenRouter Chat Model7",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-haiku-4.5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        5712
+      ],
+      "id": "955be703-bb49-4a44-b0ea-c98b103f0d5d",
+      "name": "OpenRouter Chat Model8",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -3072,
+        4816
+      ],
+      "id": "3f0b8668-33c8-45f7-a5f8-23821627efce",
+      "name": "OpenRouter Chat Model9",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "perplexity/sonar",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -8000,
+        4544
+      ],
+      "id": "133b8d72-a244-4698-9ac3-411e8207548a",
+      "name": "OpenRouter Chat Model10",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -10448,
+        4640
+      ],
+      "id": "93dcd68f-ef35-4f02-81ed-046fca0d469e",
+      "name": "OpenRouter Chat Model11",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "enclosures"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        4560,
+        6016
+      ],
+      "id": "35f007b5-bb23-4e3b-a497-b8e565379e06",
+      "name": "n8n_executive_summaries1",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search past survey reports for similar vessels, cargo types, and survey patterns to assist with section generation.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        4688,
+        6016
+      ],
+      "id": "16aa3030-cdc4-4a7e-a37e-4f2750f5a6dc",
+      "name": "Supabase Vector Store20",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsHuggingFaceInference",
+      "typeVersion": 1,
+      "position": [
+        4768,
+        6224
+      ],
+      "id": "8315e476-06bc-4e54-853e-f506db7999ba",
+      "name": "Embeddings HuggingFace Supabase Vector Store2",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "s529Ae534iDXhTDn",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4432,
+        6016
+      ],
+      "id": "976f51f0-c1e2-4899-8492-2ff863bae516",
+      "name": "OpenRouter Chat Model12",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a maritime survey report generator.\n\nYour task is to generate the EXECUTIVE SUMMARY section.\n\nSTRICT RULES:\n- Use ONLY the data provided in the input JSON.\n- Do NOT add opinions, assumptions, or interpretations.\n- Do NOT change sentence structure.\n- Do NOT paraphrase.\n- If any field is missing or null, output \"N/A\".\n- Output plain text only.\n- No markdown. No explanations.\n\nOUTPUT FORMAT (exact):\n\nEXECUTIVE SUMMARY\n\nThe {OPERATION_TYPE} operation related to the {CARGO_DESCRIPTION} consist of {OPERATION_SCOPE_LIST} from {LOADING_FROM} to the {LOADING_TO} has been {OPERATION_RESULT} {INCIDENT_STATUS} to {AFFECTED_OBJECTS}.\n\nRULES:\n- OPERATION_SCOPE_LIST must be comma-separated, with \"and\" before the last item.\n- Preserve British spelling and maritime terminology.\n\nINPUT JSON:\n{{ $json }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4496,
+        5792
+      ],
+      "id": "57e83f4b-d81a-44d5-bb05-bb4f1dddd123",
+      "name": "10. Enclosures (finalizare)"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "DATE_1",
+              "placeholder": "ex: 15 April 2025"
+            },
+            {
+              "fieldLabel": "WEATHER_DATE1",
+              "placeholder": "ex: Overcast, wind NE 3 Bft, +12C"
+            },
+            {
+              "fieldLabel": "DATE_2",
+              "placeholder": "ex: 16 April 2025"
+            },
+            {
+              "fieldLabel": "WEATHER_DATE2",
+              "placeholder": "ex: Clear, wind NW 2 Bft, +14C"
+            },
+            {
+              "fieldLabel": "SHIP_HEADING",
+              "placeholder": "ex: 270 degrees (W)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -256,
+        6512
+      ],
+      "id": "386bbf01-aace-4ebe-9258-b30cfa95bc36",
+      "name": "7.9FormWheater",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"DATE_1\": \"={{ $('7.9FormWheater').item.json['DATE_1'] }}\",\n  \"WEATHER_DATE1\": \"={{ $('7.9FormWheater').item.json['WEATHER_DATE1'] }}\",\n  \"DATE_2\": \"={{ $('7.9FormWheater').item.json['DATE_2'] }}\",\n  \"WEATHER_DATE2\": \"={{ $('7.9FormWheater').item.json['WEATHER_DATE2'] }}\",\n  \"SHIP_HEADING\": \"={{ $('7.9FormWheater').item.json['SHIP_HEADING'] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        6512
+      ],
+      "id": "0104834c-c594-4427-afe3-2a8d28cf14f4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('DOCS: Create Template Copy').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_1}}",
+              "replaceText": "={{ $('Edit Fields').item.json.DATE_1 }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{WEATHER_DATE1}}",
+              "replaceText": "={{ $('Edit Fields').item.json.WEATHER_DATE1 }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_2}}",
+              "replaceText": "={{ $('Edit Fields').item.json.DATE_2 }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{WEATHER_DATE2}}",
+              "replaceText": "={{ $('Edit Fields').item.json.WEATHER_DATE2 }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SHIP_HEADING}}",
+              "replaceText": "={{ $('Edit Fields').item.json.SHIP_HEADING }}",
+              "matchCase": true
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        480,
+        6512
+      ],
+      "id": "c614e276-7544-46dc-b779-56138d728725",
+      "name": "Update a document20",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry2",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "report_ref",
+              "keyValue": "={{ $('FORM: Survey Data Input').item.json.REPORT_REF }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        192,
+        6512
+      ],
+      "id": "934b32ba-2861-49ec-885d-2f86d25fe87b",
+      "name": "Get_surveyID2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "=New Survey Report Created:\n\nVessel Name: {{$json.vessel_name}}\nPort: {{$json.port}}\nCountry: {{$json.country}}\nSurvey Type: {{$json.survey_type}}\nRequested By: {{$json.requested_by}}\nCustomer Ref: {{$json.customer_reference}}\nReport Ref: {{$json.report_ref}}\nDate From: {{$json.date_from}}\nDate To: {{$json.date_to}}\nYear: {{$json.year}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        6992
+      ],
+      "id": "aaca066a-ce81-40f6-b755-d3e83a71078b",
+      "name": "First page updated2",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "text"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        5680,
+        5792
+      ],
+      "id": "1c5fdf4a-4816-4692-bf74-5d351d97fe19",
+      "name": "Update a document22",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"WORKING_HOURS\": \"={{ $('8.Time and Activity').item.json['WORKING_HOURS'] }}\",\n  \"MEAL_BREAKS\": \"={{ $('8.Time and Activity').item.json['MEAL_BREAKS'] }}\",\n  \"SHIFT_CHANGES\": \"={{ $('8.Time and Activity').item.json['SHIFT_CHANGES'] }}\",\n  \"DATE_A1\": \"={{ $('8.Time and Activity').item.json['DATE_A1'] }}\",\n  \"FROM_A1\": \"={{ $('8.Time and Activity').item.json['FROM_A1'] }}\",\n  \"TO_A1\": \"={{ $('8.Time and Activity').item.json['TO_A1'] }}\",\n  \"SFROM_A1\": \"={{ $('8.Time and Activity').item.json['SFROM_A1'] }}\",\n  \"STO_A1\": \"={{ $('8.Time and Activity').item.json['STO_A1'] }}\",\n  \"ACT_A1\": \"={{ $('8.Time and Activity').item.json['ACT_A1'] }}\",\n  \"DATE_A2\": \"={{ $('8.Time and Activity').item.json['DATE_A2'] }}\",\n  \"FROM_A2\": \"={{ $('8.Time and Activity').item.json['FROM_A2'] }}\",\n  \"TO_A2\": \"={{ $('8.Time and Activity').item.json['TO_A2'] }}\",\n  \"SFROM_A2\": \"={{ $('8.Time and Activity').item.json['SFROM_A2'] }}\",\n  \"STO_A2\": \"={{ $('8.Time and Activity').item.json['STO_A2'] }}\",\n  \"ACT_A2\": \"={{ $('8.Time and Activity').item.json['ACT_A2'] }}\",\n  \"DATE_A3\": \"={{ $('8.Time and Activity').item.json['DATE_A3'] }}\",\n  \"FROM_A3\": \"={{ $('8.Time and Activity').item.json['FROM_A3'] }}\",\n  \"TO_A3\": \"={{ $('8.Time and Activity').item.json['TO_A3'] }}\",\n  \"SFROM_A3\": \"={{ $('8.Time and Activity').item.json['SFROM_A3'] }}\",\n  \"STO_A3\": \"={{ $('8.Time and Activity').item.json['STO_A3'] }}\",\n  \"ACT_A3\": \"={{ $('8.Time and Activity').item.json['ACT_A3'] }}\",\n  \"DATE_A4\": \"={{ $('8.Time and Activity').item.json['DATE_A4'] }}\",\n  \"FROM_A4\": \"={{ $('8.Time and Activity').item.json['FROM_A4'] }}\",\n  \"TO_A4\": \"={{ $('8.Time and Activity').item.json['TO_A4'] }}\",\n  \"SFROM_A4\": \"={{ $('8.Time and Activity').item.json['SFROM_A4'] }}\",\n  \"STO_A4\": \"={{ $('8.Time and Activity').item.json['STO_A4'] }}\",\n  \"ACT_A4\": \"={{ $('8.Time and Activity').item.json['ACT_A4'] }}\",\n  \"DATE_A5\": \"={{ $('8.Time and Activity').item.json['DATE_A5'] }}\",\n  \"FROM_A5\": \"={{ $('8.Time and Activity').item.json['FROM_A5'] }}\",\n  \"TO_A5\": \"={{ $('8.Time and Activity').item.json['TO_A5'] }}\",\n  \"SFROM_A5\": \"={{ $('8.Time and Activity').item.json['SFROM_A5'] }}\",\n  \"STO_A5\": \"={{ $('8.Time and Activity').item.json['STO_A5'] }}\",\n  \"ACT_A5\": \"={{ $('8.Time and Activity').item.json['ACT_A5'] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1616,
+        6896
+      ],
+      "id": "b17c6679-aac4-4218-9ea4-e9daf9c4f75b",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('DOCS: Create Template Copy').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{WORKING_HOURS}}",
+              "replaceText": "={ $('Edit Fields2').item.json.WORKING_HOURS }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{MEAL_BREAKS}}",
+              "replaceText": "={ $('Edit Fields2').item.json.MEAL_BREAKS }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SHIFT_CHANGES}}",
+              "replaceText": "={ $('Edit Fields2').item.json.SHIFT_CHANGES }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_A1}}",
+              "replaceText": "={ $('Edit Fields2').item.json.DATE_A1 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{FROM_A1}}",
+              "replaceText": "={ $('Edit Fields2').item.json.FROM_A1 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TO_A1}}",
+              "replaceText": "={ $('Edit Fields2').item.json.TO_A1 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SFROM_A1}}",
+              "replaceText": "={ $('Edit Fields2').item.json.SFROM_A1 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{STO_A1}}",
+              "replaceText": "={ $('Edit Fields2').item.json.STO_A1 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{ACT_A1}}",
+              "replaceText": "={ $('Edit Fields2').item.json.ACT_A1 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_A2}}",
+              "replaceText": "={ $('Edit Fields2').item.json.DATE_A2 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{FROM_A2}}",
+              "replaceText": "={ $('Edit Fields2').item.json.FROM_A2 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TO_A2}}",
+              "replaceText": "={ $('Edit Fields2').item.json.TO_A2 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SFROM_A2}}",
+              "replaceText": "={ $('Edit Fields2').item.json.SFROM_A2 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{STO_A2}}",
+              "replaceText": "={ $('Edit Fields2').item.json.STO_A2 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{ACT_A2}}",
+              "replaceText": "={ $('Edit Fields2').item.json.ACT_A2 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_A3}}",
+              "replaceText": "={ $('Edit Fields2').item.json.DATE_A3 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{FROM_A3}}",
+              "replaceText": "={ $('Edit Fields2').item.json.FROM_A3 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TO_A3}}",
+              "replaceText": "={ $('Edit Fields2').item.json.TO_A3 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SFROM_A3}}",
+              "replaceText": "={ $('Edit Fields2').item.json.SFROM_A3 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{STO_A3}}",
+              "replaceText": "={ $('Edit Fields2').item.json.STO_A3 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{ACT_A3}}",
+              "replaceText": "={ $('Edit Fields2').item.json.ACT_A3 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_A4}}",
+              "replaceText": "={ $('Edit Fields2').item.json.DATE_A4 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{FROM_A4}}",
+              "replaceText": "={ $('Edit Fields2').item.json.FROM_A4 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TO_A4}}",
+              "replaceText": "={ $('Edit Fields2').item.json.TO_A4 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SFROM_A4}}",
+              "replaceText": "={ $('Edit Fields2').item.json.SFROM_A4 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{STO_A4}}",
+              "replaceText": "={ $('Edit Fields2').item.json.STO_A4 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{ACT_A4}}",
+              "replaceText": "={ $('Edit Fields2').item.json.ACT_A4 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_A5}}",
+              "replaceText": "={ $('Edit Fields2').item.json.DATE_A5 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{FROM_A5}}",
+              "replaceText": "={ $('Edit Fields2').item.json.FROM_A5 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TO_A5}}",
+              "replaceText": "={ $('Edit Fields2').item.json.TO_A5 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SFROM_A5}}",
+              "replaceText": "={ $('Edit Fields2').item.json.SFROM_A5 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{STO_A5}}",
+              "replaceText": "={ $('Edit Fields2').item.json.STO_A5 }",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{ACT_A5}}",
+              "replaceText": "={ $('Edit Fields2').item.json.ACT_A5 }",
+              "matchCase": true
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        6896
+      ],
+      "id": "a0e21d1a-8441-47f7-93e2-16eafd2b280e",
+      "name": "Update a document23",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "ships_registry2",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "report_ref",
+              "keyValue": "={{ $('FORM: Survey Data Input').item.json.REPORT_REF }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        6896
+      ],
+      "id": "c1924d7d-2f78-4736-bd70-63ab1abfed1d",
+      "name": "Get_surveyID4",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "WORKING_HOURS"
+            },
+            {
+              "fieldLabel": "MEAL_BREAKS"
+            },
+            {
+              "fieldLabel": "SHIFT_CHANGES"
+            },
+            {
+              "fieldLabel": "DATE_A1"
+            },
+            {
+              "fieldLabel": "FROM_A1"
+            },
+            {
+              "fieldLabel": "TO_A1"
+            },
+            {
+              "fieldLabel": "SFROM_A1"
+            },
+            {
+              "fieldLabel": "STO_A1"
+            },
+            {
+              "fieldLabel": "ACT_A1"
+            },
+            {
+              "fieldLabel": "DATE_A2"
+            },
+            {
+              "fieldLabel": "FROM_A2"
+            },
+            {
+              "fieldLabel": "TO_A2"
+            },
+            {
+              "fieldLabel": "SFROM_A2"
+            },
+            {
+              "fieldLabel": "STO_A2"
+            },
+            {
+              "fieldLabel": "ACT_A2"
+            },
+            {
+              "fieldLabel": "DATE_A3"
+            },
+            {
+              "fieldLabel": "FROM_A3"
+            },
+            {
+              "fieldLabel": "TO_A3"
+            },
+            {
+              "fieldLabel": "SFROM_A3"
+            },
+            {
+              "fieldLabel": "STO_A3"
+            },
+            {
+              "fieldLabel": "ACT_A3"
+            },
+            {
+              "fieldLabel": "DATE_A4"
+            },
+            {
+              "fieldLabel": "FROM_A4"
+            },
+            {
+              "fieldLabel": "TO_A4"
+            },
+            {
+              "fieldLabel": "SFROM_A4"
+            },
+            {
+              "fieldLabel": "STO_A4"
+            },
+            {
+              "fieldLabel": "ACT_A4"
+            },
+            {
+              "fieldLabel": "DATE_A5"
+            },
+            {
+              "fieldLabel": "FROM_A5"
+            },
+            {
+              "fieldLabel": "TO_A5"
+            },
+            {
+              "fieldLabel": "SFROM_A5"
+            },
+            {
+              "fieldLabel": "STO_A5"
+            },
+            {
+              "fieldLabel": "ACT_A5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1392,
+        6896
+      ],
+      "id": "3bb61b32-1171-4228-939b-3cd72cce3f85",
+      "name": "8.Time and Activity",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5904,
+        5792
+      ],
+      "id": "8b4d5c21-de35-4565-a203-8aff5cdf9e0b",
+      "name": "Upload Storage afford1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "===📄 Cover Page populat ✅\n\n📝 Titlu: {{ $('DOCS: Create Template Copy').item.json.name }}\n🔗 ID doc: {{ $('DOCS: Create Template Copy').item.json.id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -8672,
+        4416
+      ],
+      "id": "f5373a9c-9fa5-4731-a7a7-e9399f849d4d",
+      "name": "Cover Page – Doc Creat",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "===📋 Pag. 2 – This is to Certify That ✅\n\nClient: {{ $('Pag2').item.json['at the request and in pursuance of the instructions of'] }}\nVas: {{ $('Pag2').item.json['attend on board'] }}\nPort: {{ $('Pag2').item.json['while afloat at'] }}\nBL No.: {{ $('Pag2').item.json['BL no. / dated'] }}\nShipper: {{ $('Pag2').item.json['shipper'] }}\nConsignee: {{ $('Pag2').item.json['consignee'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6928,
+        4320
+      ],
+      "id": "c373f60b-5b81-4fa5-88fa-bca77ea6ae62",
+      "name": "✅ Certification Page (Pag.2)",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "===📝 1. Executive Summary ✅\n\n{{ $('1.Executive Summary').item.json.output.substring(0, 300) }}...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6480,
+        4416
+      ],
+      "id": "13cc83e7-8160-425b-be57-1df41d76d8bc",
+      "name": "✅ Executive Summary",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "===👥 3. Companies / Personnel Involved ✅\n\nClient: {{ $('GetCompanyInvolved').item.json.name }}\nVas (registry): {{ $('UpdateCompanyInvolved').item.json.name }}\nIMO: {{ $('UpdateCompanyInvolved').item.json.imo ?? 'N/A' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -5040,
+        5104
+      ],
+      "id": "0be0e4d9-d8d3-46b1-8806-1f926a436238",
+      "name": "✅ Companies / Personnel Involved",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "===📦 4. Cargo Details salvat ✅\n\nBL Nr: {{ $('Create a row1').item.json.bl_number }}\nPort încărcare: {{ $('Create a row1').item.json.port_loading }}\nPort descărcare: {{ $('Create a row1').item.json.port_discharge }}\nShipper: {{ $('Create a row1').item.json.shipper }}\nConsignee: {{ $('Create a row1').item.json.consignee }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3520,
+        5104
+      ],
+      "id": "7d42f8e0-02d8-4c7c-b802-08190f453db4",
+      "name": "✅ Cargo Details",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "===🏭 6. Storage Afforded to Goods ✅\n\n{{ $('6. Storage Afforded').item.json.output.substring(0, 300) }}...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        5104
+      ],
+      "id": "9f8adca1-a981-46f8-8ea8-c750f43294e4",
+      "name": "✅ Storage Afforded (§6)",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "===🔍 7. Pre-discharge Cargo Condition Survey ✅\n\n{{ $('7. Pre-discharge conditions').item.json.output.substring(0, 300) }}...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        5104
+      ],
+      "id": "5e9ecfb6-c378-41c0-a29f-a94cd42e3473",
+      "name": "✅ Pre-discharge Survey (§7)",
+      "webhookId": "d1be3762-426e-4f74-b4a7-f928c335475e",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "==🌤️ 7.5 Weather Conditions ✅\n\nData 1: {{ $('Edit Fields').item.json.DATE_1 }} - {{ $('Edit Fields').item.json.WEATHER_DATE1 }}\nData 2: {{ $('Edit Fields').item.json.DATE_2 }} - {{ $('Edit Fields').item.json.WEATHER_DATE2 }}\nShip Heading: {{ $('Edit Fields').item.json.SHIP_HEADING }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        6512
+      ],
+      "id": "cc79b1c6-9c1f-4eec-a951-a9b7632f2124",
+      "name": "✅ Weather Conditions (§7.5)",
+      "webhookId": "1f301021-c230-41ab-83a0-c4bca1fa3ec7",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "==⏱️ 8. Time and Activity Log ✅\n\nProgram lucru: {{ $('Edit Fields2').item.json.WORKING_HOURS }}\nPauze masa: {{ $('Edit Fields2').item.json.MEAL_BREAKS }}\nSchimburi stevedori: {{ $('Edit Fields2').item.json.SHIFT_CHANGES }}\n\nRand 1: {{ $('Edit Fields2').item.json.DATE_A1 }} | {{ $('Edit Fields2').item.json.FROM_A1 }}-{{ $('Edit Fields2').item.json.TO_A1 }} | {{ $('Edit Fields2').item.json.ACT_A1 }}\nRand 2: {{ $('Edit Fields2').item.json.DATE_A2 }} | {{ $('Edit Fields2').item.json.FROM_A2 }}-{{ $('Edit Fields2').item.json.TO_A2 }} | {{ $('Edit Fields2').item.json.ACT_A2 }}\nRand 3: {{ $('Edit Fields2').item.json.DATE_A3 }} | {{ $('Edit Fields2').item.json.FROM_A3 }}-{{ $('Edit Fields2').item.json.TO_A3 }} | {{ $('Edit Fields2').item.json.ACT_A3 }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2288,
+        6896
+      ],
+      "id": "a1d4ca11-5dd0-47ef-b6ed-7196c0e4bd83",
+      "name": "✅ Time & Activity Log (§8)",
+      "webhookId": "1f301021-c230-41ab-83a0-c4bca1fa3ec7",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1",
+        "text": "===⚠️ Secțiunea 3 – Companies / Personnel InvolvedDate incomplete în Supabase. Verifică înregistrarea pentru survey-ul curent și completează datele companiei înainte de a continua.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -8224,
+        4512
+      ],
+      "id": "5d9e334e-5a36-4ebb-89b7-78b20a066ffb",
+      "name": "Section 3 – Date Lipsă",
+      "webhookId": "595085ff-58ea-4ad2-9f14-c9dc3fe602ba",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "VESSEL TYPE",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "VESSEL NAME",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "DATE FROM",
+              "placeholder": "DD.MM.YYYY",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "DATE TO",
+              "placeholder": "DD.MM.YYYY",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "SURVEY TYPE",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "DISCHARGING"
+                  },
+                  {
+                    "option": "LOADING"
+                  },
+                  {
+                    "option": "ON/OFF HIRE"
+                  },
+                  {
+                    "option": "DRAFT SURVEY"
+                  },
+                  {
+                    "option": "CONDITION SURVEY"
+                  },
+                  {
+                    "option": "OTHER"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "REPORT REF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "58e24317-8a70-4df3-8192-21b34a17d727",
+      "name": "Form - Ships Registry ",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -11760,
+        4000
+      ],
+      "webhookId": "3040d0a4-8ea8-46f0-a6cf-42b3000c9a7a"
+    },
+    {
+      "parameters": {
+        "tableId": "ships_registry2"
+      },
+      "id": "21983a7d-2068-42ed-8855-a6edfcca0bd6",
+      "name": "Supabase - Insert ships_registry3",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -11536,
+        4000
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{VESSEL_NAME}}",
+              "replaceText": "={{ $('FORM: Survey Data Input').item.json.VESSEL_NAME }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{MV}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_FROM}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "={{DATE_TO}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -11136,
+        4400
+      ],
+      "id": "916eacad-6f73-4a1e-ba20-4ca16b9bf40e",
+      "name": "Update a document19",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{VESSEL_NAME}}",
+              "replaceText": "={{ $('FORM: Survey Data Input').item.json.VESSEL_NAME }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{MV}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_FROM}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "={{DATE_TO}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -10928,
+        4400
+      ],
+      "id": "49ca717b-e18c-4201-9ebe-4ec98485d831",
+      "name": "Update a document21",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{PORT_OF_LOADING}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "={{LOADING_COUNTRY}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "= {{PORT_OF_DISCHARGING}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "={{COUNTRY_OF_DISCHARGING}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "={{BL_NUMBER}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{BL_DATE}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{CARGO_DESCRIPTION}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{PACKAGES_COUNT}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TOTAL_WEIGHT_KG}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SHIPPER_NAME}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{CONSIGNEE_NAME}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{NOTIFY_PARTY}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -10176,
+        4160
+      ],
+      "id": "3cb4d123-8ab7-4d38-88c1-65292b7fa418",
+      "name": "Update PAGE2",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{VESSEL_NAME}}",
+              "replaceText": "={{ $('FORM: Survey Data Input').item.json.VESSEL_NAME }}",
+              "matchCase": true
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{MV}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{DATE_FROM}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "={{DATE_TO}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SURVEY_TYPE}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -11360,
+        4400
+      ],
+      "id": "283f35b3-8282-4e19-a05f-3c862a1407d1",
+      "name": "Update FRONT_PAGE",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "sessionId"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -10592,
+        4416
+      ],
+      "id": "ff3db0cc-46f7-4feb-8c91-e569f099f46e",
+      "name": "Executive Summary Chatbox",
+      "webhookId": "5e57d3ff-c50b-483a-81d3-031a83447fdc"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1u7v_Wip_4QPa135e5BA3mipGAeabIfzI7w14yhgHs7w/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "text"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -8896,
+        4240
+      ],
+      "id": "7241d271-8068-4b26-a46d-c6d4a4c21942",
+      "name": "Executive Summary Update",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "6TI8YOhuno64V0Qg",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Day 1"
+            },
+            {
+              "fieldLabel": "Day 2"
+            },
+            {
+              "fieldLabel": "Day 3"
+            },
+            {
+              "fieldLabel": "Day 4"
+            },
+            {
+              "fieldLabel": "Day 5"
+            },
+            {
+              "fieldLabel": "Day 6"
+            },
+            {
+              "fieldLabel": "Another Week",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "YES please"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -9984,
+        3904
+      ],
+      "id": "531ecb08-aa37-40fe-8e26-1eb56ef5ba0d",
+      "name": "HR Input",
+      "webhookId": "40110f8d-1f4b-430f-9f1f-88d5c524bb8f"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -9792,
+        3904
+      ],
+      "id": "923946a0-f70d-4a6c-9641-2dab20f854fd",
+      "name": "Weather API",
+      "webhookId": "017467fa-7a9d-4538-89e4-367f89afb7b2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get_surveyID": {
+      "main": [
+        []
+      ]
+    },
+    "Claude Sonnet7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "3.Table of Contents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet9": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet18": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet22": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "7. Pre-discharge conditions",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enclosures": {
+      "main": [
+        [
+          {
+            "node": "Get a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet30": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3.Table of Contents": {
+      "main": [
+        [
+          {
+            "node": "Convert_HTML_PDF – Table_of_Contents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6.Companies/ Personell Involved": {
+      "main": [
+        [
+          {
+            "node": "Get a row23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. Storage Afforded to goods before loading": {
+      "main": [
+        [
+          {
+            "node": "Convert_HTML_PDF – 9_Storage_Before_Loading",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_enclosures": {
+      "ai_memory": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_table_of_context": {
+      "ai_memory": [
+        [
+          {
+            "node": "3.Table of Contents",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_storage_afforded": {
+      "ai_memory": [
+        [
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_barge_particulars": {
+      "ai_memory": [
+        [
+          {
+            "node": "5. Pre-carrying Particulars",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_preload_conditions": {
+      "ai_memory": [
+        [
+          {
+            "node": "6. Storage Afforded",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_companies_involved": {
+      "ai_memory": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_certification": {
+      "ai_memory": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_cargo_operations": {
+      "ai_memory": [
+        [
+          {
+            "node": "7. Pre-discharge conditions",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_cargo_details": {
+      "ai_memory": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "3.Table of Contents",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store4": {
+      "ai_tool": [
+        [
+          {
+            "node": "5. Pre-carrying Particulars",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store6": {
+      "ai_tool": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store8": {
+      "ai_tool": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store9": {
+      "ai_tool": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store10": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.8 Safety incidents",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store11": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store12": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.6 Time and activity log",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store13": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store14": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store15": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store16": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store17": {
+      "ai_tool": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_cargo_lifting_gear": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_underhook_rigging": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_lifting_operation": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_stowage_dunnaging": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_time_activity_log": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_loading_sequences": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.6 Time and activity log",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_safety_incidents": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_safety_incidents_2": {
+      "ai_memory": [
+        [
+          {
+            "node": "11.8 Safety incidents",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.1 Cargo Operation Description": {
+      "main": [
+        [
+          {
+            "node": "Update a document8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.2 Cargo Lifting Gear": {
+      "main": [
+        [
+          {
+            "node": "Update a document9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.3 Underhook Rigging": {
+      "main": [
+        [
+          {
+            "node": "Update a document10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.4 Lifting Operation": {
+      "main": [
+        [
+          {
+            "node": "Update a document11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.5 Stowage, dunnaging and securing": {
+      "main": [
+        [
+          {
+            "node": "Update a document12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.6 Time and activity log": {
+      "main": [
+        [
+          {
+            "node": "Update a document13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.7 Loading Sequences": {
+      "main": [
+        [
+          {
+            "node": "Update a document14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11.8 Safety incidents": {
+      "main": [
+        [
+          {
+            "node": "Update a document15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store3": {
+      "ai_tool": [
+        [
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store18": {
+      "ai_tool": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert_HTML_PDF – Table_of_Contents": {
+      "main": [
+        [
+          {
+            "node": "Upload table of content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert_HTML_PDF – 9_Storage_Before_Loading": {
+      "main": [
+        [
+          {
+            "node": "Upload Storage afford",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store17",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store4": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store4",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store6": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store6",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store8": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store8",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store9": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store9",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store10": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store10",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store11": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store11",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store12": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store12",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store13": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store13",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store14": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store14",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store15": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store15",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store16": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store16",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store18": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store18",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "6. Storage Afforded",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store7": {
+      "ai_tool": [
+        [
+          {
+            "node": "6. Storage Afforded",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Inference2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store7",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_executive_summaries": {
+      "ai_memory": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If18": {
+      "main": [
+        [
+          {
+            "node": "Form3 - Chat cu AI Manager1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Section 3 – Date Lipsă",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_scope_of_survey1": {
+      "ai_memory": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store5": {
+      "ai_tool": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store5": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store5",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form3 - Chat cu AI Manager1": {
+      "main": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If19": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "✅ Executive Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies1": {
+      "main": [
+        [
+          {
+            "node": "4.Cargo Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row23": {
+      "main": [
+        [
+          {
+            "node": "Update a document6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies2": {
+      "main": [
+        [
+          {
+            "node": "6.Companies/ Personell Involved",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "5. Pre-carrying Particulars",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies3": {
+      "main": [
+        [
+          {
+            "node": "6. Storage Afforded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row24": {
+      "main": [
+        [
+          {
+            "node": "Update a document7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies": {
+      "main": [
+        [
+          {
+            "node": "GetCompanyInvolved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For53 - GetDBCompanies4": {
+      "main": [
+        [
+          {
+            "node": "7. Pre-discharge conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1.Executive Summary": {
+      "main": [
+        [
+          {
+            "node": "ExecutiveSummary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "3.Table of Contents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExecutiveSummary": {
+      "main": [
+        [
+          {
+            "node": "Executive Summary Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.Scope of Survey1": {
+      "main": [
+        [
+          {
+            "node": "ScopeOfSurvey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ScopeOfSurvey": {
+      "main": [
+        [
+          {
+            "node": "Update a document3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4.Cargo Details": {
+      "main": [
+        [
+          {
+            "node": "Create a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row1": {
+      "main": [
+        [
+          {
+            "node": "Update a document5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pag2": {
+      "main": [
+        [
+          {
+            "node": "Get_surveyID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FORM: Main Trigger": {
+      "main": [
+        [
+          {
+            "node": "SWITCH: Route Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SWITCH: Route Action": {
+      "main": [
+        [
+          {
+            "node": "DRIVE: Create Survey Folder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ListSurvey",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EditSurvey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DRIVE: Create Survey Folder": {
+      "main": [
+        [
+          {
+            "node": "DOCS: Create Template Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DOCS: Create Template Copy": {
+      "main": [
+        [
+          {
+            "node": "Form - Ships Registry ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetCompanyInvolved": {
+      "main": [
+        [
+          {
+            "node": "Update a document4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateCompanyInvolved": {
+      "main": [
+        [
+          {
+            "node": "✅ Companies / Personnel Involved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Pre-carrying Particulars": {
+      "main": [
+        [
+          {
+            "node": "Get a row23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Storage Afforded": {
+      "main": [
+        [
+          {
+            "node": "Get a row24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Pre-discharge conditions": {
+      "main": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.6 Time and activity log",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.7 Loading Sequences",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "11.8 Safety incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FORM: Survey Data Input": {
+      "main": [
+        []
+      ]
+    },
+    "First page updated": {
+      "main": [
+        [
+          {
+            "node": "Update FRONT_PAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_surveyID1": {
+      "main": [
+        [
+          {
+            "node": "First page updated1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First page updated1": {
+      "main": [
+        [
+          {
+            "node": "Update PAGE2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "TimeActivityLog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TimeActivityLog": {
+      "main": [
+        [
+          {
+            "node": "GetSurveyorSchedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSurveyorSchedule": {
+      "main": [
+        [
+          {
+            "node": "Update a document16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_enclosures1": {
+      "ai_memory": [
+        [
+          {
+            "node": "9. PhotograpIndex",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store19": {
+      "ai_tool": [
+        [
+          {
+            "node": "9. PhotograpIndex",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store17": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store19",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CheckSurveyorSchedule": {
+      "main": [
+        [
+          {
+            "node": "9. PhotograpIndex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. PhotograpIndex": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "9. Storage Afforded to goods before loading",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Update a document17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a chat action": {
+      "main": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row1": {
+      "main": [
+        [
+          {
+            "node": "Update a document18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document3": {
+      "main": [
+        [
+          {
+            "node": "✅ Certification Page (Pag.2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document4": {
+      "main": [
+        [
+          {
+            "node": "UpdateCompanyInvolved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document5": {
+      "main": [
+        [
+          {
+            "node": "✅ Cargo Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document6": {
+      "main": [
+        [
+          {
+            "node": "✅ Storage Afforded (§6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document7": {
+      "main": [
+        [
+          {
+            "node": "✅ Pre-discharge Survey (§7)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document8": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document9": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Update a document10": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.1 Cargo Operation Description",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.2 Cargo Lifting Gear",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.3 Underhook Rigging",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document11": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.4 Lifting Operation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.5 Stowage, dunnaging and securing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document12": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Update a document13": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Update a document14": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Update a document15": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.8 Safety incidents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "11.6 Time and activity log",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document16": {
+      "main": [
+        [
+          {
+            "node": "CheckSurveyorSchedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document17": {
+      "main": [
+        [
+          {
+            "node": "Send a chat action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document18": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Enclosures",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model8": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "9. PhotograpIndex",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model9": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "5. Pre-carrying Particulars",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model10": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "2.Scope of Survey1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model11": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n_executive_summaries1": {
+      "ai_memory": [
+        [
+          {
+            "node": "10. Enclosures (finalizare)",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store20": {
+      "ai_tool": [
+        [
+          {
+            "node": "10. Enclosures (finalizare)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings HuggingFace Supabase Vector Store2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store20",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model12": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "10. Enclosures (finalizare)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7.9FormWheater": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get_surveyID2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_surveyID2": {
+      "main": [
+        [
+          {
+            "node": "Update a document20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document20": {
+      "main": [
+        [
+          {
+            "node": "✅ Weather Conditions (§7.5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Get_surveyID4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document23": {
+      "main": [
+        [
+          {
+            "node": "✅ Time & Activity Log (§8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_surveyID4": {
+      "main": [
+        [
+          {
+            "node": "Update a document23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8.Time and Activity": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "This is to certify that": {
+      "main": [
+        [
+          {
+            "node": "Update a document22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document22": {
+      "main": [
+        [
+          {
+            "node": "Upload Storage afford1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cover Page – Doc Creat": {
+      "main": [
+        [
+          {
+            "node": "If18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Certification Page (Pag.2)": {
+      "main": [
+        [
+          {
+            "node": "If19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Companies / Personnel Involved": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Cargo Details": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Storage Afforded (§6)": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Pre-discharge Survey (§7)": {
+      "main": [
+        [
+          {
+            "node": "For53 - GetDBCompanies4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "7.9FormWheater",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First page updated2": {
+      "main": [
+        [
+          {
+            "node": "8.Time and Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload table of content": {
+      "main": [
+        [
+          {
+            "node": "Cover Page – Doc Creat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Storage afford": {
+      "main": [
+        [
+          {
+            "node": "10. Enclosures (finalizare)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10. Enclosures (finalizare)": {
+      "main": [
+        [
+          {
+            "node": "This is to certify that",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Weather Conditions (§7.5)": {
+      "main": [
+        [
+          {
+            "node": "8.Time and Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Time & Activity Log (§8)": {
+      "main": [
+        [
+          {
+            "node": "CheckSurveyorSchedule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form - Ships Registry ": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert ships_registry3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Insert ships_registry3": {
+      "main": [
+        [
+          {
+            "node": "First page updated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document19": {
+      "main": [
+        [
+          {
+            "node": "Update a document21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document21": {
+      "main": [
+        [
+          {
+            "node": "Pag2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update PAGE2": {
+      "main": [
+        [
+          {
+            "node": "HR Input",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Executive Summary Chatbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update FRONT_PAGE": {
+      "main": [
+        [
+          {
+            "node": "Update a document19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executive Summary Chatbox": {
+      "main": [
+        [
+          {
+            "node": "1.Executive Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executive Summary Update": {
+      "main": [
+        [
+          {
+            "node": "Cover Page – Doc Creat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Input": {
+      "main": [
+        [
+          {
+            "node": "Weather API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ff4197c0-65b7-4600-b489-dd9383df3536",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54f7d9fd6db4fe693b5fa1f71ae8be72261a3408f2c2915bf1c7d7549acd7235"
+  },
+  "id": "3BQPWTBfIFe4ZqM4",
+  "tags": []
+}

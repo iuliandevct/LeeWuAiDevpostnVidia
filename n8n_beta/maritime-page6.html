@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Loading Surveyor - Cargo Details & Pre-Load Survey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-container {
+            width: 595px;
+            min-height: 842px;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1a3a52 0%, #2d5a7b 100%);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .logo-mini {
+            width: 28px;
+            height: 28px;
+            background: #1a3a52;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mini::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .ref-info {
+            text-align: right;
+            font-size: 9px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .ref-info strong {
+            color: #1a3a52;
+            font-weight: 600;
+        }
+
+        .cargo-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+            margin-bottom: 20px;
+        }
+
+        .cargo-table thead {
+            background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 100%);
+            color: white;
+        }
+
+        .cargo-table th {
+            padding: 8px 5px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #1a3a52;
+            font-size: 7.5px;
+        }
+
+        .cargo-table td {
+            padding: 6px 5px;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        .cargo-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .case-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .weight-column {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .dimension-column {
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a3a52;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+
+        .section-content {
+            font-size: 10px;
+            color: #495057;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .exception-list {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-radius: 2px;
+        }
+
+        .exception-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exception-list ol {
+            margin: 0;
+            padding-left: 20px;
+            color: #856404;
+        }
+
+        .exception-list li {
+            margin-bottom: 6px;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .vessel-name {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: #adb5bd;
+        }
+
+        .page-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .page-container {
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+
+        [contenteditable="true"] {
+            outline: none;
+        }
+
+        [contenteditable="true"]:focus {
+            background: rgba(26, 58, 82, 0.03);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header-bar"></div>
+
+        <div class="page-header">
+            <div class="logo-mini"></div>
+            <div class="ref-info">
+                <div><strong>LOADING SURVEY</strong></div>
+                <div>Ref. No. <strong>AIG.1390.1_2024</strong></div>
+            </div>
+        </div>
+
+        <!-- Continuing Cargo Table -->
+        <table class="cargo-table">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Case no.</th>
+                    <th style="width: 35%;">Description</th>
+                    <th style="width: 10%;">Net [kg]</th>
+                    <th style="width: 10%;">Gross [kg]</th>
+                    <th style="width: 8%;">L [cm]</th>
+                    <th style="width: 8%;">W [cm]</th>
+                    <th style="width: 8%;">H [cm]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="case-number">M005-51-93</td>
+                    <td>Transformer body (nitrogen filled)</td>
+                    <td class="weight-column">114000</td>
+                    <td class="weight-column">114000</td>
+                    <td class="dimension-column">860</td>
+                    <td class="dimension-column">445</td>
+                    <td class="dimension-column">410</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-52-93</td>
+                    <td>Transformer oil (15T oil tank)</td>
+                    <td class="weight-column">14750</td>
+                    <td class="weight-column">17650</td>
+                    <td class="dimension-column">450</td>
+                    <td class="dimension-column">250</td>
+                    <td class="dimension-column">285</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-53-93</td>
+                    <td>Transformer oil (15T oil tank)</td>
+                    <td class="weight-column">14750</td>
+                    <td class="weight-column">17650</td>
+                    <td class="dimension-column">450</td>
+                    <td class="dimension-column">250</td>
+                    <td class="dimension-column">285</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-54-93</td>
+                    <td>Transformer oil (15T oil tank)</td>
+                    <td class="weight-column">14750</td>
+                    <td class="weight-column">17650</td>
+                    <td class="dimension-column">450</td>
+                    <td class="dimension-column">250</td>
+                    <td class="dimension-column">285</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-55-93</td>
+                    <td>Transformer oil (15T oil tank)</td>
+                    <td class="weight-column">14750</td>
+                    <td class="weight-column">17650</td>
+                    <td class="dimension-column">450</td>
+                    <td class="dimension-column">250</td>
+                    <td class="dimension-column">285</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-56-93</td>
+                    <td>heat sink</td>
+                    <td class="weight-column">3000</td>
+                    <td class="weight-column">3400</td>
+                    <td class="dimension-column">352</td>
+                    <td class="dimension-column">197</td>
+                    <td class="dimension-column">203</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-57-93</td>
+                    <td>Radiator</td>
+                    <td class="weight-column">3000</td>
+                    <td class="weight-column">3400</td>
+                    <td class="dimension-column">352</td>
+                    <td class="dimension-column">197</td>
+                    <td class="dimension-column">203</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-58-93</td>
+                    <td>Radiator</td>
+                    <td class="weight-column">3000</td>
+                    <td class="weight-column">3400</td>
+                    <td class="dimension-column">352</td>
+                    <td class="dimension-column">197</td>
+                    <td class="dimension-column">203</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-59-93</td>
+                    <td>Radiator</td>
+                    <td class="weight-column">3000</td>
+                    <td class="weight-column">3400</td>
+                    <td class="dimension-column">352</td>
+                    <td class="dimension-column">197</td>
+                    <td class="dimension-column">203</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-60-93</td>
+                    <td>Radiator</td>
+                    <td class="weight-column">3000</td>
+                    <td class="weight-column">3400</td>
+                    <td class="dimension-column">352</td>
+                    <td class="dimension-column">197</td>
+                    <td class="dimension-column">203</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-61-93</td>
+                    <td>Radiator</td>
+                    <td class="weight-column">1000</td>
+                    <td class="weight-column">1300</td>
+                    <td class="dimension-column">352</td>
+                    <td class="dimension-column">197</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-62-93</td>
+                    <td>Fan</td>
+                    <td class="weight-column">180</td>
+                    <td class="weight-column">370</td>
+                    <td class="dimension-column">266</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-63-93</td>
+                    <td>Fan</td>
+                    <td class="weight-column">180</td>
+                    <td class="weight-column">370</td>
+                    <td class="dimension-column">266</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-64-93</td>
+                    <td>Fan</td>
+                    <td class="weight-column">180</td>
+                    <td class="weight-column">370</td>
+                    <td class="dimension-column">266</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-65-93</td>
+                    <td>Fan</td>
+                    <td class="weight-column">180</td>
+                    <td class="weight-column">370</td>
+                    <td class="dimension-column">266</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-66-93</td>
+                    <td>Consevator</td>
+                    <td class="weight-column">2800</td>
+                    <td class="weight-column">3600</td>
+                    <td class="dimension-column">642</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">288</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-67-93</td>
+                    <td>Wheels</td>
+                    <td class="weight-column">1500</td>
+                    <td class="weight-column">1650</td>
+                    <td class="dimension-column">182</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">85</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-68-93</td>
+                    <td>Wheels</td>
+                    <td class="weight-column">1500</td>
+                    <td class="weight-column">1650</td>
+                    <td class="dimension-column">182</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">85</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-69-93</td>
+                    <td>HV Bushing</td>
+                    <td class="weight-column">570</td>
+                    <td class="weight-column">900</td>
+                    <td class="dimension-column">482</td>
+                    <td class="dimension-column">77</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-70-93</td>
+                    <td>HV Bushing</td>
+                    <td class="weight-column">570</td>
+                    <td class="weight-column">900</td>
+                    <td class="dimension-column">482</td>
+                    <td class="dimension-column">77</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-71-93</td>
+                    <td>HV Bushing</td>
+                    <td class="weight-column">570</td>
+                    <td class="weight-column">900</td>
+                    <td class="dimension-column">482</td>
+                    <td class="dimension-column">77</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-72-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <span>MS 'ARETA'</span>
+            <span class="page-number">Page 6 of 45</span>
+        </div>
+    </div>
+</body>
+</html>

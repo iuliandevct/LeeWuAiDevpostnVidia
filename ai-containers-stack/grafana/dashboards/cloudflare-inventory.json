@@ -1,0 +1,84 @@
+{
+  "uid": "cloudflare-inventory",
+  "title": "Cloudflare — LeeWu Maritime Services",
+  "tags": ["cloudflare", "lp-maritime", "inventory"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "",
+  "time": {"from": "now-24h", "to": "now"},
+  "annotations": {"list": []},
+  "templating": {"list": []},
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Cloudflare account",
+      "gridPos": {"h": 5, "w": 8, "x": 0, "y": 0},
+      "options": {
+        "mode": "markdown",
+        "content": "# 1 account\n\nOAuth inventory completed through the read-only Cloudflare MCP connection."
+      }
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "title": "Active zones",
+      "gridPos": {"h": 5, "w": 8, "x": 8, "y": 0},
+      "options": {
+        "mode": "markdown",
+        "content": "# 1 active zone\n\n[leewuai.ro](https://leewuai.ro)"
+      }
+    },
+    {
+      "id": 3,
+      "type": "text",
+      "title": "DNS records",
+      "gridPos": {"h": 5, "w": 8, "x": 16, "y": 0},
+      "options": {
+        "mode": "markdown",
+        "content": "# 16 records\n\nA/AAAA/CNAME/MX/TXT inventory visible through the granted scope."
+      }
+    },
+    {
+      "id": 4,
+      "type": "text",
+      "title": "Cloudflare Tunnel",
+      "gridPos": {"h": 6, "w": 12, "x": 0, "y": 5},
+      "options": {
+        "mode": "markdown",
+        "content": "## pnl-web\n\n1 configured tunnel. The remote LeeWu Maritime HP laptop is represented in the Obsidian graph as a separate remote node; no public port exposure is assumed."
+      }
+    },
+    {
+      "id": 5,
+      "type": "text",
+      "title": "Accessible products with no resources",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 5},
+      "options": {
+        "mode": "markdown",
+        "content": "Workers scripts/domains · KV · Pages · Queues · AI Gateway · AI Search · Vectorize · Hyperdrive · Workflows · Access applications · Gateway locations · Load balancers\n\nThese APIs were accessible but returned no configured resources."
+      }
+    },
+    {
+      "id": 6,
+      "type": "text",
+      "title": "Scope and live-metrics status",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 11},
+      "options": {
+        "mode": "markdown",
+        "content": "The 38 OAuth selections are permissions, not 38 resources or metrics.\n\n**Inventory:** connected and verified.\n\n**Continuous analytics:** pending a separate Cloudflare user API token with read-only Account Settings, Zone, and Analytics permissions. Codex MCP OAuth credentials are intentionally not copied into Grafana."
+      }
+    },
+    {
+      "id": 7,
+      "type": "text",
+      "title": "Unavailable or not enabled",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 15},
+      "options": {
+        "mode": "markdown",
+        "content": "R2 is not enabled. Workers dispatch namespaces are unavailable. D1, Durable Objects, Stream, Images, Logpush, Spectrum, Magic products, health checks, waiting rooms, and Web3 hostnames did not grant usable inventory access."
+      }
+    }
+  ]
+}

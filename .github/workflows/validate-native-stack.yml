@@ -1,0 +1,60 @@
+name: Validate native AI stack
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "agent/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate JSON dashboards
+        run: |
+          for file in ai-containers-stack/grafana/dashboards/*.json; do
+            jq -e . "$file" >/dev/null
+          done
+
+      - name: Validate Python and TOML
+        run: |
+          python3 - <<'PY'
+          import ast
+          import pathlib
+          import tomllib
+
+          root = pathlib.Path("ai-containers-stack")
+          ast.parse((root / "graph-api/server.py").read_text())
+          tomllib.loads((root / "supabase/config.toml").read_text())
+          PY
+
+      - name: Validate YAML provisioning
+        run: |
+          ruby -e 'require "yaml"; Dir["ai-containers-stack/grafana/**/*.yml"].each { |file| YAML.load_file(file) }'
+
+      - name: Reject secret files and credential signatures
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env|auth\.json|.*\.dump|.*\.backup)$'; then
+            echo "Tracked secret or database backup path detected"
+            exit 1
+          fi
+
+          pattern='(sbp_[a-f0-9]{20,}|[0-9]{8,}:[A-Za-z0-9_-]{30,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----|sk-[A-Za-z0-9_-]{20,}|gh[opsu]_[A-Za-z0-9]{20,})'
+          if git grep -n -E -i "$pattern" -- ai-containers-stack ':!*.md'; then
+            echo "Credential-like value detected"
+            exit 1
+          fi
+
+      - name: Check whitespace
+        run: |
+          git diff-tree --check --no-commit-id --root -r HEAD -- \
+            ai-containers-stack \
+            .github/workflows/validate-native-stack.yml

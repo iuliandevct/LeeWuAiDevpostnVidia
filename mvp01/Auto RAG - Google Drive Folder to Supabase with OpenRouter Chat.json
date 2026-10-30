@@ -1,0 +1,407 @@
+{
+  "name": "Auto RAG - Google Drive Folder to Supabase with OpenRouter Chat",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "380a3551-4d8b-4790-bed9-52c244cc1a4c",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -544
+      ],
+      "webhookId": "9f9261dd-f695-4d36-af94-0e2bbe118298"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "google_drive_knowledge_base",
+        "toolDescription": "Searches documents automatically indexed from the specified Google Drive folder.",
+        "tableName": "documents",
+        "topK": 5,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "8b2e9880-22d4-4af0-b8d6-875d28287045",
+      "name": "Supabase Vector Store - RAG Tool",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -272
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1f4FYK5ph7dzDsjgxi3OW5Mhe4PTzNJ3L",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "1bcea42a-e44b-4dd5-bfa6-4be0b6c9b6f2",
+      "name": "Google Drive Trigger - New File in Folder",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        192
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "zXuwimuN4EZ21CsA",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "54e324e1-b14a-49f2-a0e3-2d7c36c368b2",
+      "name": "Download New Google Drive File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2032,
+        192
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "zXuwimuN4EZ21CsA",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "file_id_meta",
+              "name": "file_id",
+              "value": "={{ $('Google Drive Trigger - New File in Folder').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "file_name_meta",
+              "name": "file_name",
+              "value": "={{ $('Google Drive Trigger - New File in Folder').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "source_meta",
+              "name": "source",
+              "value": "google_drive_folder_auto",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ff815faf-c3a4-46d3-8180-67e9616432e7",
+      "name": "Set File Metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2272,
+        192
+      ],
+      "alwaysOutputData": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "documents",
+        "options": {}
+      },
+      "id": "d2786f81-61e4-45cc-86ef-3ffb9ec2d8b3",
+      "name": "Supabase Vector Store - Insert Documents",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        192
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "binaryMode": "specificField",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "name": "file_id",
+                "value": "={{ $json.file_id }}"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $json.file_name }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a303af63-7884-4d55-9abc-68c89eb6cf84",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        3040,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful RAG assistant. Use the Supabase knowledge base tool when the user asks about company documents or uploaded files. If the answer is not found in the knowledge base, say clearly that you do not have enough information in the documents. Answer in the user's language."
+        }
+      },
+      "id": "d1193f29-8e3d-4942-b653-26f62fd3599e",
+      "name": "AI Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2112,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "f094a317-fb1e-4c3a-9b20-211416da3098",
+      "name": "OpenRouter Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        -272
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "=models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -64
+      ],
+      "id": "bccfab2a-9ead-4382-8952-b6830dc80789",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oyRLgDXB75amyLgS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        368
+      ],
+      "id": "d80576a3-4c7f-4cca-a045-68c4cab35cc3",
+      "name": "Embeddings Google Gemini2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oyRLgDXB75amyLgS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        400
+      ],
+      "id": "380b2e6c-b49b-4385-9c7a-0f3d1f5082db",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store - RAG Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger - New File in Folder": {
+      "main": [
+        [
+          {
+            "node": "Download New Google Drive File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download New Google Drive File": {
+      "main": [
+        [
+          {
+            "node": "Set File Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File Metadata": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store - Insert Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store - Insert Documents",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store - RAG Tool",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store - Insert Documents",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6d849fb2-e489-4cf4-b944-42d848496fed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54f7d9fd6db4fe693b5fa1f71ae8be72261a3408f2c2915bf1c7d7549acd7235"
+  },
+  "id": "JWLaZ9dSL5iy7plR",
+  "tags": []
+}

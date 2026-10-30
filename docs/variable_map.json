@@ -1,0 +1,513 @@
+[
+  {
+    "var": "REPORT_REF",
+    "wanfu_value": "SRV062_2026",
+    "type": "String",
+    "category": "Metadata",
+    "source": "System / P&L Ledger"
+  },
+  {
+    "var": "SURVEY_TYPE",
+    "wanfu_value": "DISCHARGING SURVEY",
+    "type": "String",
+    "category": "Metadata",
+    "source": "Order Scope"
+  },
+  {
+    "var": "SURVEY_TYPE_PLAIN",
+    "wanfu_value": "Discharging Survey",
+    "type": "String",
+    "category": "Metadata",
+    "source": "Order Scope"
+  },
+  {
+    "var": "REQUESTED_BY",
+    "wanfu_value": "GLOBAL OCEAN SHIPPING & TRADING S.R.L.",
+    "type": "String",
+    "category": "Client / Order",
+    "source": "Service Order"
+  },
+  {
+    "var": "CUSTOMER_REF",
+    "wanfu_value": "N/A",
+    "type": "String",
+    "category": "Client / Order",
+    "source": "Client Reference"
+  },
+  {
+    "var": "DATE_FROM",
+    "wanfu_value": "22 June",
+    "type": "Date / String",
+    "category": "Timing",
+    "source": "Survey Log"
+  },
+  {
+    "var": "DATE_TO",
+    "wanfu_value": "24 June",
+    "type": "Date / String",
+    "category": "Timing",
+    "source": "Survey Log"
+  },
+  {
+    "var": "PORT",
+    "wanfu_value": "CONSTANTA SUD",
+    "type": "String",
+    "category": "Location",
+    "source": "Port Authority / AIS"
+  },
+  {
+    "var": "COUNTRY",
+    "wanfu_value": "ROMANIA",
+    "type": "String",
+    "category": "Location",
+    "source": "Port Authority"
+  },
+  {
+    "var": "BERTH_NO",
+    "wanfu_value": "120",
+    "type": "String / Int",
+    "category": "Location",
+    "source": "Terminal Berthing Plan"
+  },
+  {
+    "var": "TERMINAL_NAME",
+    "wanfu_value": "SCS Terminal",
+    "type": "String",
+    "category": "Location",
+    "source": "Terminal Berthing Plan"
+  },
+  {
+    "var": "PORT_OF_LOADING",
+    "wanfu_value": "ZHANGJIAGANG",
+    "type": "String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "LOADING_COUNTRY",
+    "wanfu_value": "CHINA",
+    "type": "String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "PORT_OF_DISCHARGING",
+    "wanfu_value": "CONSTANTA SUD",
+    "type": "String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "COUNTRY_OF_DISCHARGING",
+    "wanfu_value": "ROMANIA",
+    "type": "String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "BL_NUMBER",
+    "wanfu_value": "WF03ZJGCON28Z",
+    "type": "String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "BL_DATE",
+    "wanfu_value": "April 28, 2026",
+    "type": "Date / String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "CARGO_DESCRIPTION",
+    "wanfu_value": "I-Beam and Steel Items",
+    "type": "String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading / Manifest"
+  },
+  {
+    "var": "CARGO_DESCRIPTION_DETAIL",
+    "wanfu_value": "Detailed packing attached.",
+    "type": "String / Text",
+    "category": "Cargo / B/L",
+    "source": "Packing List"
+  },
+  {
+    "var": "PACKAGES_COUNT",
+    "wanfu_value": "3",
+    "type": "Integer",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading / Tally"
+  },
+  {
+    "var": "TOTAL_WEIGHT_KG",
+    "wanfu_value": "11,020",
+    "type": "Number / String",
+    "category": "Cargo / B/L",
+    "source": "Bill of Lading Gross Wt"
+  },
+  {
+    "var": "SHIPPER_NAME",
+    "wanfu_value": "ZHEJIANG BRILLIANT LOGISTICS LTD., No.168 Gongping Road, Shanghai, China",
+    "type": "String",
+    "category": "Parties",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "CONSIGNEE_NAME",
+    "wanfu_value": "SERBIA ZIJIN COPPER DOO, Djordja Vajferta No 29., Serbia",
+    "type": "String",
+    "category": "Parties",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "NOTIFY_PARTY",
+    "wanfu_value": "Same as Consignee",
+    "type": "String",
+    "category": "Parties",
+    "source": "Bill of Lading"
+  },
+  {
+    "var": "PACKING_DESCRIPTION",
+    "wanfu_value": "Three (3) bare bundles under B/L WF03ZJGCON28Z (BOR-1289-a: 8,295 KGS, BOR-1289-b: 2,605 KGS, BOR-1289-c: 120 KGS) with shipping labels affixed.",
+    "type": "Text",
+    "category": "Cargo Condition",
+    "source": "Field Inspection & Tally"
+  },
+  {
+    "var": "VESSEL_NAME",
+    "wanfu_value": "WAN FU",
+    "type": "String",
+    "category": "Vessel",
+    "source": "Vessel Registry / Tavily"
+  },
+  {
+    "var": "VESSEL_NAME_PLAIN",
+    "wanfu_value": "WAN FU",
+    "type": "String",
+    "category": "Vessel",
+    "source": "Vessel Registry"
+  },
+  {
+    "var": "IMO_NUMBER",
+    "wanfu_value": "1072842",
+    "type": "String",
+    "category": "Vessel",
+    "source": "IMO Registry / Tavily"
+  },
+  {
+    "var": "CALL_SIGN",
+    "wanfu_value": "VRWX8",
+    "type": "String",
+    "category": "Vessel",
+    "source": "Equasis / Class"
+  },
+  {
+    "var": "VESSEL_TYPE",
+    "wanfu_value": "GENERAL CARGO / MULTIPURPOSE HEAVY LIFT",
+    "type": "String",
+    "category": "Vessel",
+    "source": "Classification Society"
+  },
+  {
+    "var": "FLAG",
+    "wanfu_value": "HONG KONG",
+    "type": "String",
+    "category": "Vessel",
+    "source": "Flag State Registry"
+  },
+  {
+    "var": "GROSS_TONNAGE",
+    "wanfu_value": "39,371",
+    "type": "Number / String",
+    "category": "Vessel",
+    "source": "Vessel Particulars"
+  },
+  {
+    "var": "DEADWEIGHT",
+    "wanfu_value": "61,250",
+    "type": "Number / String",
+    "category": "Vessel",
+    "source": "Vessel Particulars"
+  },
+  {
+    "var": "LOA",
+    "wanfu_value": "199.90",
+    "type": "Number / String",
+    "category": "Vessel",
+    "source": "Vessel Particulars"
+  },
+  {
+    "var": "BREADTH",
+    "wanfu_value": "32.26",
+    "type": "Number / String",
+    "category": "Vessel",
+    "source": "Vessel Particulars"
+  },
+  {
+    "var": "YEAR_BUILT",
+    "wanfu_value": "2025",
+    "type": "Integer",
+    "category": "Vessel",
+    "source": "Class Registry"
+  },
+  {
+    "var": "HOLDS_HATCHES",
+    "wanfu_value": "5 / 5",
+    "type": "String",
+    "category": "Vessel",
+    "source": "General Arrangement"
+  },
+  {
+    "var": "STEVEDORING_CO",
+    "wanfu_value": "SCS",
+    "type": "String",
+    "category": "Attendance",
+    "source": "Terminal Operations"
+  },
+  {
+    "var": "ATTENDING_SURVEYOR",
+    "wanfu_value": "Alexandru Radu",
+    "type": "String",
+    "category": "Attendance",
+    "source": "Attending Surveyor"
+  },
+  {
+    "var": "OTHERS_ATTENDANCE",
+    "wanfu_value": "No other attendees",
+    "type": "String",
+    "category": "Attendance",
+    "source": "Field Tally Log"
+  },
+  {
+    "var": "EXECUTIVE_SUMMARY_TEXT",
+    "wanfu_value": "The discharging operation of three (3) packages of I-Beam and Steel Items (B/L WF03ZJGCON28Z, 11,020 KGS) was carried out at SCS Terminal, Berth 120, Constan\u021ba Sud under surveyor attendance.",
+    "type": "Text",
+    "category": "Narrative",
+    "source": "Nemotron-70B Synthesis"
+  },
+  {
+    "var": "PRE_CARRIAGE_SUMMARY",
+    "wanfu_value": "The cargo units were found stowed onboard MV 'WAN FU', voyage WF03, in apparent good order and condition, properly secured.",
+    "type": "Text",
+    "category": "Narrative",
+    "source": "Pre-Discharge Inspection"
+  },
+  {
+    "var": "LH1_LH2_DESCRIPTION",
+    "wanfu_value": "Hold No. 1 Lower Hold: Two (2) packages (Pkg. No. 1-2 and 1-3) stowed and secured as applicable.",
+    "type": "Text",
+    "category": "Stowage",
+    "source": "Cargo Plan / Survey"
+  },
+  {
+    "var": "LH4_DESCRIPTION",
+    "wanfu_value": "Hold No. 5 Lower Hold: One (1) package (Pkg. No. 1-1) stowed and secured as applicable.",
+    "type": "Text",
+    "category": "Stowage",
+    "source": "Cargo Plan / Survey"
+  },
+  {
+    "var": "PRE_DISCHARGE_DESCRIPTION",
+    "wanfu_value": "Cargo inspected from accessible positions. General rust / surface corrosion and dust accumulation on exposed steel. No structural damage.",
+    "type": "Text",
+    "category": "Narrative",
+    "source": "Nemotron-Vision-4B / Skill 1"
+  },
+  {
+    "var": "CARGO_OPERATION_DESCRIPTION",
+    "wanfu_value": "Discharging carried out using vessel's own cranes in single hook configuration with textile webbing slings. Lifting and landing smooth and controlled.",
+    "type": "Text",
+    "category": "Narrative",
+    "source": "Surveyor Observation"
+  },
+  {
+    "var": "LIFTING_GEAR_DESCRIPTION",
+    "wanfu_value": "1 x Ship's crane, textile webbing slings, and connecting shackles in serviceable condition.",
+    "type": "Text",
+    "category": "Gear / Equipment",
+    "source": "Rigging Inspection"
+  },
+  {
+    "var": "LIFTING_OPERATION_DESCRIPTION",
+    "wanfu_value": "Qualified personnel assigned, load balance and stability checked, smooth lifting without shock loading or tilt.",
+    "type": "Text",
+    "category": "Narrative",
+    "source": "Handling Supervision"
+  },
+  {
+    "var": "CARGO_HANDLING_SUMMARY",
+    "wanfu_value": "Discharge and delivery of all 3 packages completed on 24 June 2026 in apparent good order with general surface rust. No shortage or discrepancy.",
+    "type": "Text",
+    "category": "Narrative",
+    "source": "Final Out-turn Summary"
+  },
+  {
+    "var": "DATE_1",
+    "wanfu_value": "24.06.2026",
+    "type": "Date",
+    "category": "Weather",
+    "source": "Port Weather Station / Tavily"
+  },
+  {
+    "var": "WEATHER_DATE1",
+    "wanfu_value": "Between 14\u00b0\u201329\u00b0C, sunny, clear sky / few clouds, good visibility, light to moderate wind SE\u2013S ~7\u201324 km/h",
+    "type": "Text",
+    "category": "Weather",
+    "source": "Port Weather Station / Tavily"
+  },
+  {
+    "var": "DATE_2",
+    "wanfu_value": "22.06.2026",
+    "type": "Date",
+    "category": "Weather",
+    "source": "Port Weather Station / Tavily"
+  },
+  {
+    "var": "WEATHER_DATE2",
+    "wanfu_value": "Clear sky, wind light SE, sea calm at berth",
+    "type": "Text",
+    "category": "Weather",
+    "source": "Port Weather Station / Tavily"
+  },
+  {
+    "var": "SHIP_HEADING",
+    "wanfu_value": "N",
+    "type": "String",
+    "category": "Weather / Vessel",
+    "source": "Vessel Log"
+  },
+  {
+    "var": "WORKING_HOURS",
+    "wanfu_value": "24/7 hrs.",
+    "type": "String",
+    "category": "Stevedore Schedule",
+    "source": "Terminal Regulations"
+  },
+  {
+    "var": "MEAL_BREAKS",
+    "wanfu_value": "12:00-13:00 hrs.; 24:00-01:00 hrs.",
+    "type": "String",
+    "category": "Stevedore Schedule",
+    "source": "Terminal Regulations"
+  },
+  {
+    "var": "SHIFT_CHANGES",
+    "wanfu_value": "06:00-07:00 hrs. / 18:00-19:00 hrs.",
+    "type": "String",
+    "category": "Stevedore Schedule",
+    "source": "Terminal Regulations"
+  },
+  {
+    "var": "DATE_A1",
+    "wanfu_value": "22.06.2026",
+    "type": "Date",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "STO_A1",
+    "wanfu_value": "22:30",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "ACT_A1",
+    "wanfu_value": "MV \u2018WAN FU\u2019 all fast, Berth 120, SCS Terminal, Constanta Sud",
+    "type": "Text",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "SFROM_A2",
+    "wanfu_value": "22:30",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "STO_A2",
+    "wanfu_value": "23:30",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "ACT_A2",
+    "wanfu_value": "Inward formalities / Berth formalities completed",
+    "type": "Text",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "DATE_A3",
+    "wanfu_value": "24.06.2026",
+    "type": "Date",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "FROM_A3",
+    "wanfu_value": "02:31",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "TO_A3",
+    "wanfu_value": "02:43",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "ACT_A3",
+    "wanfu_value": "Start discharge. Hold No. 1 Lower Hold. Packages discharged: Pkg. No. 1-2 and Pkg. No. 1-3.",
+    "type": "Text",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "DATE_A4",
+    "wanfu_value": "24.06.2026",
+    "type": "Date",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "FROM_A4",
+    "wanfu_value": "10:12",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "TO_A4",
+    "wanfu_value": "10:14",
+    "type": "Time",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "ACT_A4",
+    "wanfu_value": "Discharged Pkg. No. 1-1 from Hold No. 5 Lower Hold. Completed discharging of B/L WF03ZJGCON28Z.",
+    "type": "Text",
+    "category": "Time Log",
+    "source": "Survey Log"
+  },
+  {
+    "var": "PHOTOGRAPHS_INDEX_PLACEHOLDER",
+    "wanfu_value": "12 itemized photographs covering pre-discharge storage, lifting operations, landing onto dunnage, and shipping labels.",
+    "type": "Array / HTML Grid",
+    "category": "Photos",
+    "source": "Field Photos / Skill 1"
+  },
+  {
+    "var": "TOTAL_PAGES",
+    "wanfu_value": "15",
+    "type": "Integer",
+    "category": "Pagination",
+    "source": "Report Layout Engine"
+  }
+]

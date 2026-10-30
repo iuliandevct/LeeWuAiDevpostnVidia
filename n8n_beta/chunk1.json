@@ -1,0 +1,179 @@
+{
+  "name": "LeeWu Maritime Survey Flow (Fixed + Named)",
+  "nodes": [
+    {
+      "id": "form_main",
+      "name": "FORM: Main Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [-1600, 112],
+      "parameters": {
+        "formTitle": "Bine ati venit la LeeWu Maritime Surveyor si Logistica Cargo",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Raport nou",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  { "option": "Raport nou" },
+                  { "option": "Editeaza Raport" },
+                  { "option": "Lista Rapoarte (Arhiva)" }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    {
+      "id": "switch_router",
+      "name": "SWITCH: Route Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [-1376, 96],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "Raport nou",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "Lista Rapoarte (Arhiva)",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Raport nou'] }}",
+                    "rightValue": "Editeaza Raport",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    {
+      "id": "drive_create_folder",
+      "name": "DRIVE: Create Survey Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [-256, 1216],
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ new Date().toISOString() }}",
+        "folderId": "1WL_IC9v9DAIdMZ0bu1_F8RYdHbci7OeV"
+      }
+    },
+
+    {
+      "id": "docs_create_copy",
+      "name": "DOCS: Create Template Copy",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [192, 1216],
+      "parameters": {
+        "title": "Template_copy"
+      }
+    },
+
+    {
+      "id": "form_page2",
+      "name": "FORM: Survey Data Input",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [416, 1216],
+      "parameters": {
+        "formFields": {
+          "values": [
+            { "fieldLabel": "VESSEL_NAME" },
+            { "fieldLabel": "PORT" },
+            { "fieldLabel": "COUNTRY" },
+            { "fieldLabel": "DATE_FROM" },
+            { "fieldLabel": "DATE_TO" },
+            { "fieldLabel": "YEAR" },
+            { "fieldLabel": "SURVEY_TYPE" },
+            { "fieldLabel": "REPORT_REF" },
+            { "fieldLabel": "REQUESTED_BY" },
+            { "fieldLabel": "CUSTOMER_REF" }
+          ]
+        }
+      }
+    },
+
+    {
+      "id": "http_update_all",
+      "name": "HTTP: Replace All Placeholders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [640, 1200],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{$node[\"DOCS: Create Template Copy\"].json[\"id\"]}}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDocsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{VESSEL_NAME}}\"}, \"replaceText\": \"{{$json.VESSEL_NAME}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{PORT}}\"}, \"replaceText\": \"{{$json.PORT}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{COUNTRY}}\"}, \"replaceText\": \"{{$json.COUNTRY}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{DATE_FROM}}\"}, \"replaceText\": \"{{$json.DATE_FROM}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{DATE_TO}}\"}, \"replaceText\": \"{{$json.DATE_TO}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{YEAR}}\"}, \"replaceText\": \"{{$json.YEAR}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{SURVEY_TYPE}}\"}, \"replaceText\": \"{{$json.SURVEY_TYPE}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{REPORT_REF}}\"}, \"replaceText\": \"{{$json.REPORT_REF}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{REQUESTED_BY}}\"}, \"replaceText\": \"{{$json.REQUESTED_BY}}\"}},\n    {\"replaceAllText\": {\"containsText\": {\"text\": \"{{CUSTOMER_REF}}\"}, \"replaceText\": \"{{$json.CUSTOMER_REF}}\"}}\n  ]\n}"
+      }
+    },
+
+    {
+      "id": "telegram_done",
+      "name": "TELEGRAM: Notify Success",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [864, 1200],
+      "parameters": {
+        "chatId": "1",
+        "text": "Raport generat cu succes ✅"
+      }
+    }
+  ],
+
+  "connections": {
+    "FORM: Main Trigger": {
+      "main": [[{ "node": "SWITCH: Route Action", "type": "main", "index": 0 }]]
+    },
+    "SWITCH: Route Action": {
+      "main": [
+        [{ "node": "DRIVE: Create Survey Folder", "type": "main", "index": 0 }],
+        [],
+        []
+      ]
+    },
+    "DRIVE: Create Survey Folder": {
+      "main": [[{ "node": "DOCS: Create Template Copy", "type": "main", "index": 0 }]]
+    },
+    "DOCS: Create Template Copy": {
+      "main": [[{ "node": "FORM: Survey Data Input", "type": "main", "index": 0 }]]
+    },
+    "FORM: Survey Data Input": {
+      "main": [[{ "node": "HTTP: Replace All Placeholders", "type": "main", "index": 0 }]]
+    },
+    "HTTP: Replace All Placeholders": {
+      "main": [[{ "node": "TELEGRAM: Notify Success", "type": "main", "index": 0 }]]
+    }
+  }
+}

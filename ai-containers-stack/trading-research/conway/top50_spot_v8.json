@@ -1,0 +1,12 @@
+{
+  "name": "top50-spot-v8",
+  "mode": "analysis-only",
+  "repository": "/Users/jay/cryptoG",
+  "collector": ".monitor-venv/bin/python integrations/vibe_automaton/collect_spot_universe.py --top 50 --seconds 86400 --output artifacts/top50-spot-depth",
+  "backtest": "python3 integrations/vibe_automaton/backtest_top50_v8.py",
+  "universe": "top 50 Binance spot USDC pairs by 24h quote volume",
+  "allocation": {"pairs": 50, "per_pair_usdc": 10, "total_usdc": 500},
+  "result": "/Users/jay/cryptoG/artifacts/top50-v8/summary.json",
+  "dashboard": "http://127.0.0.1:8090/automaton.html",
+  "guardrails": {"may_place_orders": false, "may_use_live_credentials": false, "confidence": "very_high"}
+}

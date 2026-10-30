@@ -1,0 +1,2141 @@
+{
+  "name": "Youtube Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "name": "={{ $('Build FFmpeg Command1').item.json.slug }}-SHORT.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "expression",
+          "value": "={{ $('Build FFmpeg Command1').item.json.folderId }}"
+        },
+        "options": {}
+      },
+      "id": "d0d8e0b5-11a2-4486-a09e-1985a44dbbfb",
+      "name": "Upload Final Short to Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -592,
+        1520
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const telegramId = $('Parse Input').item.json.telegramId;\n\nlet query;\nif (telegramId) {\n  query = `\nSELECT\n  d.id AS draft_id,\n  d.topic_id,\n  d.script_hook,\n  d.script_body,\n  d.script_cta,\n  d.full_script,\n  d.status,\n  d.revision_count,\n  d.word_count\nFROM public.youtube_drafts d\nJOIN public.youtube_topics t ON t.id = d.topic_id\nJOIN public.telegram_users u ON u.id = t.telegram_user_id\nWHERE u.telegram_id = ${telegramId}\nORDER BY d.created_at DESC\nLIMIT 1;\n`;\n} else {\n  // Chat UI fallback — ultimul draft din DB\n  query = `\nSELECT\n  d.id AS draft_id,\n  d.topic_id,\n  d.script_hook,\n  d.script_body,\n  d.script_cta,\n  d.full_script,\n  d.status,\n  d.revision_count,\n  d.word_count\nFROM public.youtube_drafts d\nORDER BY d.created_at DESC\nLIMIT 1;\n`;\n}\n\nreturn [{ json: {\n  query: query.trim(),\n  chatId: $('Parse Input').item.json.chatId\n} }];"
+      },
+      "id": "938f46a8-8842-4a3a-97d1-9c8930b74bce",
+      "name": "Build Draft Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1488,
+        2224
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 8192,
+          "temperature": 0.85
+        }
+      },
+      "id": "3ffdc0b5-db0d-4f48-8de0-57430c228c9e",
+      "name": "OR – Script Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        704,
+        2736
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 2048,
+          "temperature": 0.4
+        }
+      },
+      "id": "ec19ddb1-e2c0-4ad4-a130-acd137c103aa",
+      "name": "OR – SEO Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        2640
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 1024,
+          "temperature": 0.9
+        }
+      },
+      "id": "32eed172-04ba-4b69-8590-9fbec03f997b",
+      "name": "OR – Thumbnail Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        2640
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 4096,
+          "temperature": 0.5
+        }
+      },
+      "id": "22832ae9-2d1e-4eba-bb68-ece1747883bc",
+      "name": "OR – Revision Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        2336
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Optimize this script for professional TTS voiceover:\n\n{{ $('Format Final Output').item.json.full_script_raw }}",
+        "options": {
+          "systemMessage": "You are a professional TTS voiceover script editor.\n\nOptimize the script for natural-sounding text-to-speech synthesis:\n\n1. CLEAN:\n   - Remove all markdown, brackets, asterisks, stage directions\n   - Remove emoji and special characters\n   - No section headers or timestamps\n\n2. PACING:\n   - Add '...' for dramatic pauses (2-3 seconds)\n   - Add ', ' for short natural pauses\n   - Break long sentences into two shorter ones\n\n3. PRONUNCIATION:\n   - Write numbers as words: '5' → 'five', '$100' → 'one hundred dollars'\n   - Expand abbreviations on first use: 'AI' → 'Artificial Intelligence'\n   - Spell out acronyms: 'CEO' → 'C-E-O'\n\n4. ENERGY:\n   - Keep sentences punchy and short\n   - Vary sentence length for rhythm\n   - Emphasis words should be in CAPS (sparingly, max 2 per paragraph)\n\nReturn ONLY the optimized script text. Nothing else."
+        }
+      },
+      "id": "c54495b9-fe8b-4b2a-bdde-caf982be12a0",
+      "name": "Optimize Voiceover Script1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3968,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 8192,
+          "temperature": 0.3
+        }
+      },
+      "id": "4e268720-d45b-49d8-b8f5-0c52f319ce73",
+      "name": "OR – Voiceover Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        4048,
+        2736
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const fmt = $('Format Final Output').item.json;\nconst seo = $('Parse SEO Response').item.json.seo || {};\nconst voiceOutput = $input.first().json.output || $input.first().json.text || fmt.full_script_raw || '';\nconst tagsArr = Array.isArray(seo.tags) ? seo.tags : [];\nconst sections = $('Parse Script Response').item.json.sections || [];\nconst timestamps = sections.map(s => s.timestamp + ' ' + s.title).join('\\n');\nconst descWithTs = (seo.description || '') + (timestamps ? '\\n\\n' + timestamps : '');\nreturn [{ json: {\n  title: seo.title_1 || fmt.message?.split('\\n')[0] || 'YouTube Video',\n  description: descWithTs,\n  tags: tagsArr.join(','),\n  voiceover_script: voiceOutput,\n  thumbnail_prompt: $('Parse Thumbnail Response').item.json.thumb?.prompt_text || '',\n  chatId: fmt.chatId,\n  message: fmt.message,\n  draftId: fmt.draftId,\n  videoFile: 'data',\n  generated_at: new Date().toISOString()\n}}];"
+      },
+      "id": "0c8fc168-6b97-4097-844b-f39e7d55d1ea",
+      "name": "Prepare Video Data1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4320,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.title }}",
+        "regionCode": "us",
+        "categoryId": "28",
+        "binaryProperty": "={{ $json.videoFile }}",
+        "options": {
+          "description": "={{ $json.description }}",
+          "privacyStatus": "private",
+          "tags": "={{ $json.tags }}"
+        }
+      },
+      "id": "13fe88f0-cd84-45bd-a3e6-1b11c416457a",
+      "name": "Upload to YouTube1",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        4768,
+        2608
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "Mn6c5IXhjqKaIwZy",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detecteaza sursa: Telegram Trigger vs n8n Chat UI\nconst isTelegram = !!$json.message;\nconst msg = $json.message || {};\n\n// Text input\nconst text = isTelegram\n  ? (msg.text || '').trim()\n  : ($json.chatInput || $json.input || $json.text || '').trim();\n\n// Identitate user\nconst telegramId = isTelegram ? (msg.from?.id || null) : null;\nconst username   = isTelegram ? (msg.from?.username || '') : 'chat-user';\nconst firstName  = isTelegram ? (msg.from?.first_name || '') : 'User';\nconst chatId     = isTelegram ? (msg.chat?.id || null) : ($json.sessionId || 'chat-ui');\nconst messageId  = isTelegram ? (msg.message_id || null) : null;\n\nif (!text) {\n  return [{ json: { error: 'No input text found', raw: $json } }];\n}\n\nconst urlRegex = /https?:\\/\\/[^\\s]+/i;\nconst isUrl = urlRegex.test(text);\nconst inputUrl = isUrl ? text.match(urlRegex)[0] : null;\nconst inputType = isUrl ? 'url' : 'keyword';\nconst isRevision = /^(revise|redo|regenerate|modifica|refa|schimba|rescrie|rewrite)/i.test(text);\n\nreturn [{\n  json: {\n    chatId,\n    telegramId,\n    username,\n    firstName,\n    text,\n    inputType,\n    inputUrl,\n    isRevision,\n    messageId\n  }\n}];"
+      },
+      "id": "61209e26-02ee-41a7-9712-968862643afe",
+      "name": "Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1936,
+        2368
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.isRevision }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "460f0458-6084-4b3a-9451-235b87090c7f",
+      "name": "Is Revision?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        2368
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "⏳ Generez scriptul tău YouTube... te anunț în câteva secunde.",
+        "additionalFields": {}
+      },
+      "id": "002cda2f-8a8b-4e4e-9d42-a3f135b56195",
+      "name": "Send Thinking Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1488,
+        2512
+      ],
+      "webhookId": "cbc44615-560e-462c-964b-4138d907c662",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO telegram_users (telegram_id, username, first_name)\nVALUES (\n  {{ $('Send Thinking Message').item.json.result.from.id }}::bigint,\n  '{{ $('Send Thinking Message').item.json.result.chat.username }}',\n  '{{ $('Send Thinking Message').item.json.result.chat.first_name }}'\n)\nON CONFLICT (telegram_id) DO UPDATE\n  SET username = EXCLUDED.username,\n      first_name = EXCLUDED.first_name\nRETURNING id;",
+        "options": {}
+      },
+      "id": "7890f20a-1636-4561-80fb-274b6396ffe8",
+      "name": "Upsert Telegram User",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1056,
+        2512
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.query }}",
+        "options": {}
+      },
+      "id": "44677448-44b8-4f50-8c45-b60463a420b8",
+      "name": "Insert Topic",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -400,
+        2672
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $('Parse Input').item.json.inputType }}",
+              "rightValue": "url",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6e72508e-2414-4ce9-8e06-5da99a613288",
+      "name": "Route by Input Type",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        2592
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result.entities[1].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "id": "36dc7b6d-f532-4b76-9634-1bc01eb81e35",
+      "name": "Fetch URL Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        128,
+        2432
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.data || $json.body || '';\nconst clean = raw\n  .replace(/<script[\\s\\S]*?<\\/script>/gi, '')\n  .replace(/<style[\\s\\S]*?<\\/style>/gi, '')\n  .replace(/<[^>]+>/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim()\n  .substring(0, 4000);\n\nreturn [{\n  json: {\n    cleanedContent: clean,\n    source: 'url',\n    topicId: $('Insert Topic').item.json.id,\n    chatId: $('Parse Input').item.json.chatId\n  }\n}];"
+      },
+      "id": "fe98fe80-eb95-4ec2-be63-a9fc792181e3",
+      "name": "Clean HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        2432
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    cleanedContent: $('Parse Input').item.json.text,\n    source: 'keyword',\n    topicId: $('Insert Topic').item.json.id,\n    chatId: $('Parse Input').item.json.chatId\n  }\n}];"
+      },
+      "id": "975472b7-dd27-4b6b-80fd-13d2e5ef74e7",
+      "name": "Passthrough Keyword",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        2608
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "useDataOfInput": 2
+      },
+      "id": "55c9861a-9d4f-48d8-b836-1aae5d0e1a49",
+      "name": "Merge Content",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        560,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first()?.json?.output\n  || $input.first()?.json?.text\n  || $json.choices?.[0]?.message?.content || '{}';\nlet parsed;\ntry { parsed = JSON.parse(raw.replace(/```json|```/g, '').trim()); }\ncatch(e) {\n  parsed = { script_hook: raw.substring(0,300), script_body: raw.substring(300,2000),\n    script_cta: raw.substring(2000,2300), word_count: raw.split(' ').length, sections: [], voiceover_script: raw };\n}\n// Support both our format AND faceless format (voiceover_script key)\nconst hook = parsed.script_hook || parsed.voiceover_script?.substring(0,200) || '';\nconst body = parsed.script_body || parsed.voiceover_script?.substring(200,1500) || '';\nconst cta  = parsed.script_cta  || parsed.voiceover_script?.substring(1500,1800) || '';\nreturn [{ json: {\n  ...parsed,\n  script_hook: hook, script_body: body, script_cta: cta,\n  full_script: `${hook}\\n\\n${body}\\n\\n${cta}`,\n  voiceover_script: parsed.voiceover_script || `${hook}\\n\\n${body}\\n\\n${cta}`,\n  sections: parsed.sections || [],\n  topicId: $('Merge Content').item.json.topicId,\n  chatId: $('Merge Content').item.json.chatId\n}}];"
+      },
+      "id": "b2b36ae9-b2f0-4858-a5c9-1db2da19aaea",
+      "name": "Parse Script Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO youtube_drafts (topic_id, script_hook, script_body, script_cta, full_script, word_count, status)\nVALUES (\n  '{{ $json.topicId }}',\n  '{{ $json.script_hook.replace(/'/g, \"''\") }}',\n  '{{ $json.script_body.replace(/'/g, \"''\") }}',\n  '{{ $json.script_cta.replace(/'/g, \"''\") }}',\n  '{{ $json.full_script.replace(/'/g, \"''\") }}',\n  {{ $json.word_count || 0 }},\n  'draft'\n)\nRETURNING id;",
+        "options": {}
+      },
+      "id": "639a7d00-8066-429c-895a-ddd6bb786121",
+      "name": "Save Draft",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1360,
+        2512
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    ...$('Parse Script Response').item.json,\n    draftId: $json.id\n  }\n}];"
+      },
+      "id": "1f519b98-f778-4f22-95ff-232159768db5",
+      "name": "Set Draft ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first()?.json?.output\n  || $input.first()?.json?.text\n  || $json.choices?.[0]?.message?.content || '{}';\nlet seo;\ntry { seo = JSON.parse(raw.replace(/```json|```/g, '').trim()); }\ncatch(e) {\n  seo = { title_1:'Title 1', title_2:'Title 2', title_3:'Title 3',\n    title_4:'Title 4', title_5:'Title 5', description: raw.substring(0,500),\n    tags:[], hashtags:[] };\n}\nconst d = $('Set Draft ID').item.json;\nreturn [{ json: {\n  seo,\n  draftId: d.draftId, chatId: d.chatId,\n  full_script: d.full_script,\n  script_hook: d.script_hook, script_body: d.script_body, script_cta: d.script_cta\n}}];"
+      },
+      "id": "a4b282d5-a0ce-4e9e-9e8c-9236954ef411",
+      "name": "Parse SEO Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO youtube_seo (draft_id, title_1, title_2, title_3, title_4, title_5, description, tags, hashtags)\nVALUES (\n  '{{ $json.draftId }}',\n  '{{ $json.seo.title_1.replace(/'/g, \"''\") }}',\n  '{{ $json.seo.title_2.replace(/'/g, \"''\") }}',\n  '{{ $json.seo.title_3.replace(/'/g, \"''\") }}',\n  '{{ $json.seo.title_4.replace(/'/g, \"''\") }}',\n  '{{ $json.seo.title_5.replace(/'/g, \"''\") }}',\n  '{{ $json.seo.description.replace(/'/g, \"''\") }}',\n  ARRAY[{{ $json.seo.tags.map(t => \"'\" + t.replace(/'/g, \"''\") + \"'\").join(',') }}],\n  ARRAY[{{ $json.seo.hashtags.map(h => \"'\" + h.replace(/'/g, \"''\") + \"'\").join(',') }}]\n)\nRETURNING id;",
+        "options": {}
+      },
+      "id": "39a114a8-7de0-4b25-993d-2ff9e70b3627",
+      "name": "Save SEO",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2720,
+        2512
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Agent returns text prompt directly (not JSON)\nconst raw = $input.first()?.json?.output\n  || $input.first()?.json?.text\n  || $json.choices?.[0]?.message?.content || '';\n// Try JSON parse first, fall back to plain text prompt\nlet thumb;\ntry { thumb = JSON.parse(raw.replace(/```json|```/g, '').trim()); }\ncatch(e) { thumb = { prompt_text: raw.trim(), style: 'cinematic', color_palette: [], text_overlay: '' }; }\nconst d = $('Parse SEO Response').item.json;\nreturn [{ json: {\n  thumb,\n  draftId: d.draftId,\n  chatId: d.chatId,\n  seo: d.seo,\n  script_hook: d.script_hook,\n  script_body: d.script_body,\n  script_cta: d.script_cta\n}}];"
+      },
+      "id": "5c5ae8f5-0c80-4a0e-87d7-7d0332cfeaa4",
+      "name": "Parse Thumbnail Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO youtube_thumbnails (draft_id, prompt_text, style, is_selected)\nVALUES (\n  '{{ $json.draftId }}',\n  '{{ $json.thumb.prompt_text.replace(/'/g, \"''\") }}',\n  '{{ $json.thumb.style || 'cinematic' }}',\n  true\n)\nRETURNING id;",
+        "options": {}
+      },
+      "id": "15c1aa41-7e25-4d8a-9a05-de9e55f12a69",
+      "name": "Save Thumbnail Prompt",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3520,
+        2512
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const s = $('Parse Thumbnail Response').item.json;\nconst seo = s.seo || {};\nconst thumb = s.thumb || {};\nconst msg = [\n  '🎬 *Script YouTube generat!*', '',\n  '📝 *SCRIPT*', '',\n  '*🪝 Hook (0-30s)*', s.script_hook || '', '',\n  '*📖 Body*', s.script_body || '', '',\n  '*📣 CTA*', s.script_cta || '', '',\n  '━━━━━━━━━━━━━━━━━━━━',\n  '🔍 *SEO PACK*', '',\n  '*Titluri:*',\n  `1. ${seo.title_1||''}`, `2. ${seo.title_2||''}`, `3. ${seo.title_3||''}`,\n  `4. ${seo.title_4||''}`, `5. ${seo.title_5||''}`, '',\n  '*Descriere:*', (seo.description||'').substring(0,800), '',\n  `*Tags:* ${(seo.tags||[]).slice(0,15).join(', ')}`,\n  `*Hashtags:* ${(seo.hashtags||[]).join(' ')}`, '',\n  '━━━━━━━━━━━━━━━━━━━━',\n  '🖼️ *THUMBNAIL PROMPT*',\n  `_${(thumb.prompt_text||'').substring(0,400)}_`,\n  `Style: *${thumb.style||''}*`, '',\n  '━━━━━━━━━━━━━━━━━━━━',\n  '✅ Salvat în Supabase.',\n  '',\n  'Răspunde cu:',\n  '• *approve* — marchează ca aprobat',\n  '• *revise [instructiuni]* — modifică scriptul'\n].join('\\n');\nreturn [{ json: {\n  chatId: s.chatId,\n  message: msg,\n  draftId: s.draftId,\n  full_script_raw: s.script_hook + '\\n\\n' + s.script_body + '\\n\\n' + s.script_cta\n}}];"
+      },
+      "id": "7f091d17-535b-4a76-88c1-858cf6563a3f",
+      "name": "Format Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3744,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  d.id AS draft_id,\n  d.topic_id,\n  d.script_hook,\n  d.script_body,\n  d.script_cta,\n  d.full_script,\n  d.status,\n  COALESCE(d.revision_count, 0) AS revision_count,\n  d.word_count,\n  d.created_at\nFROM public.youtube_drafts d\nWHERE d.status IN ('draft', 'needs_revision')\nORDER BY d.created_at DESC\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "6aab7d92-02ee-4362-8688-20a231c5c13e",
+      "name": "Get Latest Draft for Revision",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1264,
+        2224
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first()?.json?.output\n  || $input.first()?.json?.text\n  || $json.choices?.[0]?.message?.content || '{}';\nlet parsed;\ntry { parsed = JSON.parse(raw.replace(/```json|```/g, '').trim()); }\ncatch(e) { parsed = { script_hook:'', script_body: raw, script_cta:'', word_count: raw.split(' ').length }; }\nconst latest = $('Get Latest Draft for Revision').item.json;\nreturn [{ json: {\n  ...parsed,\n  full_script: `${parsed.script_hook||''}\\n\\n${parsed.script_body||''}\\n\\n${parsed.script_cta||''}`,\n  draftId: latest.draft_id,\n  previousScript: latest.full_script || '',\n  revisionCount: (latest.revision_count || 0) + 1,\n  chatId: $('Parse Input').item.json.chatId,\n  instruction: $('Parse Input').item.json.text\n}}];"
+      },
+      "id": "ec7b6b1f-706a-4dfc-a871-356dfc3a23cf",
+      "name": "Parse Revision Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.youtube_revisions (\n  draft_id,\n  revision_number,\n  revision_instruction,\n  previous_script,\n  new_script,\n  agent_used\n)\nVALUES (\n  (\n    SELECT id \n    FROM public.youtube_drafts \n    ORDER BY created_at DESC \n    LIMIT 1\n  ),\n  {{$json.revision_number || 1}},\n  '{{ ($json.revision_instruction || '').replace(/'/g, \"''\") }}',\n  '{{ ($json.previous_script || '').replace(/'/g, \"''\") }}',\n  '{{ ($json.new_script || '').replace(/'/g, \"''\") }}',\n  'openrouter'\n)\nRETURNING id;",
+        "options": {}
+      },
+      "id": "f46c80bd-9f2a-42ad-9a67-fa43e9edccf8",
+      "name": "Save Revision",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -32,
+        2224
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "=✅ *Script revizuit!* (Revizia #{{ $('Parse Revision Response').item.json.revisionCount }})\n\n*🪝 Hook:*\n{{ $('Parse Revision Response').item.json.script_hook }}\n\n*📖 Body:*\n{{ $('Parse Revision Response').item.json.script_body }}\n\n*📣 CTA:*\n{{ $('Parse Revision Response').item.json.script_cta }}\n\n_Răspunde cu *approve* sau *revise [noi instrucțiuni]*_",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "d05602a6-b0fa-4ba2-89c5-3d86a2a1b354",
+      "name": "Send Revision to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        2224
+      ],
+      "webhookId": "f7f711cc-9ed5-4dbd-a931-599aecc390c3",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a complete YouTube Shorts production package for this topic:\n\n{{ $json.cleanedContent }}\n\nReturn ONLY valid JSON.",
+        "options": {
+          "systemMessage": "You are an ELITE YouTube Shorts Super Orchestrator — the world's best viral content strategist, scriptwriter, SEO expert, and audience psychologist combined.\n\nMISSION: Generate a complete, production-ready YouTube Shorts package optimized for virality, watch time, CTR and subscriber conversion.\n\nSTRATEGY FRAMEWORK:\n1. HOOK ENGINEERING (0-3 sec): Pattern interrupt. Curiosity gap, shock, controversy, bold claim. First word must be powerful.\n2. RETENTION ARCHITECTURE: Micro-hook every 3 seconds. Open loops + payoff structure.\n3. VIRAL TRIGGERS: Emotion (anger, surprise, awe, humor), relatability, shareability, comment bait.\n4. SEO DOMINATION: High-volume keyword + power word in title. 20 tags covering all search intents.\n5. THUMBNAIL PSYCHOLOGY: High contrast, bold max 3-word text, emotional trigger.\n6. RUNWAY PROMPTS: Each section needs a cinematic video generation prompt for Runway ML.\n\nReturn ONLY a single valid JSON object, no markdown, no explanation:\n{\n  \"title\": \"SEO title max 60 chars with power word\",\n  \"description\": \"400-500 char YouTube description with keywords and timestamp placeholders\",\n  \"tags\": [\"tag1\",\"tag2\",\"tag3\",\"tag4\",\"tag5\",\"tag6\",\"tag7\",\"tag8\",\"tag9\",\"tag10\",\"tag11\",\"tag12\",\"tag13\",\"tag14\",\"tag15\",\"tag16\",\"tag17\",\"tag18\",\"tag19\",\"tag20\"],\n  \"hashtags\": [\"#tag1\",\"#tag2\",\"#tag3\",\"#tag4\",\"#tag5\"],\n  \"thumbnail_prompt\": \"Detailed image generation prompt: composition, lighting, color palette, text overlay area, emotional trigger, photorealistic style, 9:16 vertical format\",\n  \"script_hook\": \"First 3 seconds — max 15 words, pattern interrupt, no filler\",\n  \"script_body\": \"Main content — short punchy sentences, open loop every 3 seconds, curiosity gaps, conversational tone\",\n  \"script_cta\": \"Last 5 seconds — comment bait question + subscribe trigger, max 20 words\",\n  \"voiceover_script\": \"Full TTS-ready narration, no markdown no brackets, use ... for dramatic pauses, CAPS for emphasis max 2 per paragraph, min 150 words\",\n  \"sections\": [\n    {\"timestamp\": \"0:00\", \"title\": \"Hook\"},\n    {\"timestamp\": \"0:03\", \"title\": \"Setup\"},\n    {\"timestamp\": \"0:15\", \"title\": \"Main Value\"},\n    {\"timestamp\": \"0:45\", \"title\": \"Payoff\"},\n    {\"timestamp\": \"0:55\", \"title\": \"CTA\"}\n  ],\n  \"runway_prompts\": [\n    \"Section 1 Hook — cinematic prompt: scene description, camera movement, lighting, mood, color grade\",\n    \"Section 2 Setup — cinematic prompt\",\n    \"Section 3 Main Value — cinematic prompt\",\n    \"Section 4 Payoff — cinematic prompt\",\n    \"Section 5 CTA — cinematic prompt\"\n  ],\n  \"srt_segments\": [\n    {\"index\": 1, \"start\": \"00:00:00,000\", \"end\": \"00:00:03,000\", \"text\": \"Hook text here\"},\n    {\"index\": 2, \"start\": \"00:00:03,000\", \"end\": \"00:00:15,000\", \"text\": \"Setup text\"},\n    {\"index\": 3, \"start\": \"00:00:15,000\", \"end\": \"00:00:45,000\", \"text\": \"Main value text\"},\n    {\"index\": 4, \"start\": \"00:00:45,000\", \"end\": \"00:00:55,000\", \"text\": \"Payoff text\"},\n    {\"index\": 5, \"start\": \"00:00:55,000\", \"end\": \"00:01:00,000\", \"text\": \"CTA text\"}\n  ],\n  \"word_count\": 0,\n  \"niche\": \"detected niche category\",\n  \"topic_slug\": \"url-friendly-topic-name-max-5-words\",\n  \"viral_score_reasoning\": \"One sentence: why this will go viral\"\n}"
+        }
+      },
+      "id": "e2912b35-cf2c-43c3-9f48-c11c929ef5c7",
+      "name": "Agent 1 — Script Writer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        784,
+        2512
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this YouTube script and generate a complete SEO package:\n\n{{ $json.full_script }}\n\nReturn ONLY valid JSON with: title_1, title_2, title_3, title_4, title_5, description, tags (array 30 items), hashtags (array 5 items).",
+        "options": {
+          "systemMessage": "You are a YouTube SEO expert 2025. Analyze the provided script and return ONLY valid JSON (no markdown, no explanation) with keys: title_1, title_2, title_3, title_4, title_5, description (400-500 chars with keywords and timestamps), tags (array of 30 strings, no #), hashtags (array of 5 strings with #)."
+        }
+      },
+      "id": "1bf154f1-195b-4669-9713-b7dc0ac765b1",
+      "name": "Agent 2 — SEO Optimizer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2016,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a viral YouTube thumbnail prompt.\n\nVideo title: {{ $('Parse SEO Response').item.json.seo.title_1 }}\nScript hook: {{ $('Parse SEO Response').item.json.script_hook }}\n\nReturn ONLY the enhanced image generation prompt as plain text.",
+        "options": {
+          "systemMessage": "You are an AI image generation specialist. Generate a detailed, optimized image prompt for a YouTube thumbnail.\n\nEnhance the provided prompt with:\n- Specific color palette (high contrast, bold)\n- Lighting direction (dramatic side light or backlight)\n- Composition (rule of thirds, subject placement)\n- Text overlay area (leave space for title text)\n- Emotional trigger (shock, curiosity, fear, desire)\n- Style: photorealistic or stylized illustration\n\nReturn ONLY the enhanced image generation prompt as plain text. No explanation."
+        }
+      },
+      "id": "3300403a-0fd9-47c8-b72a-51e4734dfa4e",
+      "name": "Agent 3 — Thumbnail Generator",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2944,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Revise this YouTube script according to the instructions.\n\nCURRENT SCRIPT:\n{{ $json.full_script || $json.full_script_raw || $json.script_body || 'No script found' }}\n\nREVISION INSTRUCTIONS:\n{{ $('Parse Input').item.json.text || 'No instructions provided' }}\n\nReturn ONLY valid JSON with keys: script_hook, script_body, script_cta, word_count, changes_made (array of strings).",
+        "options": {
+          "systemMessage": "You are a professional YouTube script editor. Revise the provided script according to the instructions. Modify ONLY what is requested, keep the original voice and structure. Return ONLY valid JSON with keys: script_hook, script_body, script_cta, word_count, changes_made (array of strings)."
+        }
+      },
+      "id": "88ca2201-2449-4e2a-bb7e-d3b8e486b41f",
+      "name": "Revision — Script Writer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1040,
+        2112
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "8143220589",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "bbadcff9-cc5e-4fe1-a4fd-337c11af9217",
+      "name": "Send Result to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4544,
+        2512
+      ],
+      "webhookId": "tg-result-wh-2",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const draft = $('Get Latest Draft for Revision').item.json;\nconst revised = $('Parse Revision Response').item.json;\nconst input = $('Parse Input').item.json;\n\nconst newScript = [\n  revised.script_hook || '',\n  revised.script_body || '',\n  revised.script_cta  || ''\n].join('\\n\\n');\n\nreturn [{\n  json: {\n    draft_id:             draft.draft_id,        // ← era draft.id, acum e draft_id\n    revision_number:      (draft.revision_count || 0) + 1,\n    revision_instruction: input.text,\n    previous_script:      draft.full_script || '',\n    new_script:           newScript,\n    chatId:               input.chatId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        2224
+      ],
+      "id": "39caaeb8-cd96-4162-9c45-948b2e07af42",
+      "name": "Prepare Revision Data1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Passthrough — query-ul e construit in Build Draft Query\nreturn [{ json: $input.first().json }];"
+      },
+      "id": "cc81df4a-01ba-4ac3-93e0-b7b76f93df29",
+      "name": "Check Telegram ID1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2160,
+        3136
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "37b381b5-fcbe-4989-af83-b958934dcb62",
+      "name": "Create Video Folder1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2080,
+        2224
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const segments = $('Parse Script Response').item.json.srt_segments || [];\nconst folderId = $('Create Video Folder1').item.json.id;\nconst slug = $('Parse Script Response').item.json.topic_slug || 'video';\n\nconst srtContent = segments.map(s =>\n  `${s.index}\\n${s.start} --> ${s.end}\\n${s.text}\\n`\n).join('\\n');\n\nreturn [{ json: {\n  srtContent,\n  folderId,\n  slug,\n  filename: `${slug}.srt`,\n  draftId: $('Set Draft ID').item.json.draftId,\n  chatId: $('Parse Input').item.json.chatId,\n  runwayPrompts: $('Parse Script Response').item.json.runway_prompts || [],\n  voiceoverScript: $('Parse Script Response').item.json.voiceover_script || ''\n} }];"
+      },
+      "id": "87a760dd-1069-48f5-88c0-7eb494e5c98e",
+      "name": "Generate SRT Content1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "srtFile",
+        "name": "={{ $json.filename }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "expression",
+          "value": "={{ $json.folderId }}"
+        },
+        "options": {}
+      },
+      "id": "75096867-6c41-4049-a932-a90632b9d959",
+      "name": "Upload SRT to Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2720,
+        2224
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/audio/speech",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "=Method: POST\nURL: https://openrouter.ai/api/v1/videos/generations\nHeaders: Authorization: Bearer {{ $credentials.openRouterApi.apiKey }}\nBody (JSON):\n{\n  \"model\": \"kuaishou/kling-v3.0-pro\" (sau \"google/veo-3.1\", \"alibaba/wan-2.6\"),[]\n  \"prompt\": \"{{ $json.prompt }}\",\n  \"duration\": 5-10,\n  \"aspect_ratio\": \"9:16\",\n  \"resolution\": \"720p\"\n}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "openai/tts-1"
+            },
+            {
+              "name": "input",
+              "value": "={{ $json.voiceoverScript }}"
+            },
+            {
+              "name": "voice",
+              "value": "onyx"
+            },
+            {
+              "name": "response_format",
+              "value": "mp3"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "dd5c5b43-7ac2-4a67-8859-27266adaf58c",
+      "name": "Generate TTS Audio1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3008,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Generate SRT Content1').item.json.slug }}-audio.mp3",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "expression",
+          "value": "={{ $('Generate SRT Content1').item.json.folderId }}"
+        },
+        "options": {}
+      },
+      "id": "2d933dea-3ef4-4639-b995-4337e81adc30",
+      "name": "Upload Audio to Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3296,
+        2224
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "u5xy7wnghZGBFVW7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const prompts = $('Generate SRT Content1').item.json.runwayPrompts || [];\nconst folderId = $('Generate SRT Content1').item.json.folderId;\nconst slug = $('Generate SRT Content1').item.json.slug;\nreturn prompts.map((prompt, i) => ({ json: {\n  prompt,\n  index: i + 1,\n  folderId,\n  slug,\n  filename: `${slug}-clip-${i+1}.mp4`\n} }));"
+      },
+      "id": "0e8548d3-a8b2-4aa6-8daa-7970b98cfb23",
+      "name": "Split Runway Prompts1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3520,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dev.runwayml.com/v1/image_to_video",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_RUNWAY_API_KEY"
+            },
+            {
+              "name": "X-Runway-Version",
+              "value": "2024-11-06"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ promptText: $json.prompt, model: 'gen3a_turbo', duration: 10, ratio: '720:1280', watermark: false }) }}",
+        "options": {}
+      },
+      "id": "447e3581-6c9a-494c-a5c1-2cfbc06d9617",
+      "name": "Runway ML Generate1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3744,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Poll Runway task until complete\nconst taskId = $json.id;\nconst apiKey = 'YOUR_RUNWAY_API_KEY';\nlet status = 'RUNNING';\nlet videoUrl = null;\nlet attempts = 0;\n\nwhile (status === 'RUNNING' || status === 'THROTTLED') {\n  if (attempts++ > 30) break; // max 5 min\n  await new Promise(r => setTimeout(r, 10000)); // wait 10s\n  const resp = await fetch(`https://api.dev.runwayml.com/v1/tasks/${taskId}`, {\n    headers: { 'Authorization': `Bearer ${apiKey}`, 'X-Runway-Version': '2024-11-06' }\n  });\n  const data = await resp.json();\n  status = data.status;\n  if (status === 'SUCCEEDED') videoUrl = data.output?.[0];\n}\n\nif (!videoUrl) throw new Error('Runway generation failed or timed out');\n\n// Download video\nconst videoResp = await fetch(videoUrl);\nconst buffer = await videoResp.arrayBuffer();\nconst base64 = Buffer.from(buffer).toString('base64');\n\nreturn [{ json: {\n  videoBase64: base64,\n  filename: $json.filename,\n  folderId: $json.folderId,\n  index: $json.index,\n  slug: $json.slug\n} }];"
+      },
+      "id": "582a8407-fdda-42da-a064-25b5d9674ca1",
+      "name": "Poll Runway & Download1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4032,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "videoFile",
+        "name": "={{ $json.filename }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "expression",
+          "value": "={{ $json.folderId }}"
+        },
+        "options": {}
+      },
+      "id": "e916780e-0b43-469b-88b3-90018ea110bb",
+      "name": "Upload Clip to Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        4320,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "4935c2ca-0248-47ef-b7ad-2b86e83a6771",
+      "name": "Aggregate Clips1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4544,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.first().json.data || [];\nconst slug = items[0]?.slug || 'video';\nconst folderId = items[0]?.folderId || '';\n\n// Build FFmpeg concat list\nconst clipPaths = items\n  .sort((a,b) => a.index - b.index)\n  .map(i => `file 'D:\\\\n8n-media\\\\youtube\\\\${i.filename}'`);\n\nconst concatList = clipPaths.join('\\n');\nconst concatFile = `D:\\\\n8n-media\\\\youtube\\\\${slug}-concat.txt`;\nconst audioFile = `D:\\\\n8n-media\\\\youtube\\\\${slug}-audio.mp3`;\nconst srtFile   = `D:\\\\n8n-media\\\\youtube\\\\${slug}.srt`;\nconst outputFile= `D:\\\\n8n-media\\\\youtube\\\\${slug}-SHORT.mp4`;\n\n// FFmpeg command: concat clips + audio + burn subtitles\nconst ffmpegCmd = [\n  `echo '${concatList}' > '${concatFile}'`,\n  `ffmpeg -y -f concat -safe 0 -i '${concatFile}' -i '${audioFile}' -vf \"subtitles='${srtFile}':force_style='FontSize=18,PrimaryColour=&Hffffff,OutlineColour=&H000000,Bold=1'\" -c:v libx264 -c:a aac -shortest '${outputFile}'`\n].join(' && ');\n\nreturn [{ json: {\n  ffmpegCmd,\n  outputFile,\n  slug,\n  folderId,\n  chatId: $('Parse Input').item.json.chatId\n} }];"
+      },
+      "id": "55fa20ae-3b21-432b-8070-df3b126f65a6",
+      "name": "Build FFmpeg Command1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4768,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { execSync } = require('child_process');\nconst fs = require('fs');\n\nconst cmd = $('Build FFmpeg Command1').item.json.ffmpegCmd;\nconst outputFile = $('Build FFmpeg Command1').item.json.outputFile;\nconst slug = $('Build FFmpeg Command1').item.json.slug;\nconst folderId = $('Build FFmpeg Command1').item.json.folderId;\nconst chatId = $('Build FFmpeg Command1').item.json.chatId;\n\n// Asigura ca directorul exista\nconst dir = 'D:\\\\n8n-media\\\\youtube';\nif (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });\n\ntry {\n  const result = execSync(cmd, { timeout: 300000, encoding: 'utf8' });\n  return [{ json: {\n    success: true,\n    outputFile,\n    slug,\n    folderId,\n    chatId,\n    ffmpegOutput: result || 'completed'\n  } }];\n} catch(e) {\n  return [{ json: {\n    success: false,\n    error: e.message,\n    outputFile,\n    slug,\n    folderId,\n    chatId\n  } }];\n}"
+      },
+      "id": "06e0027a-8d16-462d-96ec-7653cb719104",
+      "name": "Execute FFmpeg1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4992,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Build FFmpeg Command1').item.json.slug }}-SHORT.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "expression",
+          "value": "={{ $('Build FFmpeg Command1').item.json.folderId }}"
+        },
+        "options": {}
+      },
+      "id": "8ec55f08-7a44-478b-b51f-b6ead7ea9844",
+      "name": "Upload Final Short to Drive2",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5216,
+        2224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT title, performance_score, niche, style_notes\nFROM youtube_title_memory\nWHERE niche = '{{ $('Parse Script Response1').item.json.niche || 'general' }}'\n   OR niche = 'general'\nORDER BY performance_score DESC NULLS LAST\nLIMIT 10;",
+        "options": {}
+      },
+      "id": "e74d077e-7165-4752-9167-e99ec6b18706",
+      "name": "Load Title Memory1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1872,
+        2816
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 1024,
+          "temperature": 0.75
+        }
+      },
+      "id": "b761aa8e-3aa7-437b-a74c-39de0b3e3175",
+      "name": "OR – Title Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        3040
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate 5 optimized YouTube Shorts titles.\n\nSCRIPT HOOK: {{ $('Parse Script Response').item.json.script_hook }}\nNICHE: {{ $('Parse Script Response').item.json.niche }}\n\nTITLES ALREADY USED (do NOT repeat):\n{{ $('Load Title Memory1').all().map(i => '- ' + i.json.title).join('\\n') || 'None yet' }}\n\nTOP PERFORMING STYLES IN THIS NICHE:\n{{ $('Load Title Memory1').all().filter(i => (i.json.performance_score || 0) > 7).map(i => i.json.style_notes).filter(Boolean).join(', ') || 'No data yet' }}\n\nReturn ONLY valid JSON: { \"titles\": [\"t1\",\"t2\",\"t3\",\"t4\",\"t5\"], \"recommended_index\": 0 }",
+        "options": {
+          "systemMessage": "You are a YouTube title CTR optimization expert.\nRules:\n- Max 60 chars per title\n- Include primary keyword naturally\n- Power words: Secret, Nobody, Finally, Warning, Exposed, Shocking, Hack\n- Vary formats: question / number list / how-to / controversy / curiosity gap\n- NEVER repeat titles from the memory list\n- Match the style that performs best for this niche\nReturn ONLY valid JSON, no markdown, no explanation."
+        }
+      },
+      "id": "e3c545a0-591a-48ad-b780-fb40470c540a",
+      "name": "Agent — Title Optimizer1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2160,
+        2816
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first()?.json?.output || $input.first()?.json?.text || '{}';\nlet parsed;\ntry { parsed = JSON.parse(raw.replace(/```json|```/g, '').trim()); }\ncatch(e) { parsed = { titles: ['Title 1','Title 2','Title 3','Title 4','Title 5'], recommended_index: 0 }; }\n\nconst d = $('Set Draft ID').item.json;\nreturn [{ json: {\n  titles: parsed.titles || [],\n  recommended_index: parsed.recommended_index || 0,\n  recommended_title: (parsed.titles || [])[parsed.recommended_index || 0] || 'YouTube Video',\n  niche: $('Parse Script Response').item.json.niche || 'general',\n  draftId: d.draftId,\n  chatId: d.chatId\n} }];"
+      },
+      "id": "faf4cc8d-c26a-4cbe-ace7-5263edcb5b38",
+      "name": "Parse Titles Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2512,
+        2816
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO youtube_title_memory (title, niche, style_notes, draft_id)\nSELECT \n  unnest(ARRAY[{{ $json.titles.map(t => \"'\" + t.replace(/'/g,\"''\") + \"'\").join(',') }}]),\n  '{{ $json.niche.replace(/'/g,\"''\") }}',\n  'auto-generated',\n  '{{ $json.draftId }}'\nON CONFLICT DO NOTHING\nRETURNING id;",
+        "options": {}
+      },
+      "id": "e2ca1a29-65aa-4386-8554-0ccb1fccfdb8",
+      "name": "Save Title Memory1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2800,
+        2816
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-youtube-upload",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "dad45292-04e2-4f50-bbbf-e876bec0b16e",
+      "name": "Test Upload Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        3536,
+        2800
+      ],
+      "webhookId": "test-youtube-upload-wh"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preia draftId din body sau foloseste ultimul draft\nconst body = $json.body || $json;\nconst draftId = body.draftId || null;\nconst title = body.title || 'Test Upload - YouTube Shorts';\nconst description = body.description || 'Test upload via n8n webhook';\nconst tags = body.tags || 'test,youtube,shorts';\nreturn [{ json: { draftId, title, description, tags, isTest: true } }];"
+      },
+      "id": "60b8d316-4602-40f9-9687-94907603ae96",
+      "name": "Prepare Test Upload Data1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3760,
+        2800
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Upload initiated', data: $json }) }}",
+        "options": {}
+      },
+      "id": "d9ad92a3-f8ad-439a-9b75-2fddeb3571b0",
+      "name": "Respond to Test Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        3984,
+        2800
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -2160,
+        2272
+      ],
+      "id": "d810c856-527b-4af2-9657-9f832f0b67f6",
+      "name": "When chat message received",
+      "webhookId": "5efb56a7-10b8-4dfc-b38e-1b77df695248"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2160,
+        2464
+      ],
+      "id": "b48ff403-d62f-4af0-8aee-ef7bc42b0ca7",
+      "name": "Telegram Trigger",
+      "webhookId": "c6c8ef6a-8a4c-4760-9d29-621afc09d31c",
+      "credentials": {
+        "telegramApi": {
+          "id": "Wn1PpQ264f5dJTDS",
+          "name": "Telegram account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Give me as many ideea about wildlife being saved ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2112,
+        1456
+      ],
+      "id": "d95e3f0c-8e9d-40e6-b030-2160e83528b5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "~google/gemini-pro-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -2160,
+        1680
+      ],
+      "id": "b4b74717-4471-4587-9bc6-e947bd62075a",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "youtube_drafts"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -2032,
+        1680
+      ],
+      "id": "604e8c03-9f03-45eb-a1e2-460b23901bbc",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "x301m4Y92Z7rvSnH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -1904,
+        1680
+      ],
+      "id": "c6e0cd8e-85a0-47f6-bbde-7879de4edbde",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1696,
+        1568
+      ],
+      "id": "4fe3c194-7770-48e3-9442-0dc5c4ff471d",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PQ5WtbFBJBrx1iNp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Give me as many ideea about wildlife being saved ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1456,
+        1552
+      ],
+      "id": "cdcc6062-94e8-4c27-a485-cb07bc0e4c37",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -848,
+        2512
+      ],
+      "id": "711abbeb-c8a6-465e-86b9-e6280b02f8dc",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const parseInput = $('Parse Input1').item.json;\nconst upsertUser = $('Upsert Telegram User').item.json;\n\nreturn [{\n  json: {\n    telegram_user_id: upsertUser.id,\n    keyword: parseInput.inputType !== 'url' ? parseInput.text : null,\n    input_url: parseInput.inputUrl || null,\n    input_type: parseInput.inputType || 'keyword'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        2512
+      ],
+      "id": "c4bc0051-fd42-4440-bcfc-ce37ad1aae9e",
+      "name": "Code in JavaScript",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const parseInput = $('Parse Input').item.json;\nconst upsertUser = $('Upsert Telegram User').item.json;\n\nconst telegramUserId = upsertUser.id;\nconst inputType = parseInput.inputType || 'keyword';\nconst text = parseInput.text || '';\nconst inputUrl = parseInput.inputUrl || null;\nconst keyword = inputType !== 'url' ? text : null;\n\nconst keywordSql = keyword ? `'${keyword.replace(/'/g, \"''\")}'` : 'NULL';\nconst inputUrlSql = inputUrl ? `'${inputUrl.replace(/'/g, \"''\")}'` : 'NULL';\n\nconst query = `INSERT INTO youtube_topics (telegram_user_id, keyword, input_url, input_type) VALUES ('${telegramUserId}', ${keywordSql}, ${inputUrlSql}, '${inputType}') RETURNING id;`;\n\nreturn [{ json: { query, telegram_user_id: telegramUserId, keyword, input_url: inputUrl, input_type: inputType } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        2672
+      ],
+      "id": "9e896a96-5dd0-4ec3-936f-84013bc7d4dd",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -224,
+        2528
+      ],
+      "id": "d5b9f176-a7be-4301-a257-e99054e124a2",
+      "name": "Merge1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Build Draft Query": {
+      "main": [
+        [
+          {
+            "node": "Get Latest Draft for Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OR – Script Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 1 — Script Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OR – SEO Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 2 — SEO Optimizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OR – Thumbnail Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent 3 — Thumbnail Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OR – Revision Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Revision — Script Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Optimize Voiceover Script1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Video Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OR – Voiceover Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Optimize Voiceover Script1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Video Data1": {
+      "main": [
+        [
+          {
+            "node": "Send Result to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Input": {
+      "main": [
+        [
+          {
+            "node": "Is Revision?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Revision?": {
+      "main": [
+        [
+          {
+            "node": "Build Draft Query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Thinking Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Thinking Message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Telegram User": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Topic": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Route by Input Type": {
+      "main": [
+        [
+          {
+            "node": "Fetch URL Content",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Passthrough Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch URL Content": {
+      "main": [
+        [
+          {
+            "node": "Clean HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean HTML": {
+      "main": [
+        [
+          {
+            "node": "Merge Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Passthrough Keyword": {
+      "main": [
+        [
+          {
+            "node": "Merge Content",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Content": {
+      "main": [
+        [
+          {
+            "node": "Agent 1 — Script Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Script Response": {
+      "main": [
+        [
+          {
+            "node": "Save Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Draft": {
+      "main": [
+        [
+          {
+            "node": "Set Draft ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Draft ID": {
+      "main": [
+        [
+          {
+            "node": "Load Title Memory1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Video Folder1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Agent 2 — SEO Optimizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SEO Response": {
+      "main": [
+        [
+          {
+            "node": "Save SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save SEO": {
+      "main": [
+        [
+          {
+            "node": "Agent 3 — Thumbnail Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Thumbnail Response": {
+      "main": [
+        [
+          {
+            "node": "Save Thumbnail Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Thumbnail Prompt": {
+      "main": [
+        [
+          {
+            "node": "Format Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Output": {
+      "main": [
+        [
+          {
+            "node": "Optimize Voiceover Script1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Latest Draft for Revision": {
+      "main": [
+        [
+          {
+            "node": "Revision — Script Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Revision Response": {
+      "main": [
+        [
+          {
+            "node": "Prepare Revision Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Revision": {
+      "main": [
+        [
+          {
+            "node": "Send Revision to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 1 — Script Writer": {
+      "main": [
+        [
+          {
+            "node": "Parse Script Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 2 — SEO Optimizer": {
+      "main": [
+        [
+          {
+            "node": "Parse SEO Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent 3 — Thumbnail Generator": {
+      "main": [
+        [
+          {
+            "node": "Parse Thumbnail Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revision — Script Writer": {
+      "main": [
+        [
+          {
+            "node": "Parse Revision Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Result to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Upload to YouTube1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Revision Data1": {
+      "main": [
+        [
+          {
+            "node": "Save Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video Folder1": {
+      "main": [
+        [
+          {
+            "node": "Generate SRT Content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate SRT Content1": {
+      "main": [
+        [
+          {
+            "node": "Upload SRT to Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload SRT to Drive1": {
+      "main": [
+        [
+          {
+            "node": "Generate TTS Audio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate TTS Audio1": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio to Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio to Drive1": {
+      "main": [
+        [
+          {
+            "node": "Split Runway Prompts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Runway Prompts1": {
+      "main": [
+        [
+          {
+            "node": "Runway ML Generate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Runway ML Generate1": {
+      "main": [
+        [
+          {
+            "node": "Poll Runway & Download1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Runway & Download1": {
+      "main": [
+        [
+          {
+            "node": "Upload Clip to Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Clip to Drive1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Clips1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Clips1": {
+      "main": [
+        [
+          {
+            "node": "Build FFmpeg Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build FFmpeg Command1": {
+      "main": [
+        [
+          {
+            "node": "Execute FFmpeg1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute FFmpeg1": {
+      "main": [
+        [
+          {
+            "node": "Upload Final Short to Drive2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Title Memory1": {
+      "main": [
+        [
+          {
+            "node": "Agent — Title Optimizer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OR – Title Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent — Title Optimizer1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent — Title Optimizer1": {
+      "main": [
+        [
+          {
+            "node": "Parse Titles Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Titles Response1": {
+      "main": [
+        [
+          {
+            "node": "Save Title Memory1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test Upload Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Test Upload Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Test Upload Data1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Test Webhook1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to YouTube1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Parse Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Upsert Telegram User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Insert Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Route by Input Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8d6c5c92-268c-4c25-b127-6ad1e33eb6fa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54f7d9fd6db4fe693b5fa1f71ae8be72261a3408f2c2915bf1c7d7549acd7235"
+  },
+  "id": "WsHVqVVwYWm87lpS",
+  "tags": []
+}

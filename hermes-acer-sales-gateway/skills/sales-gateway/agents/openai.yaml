@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sales Gateway"
+  short_description: "Qualify maritime leads and prepare safe sales follow-ups"
+  default_prompt: "Qualify this maritime sales lead and draft the next action without sending anything."

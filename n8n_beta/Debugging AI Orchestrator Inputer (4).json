@@ -1,0 +1,337 @@
+{
+  "name": "Debugging AI Orchestrator Inputer",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "~google/gemini-pro-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        336
+      ],
+      "id": "530a0031-bddf-4f13-8c10-1f1b7f72f19f",
+      "name": "OpenRouter Chat Model28",
+      "credentials": {
+        "openRouterApi": {
+          "id": "qg58l9TqaKDkQqLV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw =\n  $input.first().json.text ||\n  $input.first().json.content?.[0]?.text ||\n  '';\n\nconst cleaned = raw\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nconst start = cleaned.indexOf('{');\nconst end = cleaned.lastIndexOf('}');\n\nif (start === -1 || end === -1) {\n  throw new Error('No valid JSON object found');\n}\n\nconst jsonString = cleaned.substring(start, end + 1);\n\ntry {\n  const parsed = JSON.parse(jsonString);\n  return [{ json: parsed }];\n} catch (e) {\n  throw new Error(\n    'JSON parse failed: ' +\n    e.message +\n    '\\n\\nJSON:\\n' +\n    jsonString.substring(0, 3000)\n  );\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        128
+      ],
+      "id": "29a6b141-c537-4a16-b395-887e5a17088e",
+      "name": "Parser"
+    },
+    {
+      "parameters": {
+        "tableId": "report_chunks",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "report_ref",
+              "fieldValue": "={{ $json.report_ref }}"
+            },
+            {
+              "fieldId": "chapter_number",
+              "fieldValue": "={{ $json.chapter_number }}"
+            },
+            {
+              "fieldId": "chapter_title",
+              "fieldValue": "={{ $json.chapter_title }}"
+            },
+            {
+              "fieldId": "subchapter_number",
+              "fieldValue": "={{ $json.subchapter_number }}"
+            },
+            {
+              "fieldId": "subchapter_title",
+              "fieldValue": "={{ $json.subchapter_title }}"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        224,
+        96
+      ],
+      "id": "d2c3f469-e28b-417d-8f69-c8b07ede3391",
+      "name": "Insert in documents1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ddl32EylulsduxTJ",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "PDF",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "pdf input",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -1120,
+        -80
+      ],
+      "id": "7690f56d-8e61-4103-8010-fa87ceb656c8",
+      "name": "On form submission",
+      "webhookId": "af3ddeae-abe7-4eee-b059-903585d63cad"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "pdf_input",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -704,
+        -80
+      ],
+      "id": "01220b83-b2dc-4989-bc7a-1e6e6edefa02",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\n\n// Vezi exact ce binary fields există\nconst binaryKeys = Object.keys(item.binary || {});\nconsole.log('Binary keys found:', binaryKeys);\n\n// Ia primul binary field indiferent de nume\nif (binaryKeys.length === 0) {\n  throw new Error('No binary data found. Keys: ' + JSON.stringify(Object.keys(item.json)));\n}\n\nreturn [{\n  json: item.json,\n  binary: item.binary\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        -80
+      ],
+      "id": "c0e7abc4-fe99-4c2d-b540-c6c8fcdf5bca",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the document below and extract its real content.\n\nExtract these header fields:\n- report_ref: the report reference number (e.g. PL019_2026)\n- vessel_name: name of the vessel\n- port: port of discharge\n- survey_date: date of survey in YYYY-MM-DD format\n- bl_number: Bill of Lading number\n- shipper: shipper company name\n- consignee: consignee company name\n\nExtract every chapter AND subchapter as individual chunks.\n\nReturn exactly this structure (replace all values with real content from the document):\n{\n  \"report_ref\": \"<extracted value>\",\n  \"vessel_name\": \"<extracted value>\",\n  \"port\": \"<extracted value>\",\n  \"survey_date\": \"<YYYY-MM-DD>\",\n  \"bl_number\": \"<extracted value>\",\n  \"shipper\": \"<extracted value>\",\n  \"consignee\": \"<extracted value>\",\n  \"chunks\": [\n    {\n      \"chapter_number\": 1,\n      \"chapter_title\": \"<real title>\",\n      \"subchapter_number\": null,\n      \"subchapter_title\": null,\n      \"content\": \"<full text of this chapter>\"\n    },\n    {\n      \"chapter_number\": 7,\n      \"chapter_title\": \"<real title>\",\n      \"subchapter_number\": \"7.1\",\n      \"subchapter_title\": \"<real subchapter title>\",\n      \"content\": \"<full text of subchapter 7.1>\"\n    }\n  ]\n}\n\nRules:\n- Every subchapter (4.1, 4.2, 6.1, 7.1, 7.2 etc.) must be a separate chunk\n- content must contain the complete text of that section\n- Use only information present in the document\n- Return ONLY the JSON object, no explanation\n\nDocument:\n{{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a document processing orchestrator. Return ONLY a valid JSON object. No explanation, no markdown, no backticks."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1040,
+        144
+      ],
+      "id": "0e24bf20-3ebb-4bae-b55d-835ba037dcb4",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => ({\n  json: {\n    report_ref: item.json.report_ref || null,\n    vessel_name: item.json.vessel_name || null,\n    port: item.json.port || null,\n    survey_date: item.json.survey_date || null,\n    bl_number: item.json.bl_number || null,\n    shipper: item.json.shipper || null,\n    consignee: item.json.consignee || null,\n    chapter_number: item.json.chapter_number,\n    chapter_title: item.json.chapter_title,\n    subchapter_number: item.json.subchapter_number || null,\n    subchapter_title: item.json.subchapter_title || null,\n    content: item.json.content\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        128
+      ],
+      "id": "0ec75347-1721-4822-91cc-af8ee70e76b8",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// Inserează raportul master separat via HTTP sau Supabase node\n// Pasează chunks mai departe cu report_ref atasat\nreturn data.chunks.map(chunk => ({\n  json: {\n    report_ref: data.report_ref,\n    chapter_number: chunk.chapter_number,\n    chapter_title: chunk.chapter_title,\n    subchapter_number: chunk.subchapter_number || null,\n    subchapter_title: chunk.subchapter_title || null,\n    content: chunk.content\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        128
+      ],
+      "id": "9acb2033-29eb-4de9-8a77-a1de605458c6",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fflsiogofkuwaeqzcrff.supabase.co/rest/v1/reports",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmbHNpb2dvZmt1d2FlcXpjcmZmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODg4ODA2NywiZXhwIjoyMDk0NDY0MDY3fQ.jJE-F3eL8f8OFMh4fTYNtulpn2fR9_3v3PDtkMtw-BE"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer <service_role_key>"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"report_ref\": \"{{ $json.report_ref }}\",\n  \"vessel_name\": \"{{ $('Parser').item.json.vessel_name }}\",\n  \"port\": \"{{ $json.port }}\",\n  \"survey_date\": \"{{ $json.survey_date }}\",\n  \"bl_number\": \"{{ $json.bl_number }}\",\n  \"shipper\": \"{{ $json.shipper }}\",\n  \"consignee\": \"{{ $json.consignee }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -208,
+        128
+      ],
+      "id": "ac5c7918-b0d1-4db4-bdb4-6c80a64ecd7a",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenRouter Chat Model28": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Insert in documents1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6b6dd179-a659-453b-bc60-3bea562a703d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54f7d9fd6db4fe693b5fa1f71ae8be72261a3408f2c2915bf1c7d7549acd7235"
+  },
+  "id": "NHsnFJWxIURg3Zqc",
+  "tags": []
+}

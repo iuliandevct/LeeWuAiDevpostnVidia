@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Loading Surveyor - Cargo Details Continued</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-container {
+            width: 595px;
+            min-height: 842px;
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #1a3a52 0%, #2d5a7b 100%);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .logo-mini {
+            width: 28px;
+            height: 28px;
+            background: #1a3a52;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mini::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .ref-info {
+            text-align: right;
+            font-size: 9px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .ref-info strong {
+            color: #1a3a52;
+            font-weight: 600;
+        }
+
+        .cargo-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+        }
+
+        .cargo-table thead {
+            background: linear-gradient(135deg, #1a3a52 0%, #2d5a7b 100%);
+            color: white;
+        }
+
+        .cargo-table th {
+            padding: 8px 5px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #1a3a52;
+            font-size: 7.5px;
+        }
+
+        .cargo-table td {
+            padding: 6px 5px;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            line-height: 1.4;
+        }
+
+        .cargo-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .cargo-table tbody tr:hover {
+            background: #e3f2fd;
+        }
+
+        .case-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        .weight-column {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .dimension-column {
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: #adb5bd;
+        }
+
+        .page-number {
+            font-weight: 600;
+            color: #1a3a52;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .page-container {
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header-bar"></div>
+
+        <div class="page-header">
+            <div class="logo-mini"></div>
+            <div class="ref-info">
+                <div><strong>LOADING SURVEY</strong></div>
+                <div>Ref. No. <strong>AIG.1390.1_2024</strong></div>
+            </div>
+        </div>
+
+        <table class="cargo-table">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Case no.</th>
+                    <th style="width: 35%;">Description</th>
+                    <th style="width: 10%;">Net [kg]</th>
+                    <th style="width: 10%;">Gross [kg]</th>
+                    <th style="width: 8%;">L [cm]</th>
+                    <th style="width: 8%;">W [cm]</th>
+                    <th style="width: 8%;">H [cm]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="case-number">M005-22-93</td>
+                    <td>HV Bushing</td>
+                    <td class="weight-column">570</td>
+                    <td class="weight-column">900</td>
+                    <td class="dimension-column">482</td>
+                    <td class="dimension-column">77</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-23-93</td>
+                    <td>HV Bushing</td>
+                    <td class="weight-column">570</td>
+                    <td class="weight-column">900</td>
+                    <td class="dimension-column">482</td>
+                    <td class="dimension-column">77</td>
+                    <td class="dimension-column">98</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-24-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-25-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-26-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-27-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-28-93</td>
+                    <td>LV Bushing</td>
+                    <td class="weight-column">125</td>
+                    <td class="weight-column">180</td>
+                    <td class="dimension-column">312</td>
+                    <td class="dimension-column">67</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-29-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-30-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-31-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-32-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-33-93</td>
+                    <td>Stabilizing sleeve</td>
+                    <td class="weight-column">40</td>
+                    <td class="weight-column">100</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">47</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-34-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">228</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-35-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">228</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-36-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">92</td>
+                    <td class="dimension-column">188</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-37-93</td>
+                    <td>ascending flanged base</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">92</td>
+                    <td class="dimension-column">188</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-38-93</td>
+                    <td>Accessories</td>
+                    <td class="weight-column">450</td>
+                    <td class="weight-column">600</td>
+                    <td class="dimension-column">262</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-39-93</td>
+                    <td>spare parts</td>
+                    <td class="weight-column">150</td>
+                    <td class="weight-column">250</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">102</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-40-93</td>
+                    <td>Pipe</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">412</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-41-93</td>
+                    <td>Cabine Feet</td>
+                    <td class="weight-column">1000</td>
+                    <td class="weight-column">1200</td>
+                    <td class="dimension-column">332</td>
+                    <td class="dimension-column">112</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-42-93</td>
+                    <td>stents</td>
+                    <td class="weight-column">600</td>
+                    <td class="weight-column">700</td>
+                    <td class="dimension-column">132</td>
+                    <td class="dimension-column">112</td>
+                    <td class="dimension-column">108</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-43-93</td>
+                    <td>High pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">262</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-44-93</td>
+                    <td>High pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">282</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-45-93</td>
+                    <td>Low pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">262</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-46-93</td>
+                    <td>Low pressure side return oil tank</td>
+                    <td class="weight-column">300</td>
+                    <td class="weight-column">450</td>
+                    <td class="dimension-column">282</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">78</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-47-93</td>
+                    <td>Return pipe</td>
+                    <td class="weight-column">450</td>
+                    <td class="weight-column">600</td>
+                    <td class="dimension-column">212</td>
+                    <td class="dimension-column">182</td>
+                    <td class="dimension-column">68</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-48-93</td>
+                    <td>Switching switch</td>
+                    <td class="weight-column">1700</td>
+                    <td class="weight-column">2000</td>
+                    <td class="dimension-column">192</td>
+                    <td class="dimension-column">162</td>
+                    <td class="dimension-column">258</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-49-93</td>
+                    <td>on-line monitoring device</td>
+                    <td class="weight-column">500</td>
+                    <td class="weight-column">650</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">122</td>
+                    <td class="dimension-column">228</td>
+                </tr>
+                <tr>
+                    <td class="case-number">M005-50-93</td>
+                    <td>stents</td>
+                    <td class="weight-column">250</td>
+                    <td class="weight-column">400</td>
+                    <td class="dimension-column">332</td>
+                    <td class="dimension-column">152</td>
+                    <td class="dimension-column">88</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <span>MS 'ARETA'</span>
+            <span class="page-number">Page 5 of 45</span>
+        </div>
+    </div>
+</body>
+</html>

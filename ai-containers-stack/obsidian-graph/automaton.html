@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conway Automaton Console</title>
+  <style>
+    :root{color-scheme:dark;--bg:#05060b;--card:#0a0d16;--line:#262b38;--text:#eef0f6;--dim:#8b91a3;--gold:#f4c76a;--green:#62f3a5}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 70% 5%,#131727 0,transparent 35%),var(--bg);color:var(--text);font:14px ui-monospace,SFMono-Regular,Menlo,monospace}
+    main{max-width:1100px;margin:auto;padding:44px 24px}.eyebrow{color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-size:11px}h1{font:700 38px system-ui;margin:10px 0}p{color:var(--dim);line-height:1.65}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}.card{background:rgba(10,13,22,.9);border:1px solid var(--line);border-radius:16px;padding:20px}.label{color:var(--dim);font-size:11px;text-transform:uppercase}.value{font-size:22px;margin-top:10px}.setup{color:var(--gold)}.online{color:var(--green)}a{color:var(--text);text-decoration:none;border:1px solid var(--line);padding:12px 16px;border-radius:10px;display:inline-block;margin:6px 8px 6px 0}a:hover{border-color:var(--gold)}pre{white-space:pre-wrap;color:#b6bbca}.pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);animation:p 1.4s infinite}@keyframes p{50%{opacity:.3;transform:scale(.65)}}@media(max-width:720px){.grid{grid-template-columns:1fr}h1{font-size:29px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow"><span class="pulse"></span> isolated agent runtime</div>
+  <h1>Conway Automaton</h1>
+  <p>Consolă locală read-only pentru starea containerului, bridge-ul Supabase și observabilitate. Agentul nu este finanțat și nu rulează autonom până la configurarea explicită.</p>
+  <div class="grid">
+    <section class="card"><div class="label">Runtime</div><div class="value setup" id="runtime">SETUP</div></section>
+    <section class="card"><div class="label">Supabase bridge</div><div class="value online">30 sec</div></section>
+    <section class="card"><div class="label">Auto-replication</div><div class="value">OFF</div></section>
+  </div>
+  <a href="http://localhost:3000/d/automaton-observability">Open Grafana metrics</a>
+  <a href="/?focus=automaton">Back to Obsidian graph</a>
+  <section class="card" style="margin-top:22px">
+    <div class="label">Trading research integration</div>
+    <div class="value online">TOP 50 V8 · SHADOW</div>
+    <p>Top 50 perechi spot USDC, 10 USDC/pereche, TP 0,5% cu trailing și filtru very-high-confidence. Execuția rămâne dezactivată.</p>
+    <a href="http://127.0.0.1:8899/agent">Open VibeTrading Agent</a>
+    <a href="http://127.0.0.1:8899/">Open VibeTrading</a>
+    <a href="http://localhost:8091/trading">Open V8 JSON</a>
+    <pre id="trading">Loading trading research…</pre>
+  </section>
+  <section class="card" style="margin-top:22px">
+    <div class="label">Live stack response</div>
+    <pre id="details">Connecting…</pre>
+  </section>
+</main>
+<script>
+async function refresh(){
+  try{
+    const response=await fetch('http://localhost:8091/status',{cache:'no-store'});
+    const payload=await response.json();
+    const agent=(payload.services||[]).find(s=>s.id==='automaton');
+    document.getElementById('runtime').textContent=agent?.state==='online'?'SETUP · CONTAINER ONLINE':'SETUP · '+(agent?.state||'UNKNOWN').toUpperCase();
+    document.getElementById('details').textContent=JSON.stringify({automaton:agent,summary:payload.summary,updated_at:payload.updated_at},null,2);
+  }catch(error){document.getElementById('details').textContent='Graph API unavailable: '+error.message}
+}
+async function refreshTrading(){
+  try{
+    const response=await fetch('http://localhost:8091/trading',{cache:'no-store'});
+    const payload=await response.json();
+    document.getElementById('trading').textContent=JSON.stringify(payload,null,2);
+  }catch(error){document.getElementById('trading').textContent='Trading status unavailable: '+error.message}
+}
+refresh();refreshTrading();setInterval(refresh,5000);setInterval(refreshTrading,5000);
+</script>
+</body>
+</html>

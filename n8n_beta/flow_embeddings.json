@@ -1,0 +1,258 @@
+{
+  "name": "RAG Ingestion - Google Drive to Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": "Incoming Reports"
+      },
+      "id": "1",
+      "name": "Google Drive Trigger",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{$json[\"id\"]}}"
+      },
+      "id": "2",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const fileName = $json.name || '';\nconst ext = fileName.split('.').pop().toLowerCase();\nreturn [{json:{...$json,file_name:fileName,file_type:ext}}];"
+      },
+      "id": "3",
+      "name": "Detect File Type",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const text = $json.text || $json.content || $json.rawText || '';\nconst clean = text.replace(/\\s+/g,' ').trim();\nreturn [{json:{...$json,raw_text:clean}}];"
+      },
+      "id": "4",
+      "name": "Normalize Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const match = $json.file_name.match(/LP-\\d{4}-\\d+/);\nreturn [{json:{...$json,report_ref:match ? match[0] : null}}];"
+      },
+      "id": "5",
+      "name": "Extract Report Ref",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id from surveys where report_ref = '{{$json[\"report_ref\"]}}' limit 1;"
+      },
+      "id": "6",
+      "name": "Find Survey",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "document_files",
+        "columns": "survey_id,file_name,file_type,source,google_drive_id,raw_text",
+        "additionalFields": {},
+        "values": "={{[$json[\"id\"],$node[\"Detect File Type\"].json[\"file_name\"],$node[\"Detect File Type\"].json[\"file_type\"],\"gdrive\",$node[\"Google Drive Trigger\"].json[\"id\"],$node[\"Normalize Text\"].json[\"raw_text\"]]}}"
+      },
+      "id": "7",
+      "name": "Insert Document File",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const text = $node['Normalize Text'].json.raw_text;\nconst surveyId = $node['Find Survey'].json.id;\nconst fileId = $json.id;\nconst size = 1000;\nconst overlap = 150;\nlet out=[];\nlet idx=0;\nfor(let i=0;i<text.length;i+=(size-overlap)){\n out.push({survey_id:surveyId,file_id:fileId,chunk_index:idx++,content:text.slice(i,i+size)});\n}\nreturn out.map(x=>({json:x}));"
+      },
+      "id": "8",
+      "name": "Split Chunks",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://openrouter.ai/api/v1/embeddings",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "headerParametersJson": "{\n  \"Authorization\":\"Bearer YOUR_OPENROUTER_KEY\",\n  \"Content-Type\":\"application/json\"\n}",
+        "bodyParametersJson": "{\n  \"model\":\"text-embedding-3-small\",\n  \"input\":\"{{$json[\"content\"]}}\"\n}"
+      },
+      "id": "9",
+      "name": "Create Embedding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "document_chunks",
+        "columns": "survey_id,file_id,chunk_index,content,embedding",
+        "values": "={{[$node['Split Chunks'].json['survey_id'],$node['Split Chunks'].json['file_id'],$node['Split Chunks'].json['chunk_index'],$node['Split Chunks'].json['content'],$json['data'][0]['embedding']]}}"
+      },
+      "id": "10",
+      "name": "Insert Chunk",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Detect File Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect File Type": {
+      "main": [
+        [
+          {
+            "node": "Normalize Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Text": {
+      "main": [
+        [
+          {
+            "node": "Extract Report Ref",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Report Ref": {
+      "main": [
+        [
+          {
+            "node": "Find Survey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Survey": {
+      "main": [
+        [
+          {
+            "node": "Insert Document File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Document File": {
+      "main": [
+        [
+          {
+            "node": "Split Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Chunks": {
+      "main": [
+        [
+          {
+            "node": "Create Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Embedding": {
+      "main": [
+        [
+          {
+            "node": "Insert Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

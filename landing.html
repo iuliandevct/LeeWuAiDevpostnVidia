@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LeeWu AI — Autonomous Maritime Cargo Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#94da32",
+        "primary-container": "#76b900",
+        "secondary": "#81cfff",
+        "secondary-container": "#00a3e0",
+        "tertiary": "#ffb95f",
+        "background": "#101319",
+        "surface": "#101319",
+        "surface-container-lowest": "#0b0e14",
+        "surface-container-low": "#191c22",
+        "surface-container": "#1d2026",
+        "surface-container-high": "#272a30",
+        "surface-container-highest": "#32353b",
+        "on-surface": "#e1e2eb",
+        "on-surface-variant": "#c1cab1",
+        "outline": "#8c947d",
+        "outline-variant": "#424936",
+        "error": "#ffb4ab"
+      },
+      fontFamily: {
+        "headline": ["Geist", "sans-serif"],
+        "body": ["Inter", "sans-serif"],
+        "mono": ["JetBrains Mono", "monospace"]
+      }
+    }
+  }
+}
+</script>
+<style>
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #101319; }
+  ::-webkit-scrollbar-thumb { background: #272a30; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94da32; }
+  
+  .glow-primary {
+    box-shadow: 0 0 30px rgba(148, 218, 50, 0.2);
+  }
+  .glow-cyan {
+    box-shadow: 0 0 30px rgba(129, 207, 255, 0.2);
+  }
+  .grid-pattern {
+    background-size: 32px 32px;
+    background-image: linear-gradient(to right, rgba(66, 73, 54, 0.15) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(66, 73, 54, 0.15) 1px, transparent 1px);
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased overflow-x-hidden min-h-screen flex flex-col selection:bg-primary/30 selection:text-primary">
+
+  <!-- ==================== TOP STICKY NAVBAR ==================== -->
+  <header class="sticky top-0 z-50 bg-surface/85 backdrop-blur-xl border-b border-outline-variant/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="landing.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary/20 border border-primary/50 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(148,218,50,0.3)]">
+          <span class="material-symbols-outlined text-xl">directions_boat</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-headline font-bold text-lg text-on-surface tracking-tight leading-none">LeeWu AI</span>
+          <span class="font-mono text-[9px] uppercase tracking-widest text-primary font-semibold">Autonomous Maritime Intelligence</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 font-mono text-xs text-on-surface-variant">
+        <a href="#capabilities" class="hover:text-primary transition-colors">Capabilities</a>
+        <a href="#models" class="hover:text-primary transition-colors">Nemotron Tiers</a>
+        <a href="#grounding" class="hover:text-primary transition-colors">Tavily Grounding</a>
+        <a href="#console-preview" class="hover:text-primary transition-colors">Mission Console</a>
+        <a href="#casestudy" class="hover:text-primary transition-colors">Field Case Study</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="survey.html" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline-variant/50 text-xs font-mono text-on-surface hover:border-secondary hover:text-secondary transition-all">
+          <span class="material-symbols-outlined text-sm">print</span>
+          <span>Sample A4 Report</span>
+        </a>
+        <a href="login.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-background font-headline font-semibold text-xs hover:bg-primary-container shadow-[0_0_20px_rgba(148,218,50,0.35)] transition-all">
+          <span class="material-symbols-outlined text-sm">terminal</span>
+          <span>Launch Console</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden grid-pattern">
+    <!-- Ambient Blur Spheres -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-64 right-10 w-[450px] h-[300px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <!-- Telemetry Status Pill -->
+      <div class="flex justify-center mb-6">
+        <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/40 shadow-xl">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+          </span>
+          <span class="font-mono text-xs font-medium text-on-surface-variant">
+            NEBIUS TOKEN FACTORY • H100 CLUSTER • 240MS DRONE VISION TRIAGE
+          </span>
+          <span class="font-mono text-[9px] px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/40 font-bold">LIVE</span>
+        </div>
+      </div>
+
+      <!-- Main Headline -->
+      <div class="text-center max-w-4xl mx-auto">
+        <h1 class="font-headline text-4xl sm:text-6xl font-extrabold tracking-tight text-on-surface leading-[1.1] mb-6">
+          Autonomous Agentic Maritime Cargo Intelligence & Warranty Survey
+        </h1>
+        <p class="font-body text-base sm:text-lg text-on-surface-variant leading-relaxed max-w-3xl mx-auto mb-10">
+          Eliminate manual reporting bottlenecks and generic model hallucinations. LeeWu AI unites high-throughput drone vision triage, tiered NVIDIA Nemotron inference, and real-time Tavily web grounding into an auditable, P&I Club compliant operating harness.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-16">
+          <a href="login.html" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-primary text-background font-headline font-bold text-sm hover:bg-primary-container shadow-[0_0_25px_rgba(148,218,50,0.4)] transition-all">
+            <span class="material-symbols-outlined text-lg">dashboard</span>
+            <span>Open Mission Console</span>
+          </a>
+          <a href="survey.html" target="_blank" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-surface-container-high border border-outline-variant/60 text-on-surface font-headline font-semibold text-sm hover:border-secondary hover:text-secondary transition-all">
+            <span class="material-symbols-outlined text-lg">description</span>
+            <span>Inspect Statutory Survey Report (15p A4)</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4 Key Metric Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+        <div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs uppercase tracking-wider text-outline">Vision Latency</span>
+            <span class="material-symbols-outlined text-primary text-lg">speed</span>
+          </div>
+          <div class="font-headline font-extrabold text-3xl text-on-surface">240<span class="text-primary text-xl">ms</span></div>
+          <span class="font-mono text-[11px] text-on-surface-variant mt-1">p95 per drone photo frame</span>
+        </div>
+
+        <div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs uppercase tracking-wider text-outline">Token Cost Savings</span>
+            <span class="material-symbols-outlined text-secondary text-lg">trending_down</span>
+          </div>
+          <div class="font-headline font-extrabold text-3xl text-on-surface">-85<span class="text-secondary text-xl">%</span></div>
+          <span class="font-mono text-[11px] text-on-surface-variant mt-1">vs monolithic 70B inference</span>
+        </div>
+
+        <div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs uppercase tracking-wider text-outline">IMO Hallucination</span>
+            <span class="material-symbols-outlined text-primary text-lg">verified</span>
+          </div>
+          <div class="font-headline font-extrabold text-3xl text-primary">0.0<span class="text-xl">%</span></div>
+          <span class="font-mono text-[11px] text-on-surface-variant mt-1">Tavily grounded registries</span>
+        </div>
+
+        <div class="p-5 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono text-xs uppercase tracking-wider text-outline">Surveyor Margin</span>
+            <span class="material-symbols-outlined text-tertiary text-lg">monetization_on</span>
+          </div>
+          <div class="font-headline font-extrabold text-3xl text-on-surface">87.3<span class="text-tertiary text-xl">%</span></div>
+          <span class="font-mono text-[11px] text-on-surface-variant mt-1">Commercial EBITDA margin</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== INTERACTIVE HUD SIMULATOR ==================== -->
+  <section class="py-16 bg-surface-container-lowest border-y border-outline-variant/30 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-primary font-semibold">OPTICAL HUD RETICLE</span>
+          <h2 class="font-headline text-2xl sm:text-3xl font-bold text-on-surface mt-1">Real-Time Drone Hold Inspection Simulation</h2>
+        </div>
+        <div class="font-mono text-xs text-on-surface-variant px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/30">
+          FEED: MV WAN FU • HOLD NO. 5 LOWER HOLD • CAMERA SENSOR 4K
+        </div>
+      </div>
+
+      <!-- HUD Viewport -->
+      <div class="relative w-full h-[450px] sm:h-[520px] rounded-2xl bg-surface-container-low border border-outline-variant/50 overflow-hidden shadow-2xl flex flex-col justify-between p-6">
+        <!-- Optical Grid Background -->
+        <div class="absolute inset-0 grid-pattern opacity-40"></div>
+        
+        <!-- Center Target Reticle -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="relative w-64 h-64 border border-secondary/30 rounded-full flex items-center justify-center">
+            <div class="w-48 h-48 border border-dashed border-secondary/20 rounded-full animate-spin" style="animation-duration: 20s;"></div>
+            <div class="absolute w-full h-[1px] bg-secondary/30"></div>
+            <div class="absolute h-full w-[1px] bg-secondary/30"></div>
+            <div class="w-3 h-3 bg-primary rounded-full shadow-[0_0_10px_#94da32]"></div>
+          </div>
+        </div>
+
+        <!-- Bounding Box 1: Steel Beam Corrosion -->
+        <div class="absolute top-28 left-16 sm:left-32 border-2 border-tertiary bg-tertiary/10 rounded p-2 max-w-xs shadow-lg backdrop-blur-sm animate-pulse">
+          <div class="flex items-center gap-1.5 text-[10px] font-mono font-bold text-tertiary uppercase">
+            <span class="material-symbols-outlined text-xs">warning</span>
+            <span>SURFACE RUST DETECTED</span>
+          </div>
+          <div class="text-[11px] font-body text-on-surface mt-1">
+            General atmospheric surface rust on exposed I-Beam flange. No pitting.
+          </div>
+          <div class="font-mono text-[9px] text-tertiary/80 mt-1">CONFIDENCE: 98.4% • CLASS 2</div>
+        </div>
+
+        <!-- Bounding Box 2: Lashing & Dunnage -->
+        <div class="absolute bottom-24 right-16 sm:right-32 border-2 border-primary bg-primary/10 rounded p-2 max-w-xs shadow-lg backdrop-blur-sm">
+          <div class="flex items-center gap-1.5 text-[10px] font-mono font-bold text-primary uppercase">
+            <span class="material-symbols-outlined text-xs">check_circle</span>
+            <span>LASHING DUNNAGE VERIFIED</span>
+          </div>
+          <div class="text-[11px] font-body text-on-surface mt-1">
+            Softwood dunnage properly laid under bundles. Textile webbing slings secured.
+          </div>
+          <div class="font-mono text-[9px] text-primary/80 mt-1">IMO CSS ANNEX 13 COMPLIANT</div>
+        </div>
+
+        <!-- Top Telemetry Ribbon -->
+        <div class="relative z-10 flex items-center justify-between font-mono text-xs text-on-surface-variant bg-surface-container-highest/80 backdrop-blur-md px-4 py-2 rounded-lg border border-outline-variant/30">
+          <div class="flex items-center gap-4">
+            <span>ALT: <strong class="text-on-surface">14.2m</strong></span>
+            <span>BEARING: <strong class="text-on-surface">012° N</strong></span>
+            <span>LUX: <strong class="text-on-surface">1,450 lm</strong></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+            <span class="text-primary font-bold">INSPECTION ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- Bottom Telemetry Ribbon -->
+        <div class="relative z-10 flex flex-wrap items-center justify-between font-mono text-xs text-on-surface-variant bg-surface-container-highest/80 backdrop-blur-md px-4 py-2 rounded-lg border border-outline-variant/30 gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-outline">MODEL:</span>
+            <span class="text-primary font-semibold">nvidia/nemotron-nano-4b-vision</span>
+            <span class="text-outline">•</span>
+            <span>FPS: <strong class="text-on-surface">24.2</strong></span>
+          </div>
+          <div>
+            COORDINATES: <strong class="text-on-surface">44°06'18"N 28°39'44"E (PORT OF CONSTANȚA SUD)</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TIERED NEMOTRON ARCHITECTURE ==================== -->
+  <section id="models" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="font-mono text-xs uppercase tracking-widest text-primary font-semibold">TIERED MODEL SELECTION</span>
+      <h2 class="font-headline text-3xl sm:text-4xl font-extrabold text-on-surface mt-2 mb-4">
+        Specialized Compute per Inspection Task
+      </h2>
+      <p class="font-body text-on-surface-variant text-sm sm:text-base">
+        Eliminate monolithic waste. We route every stage to its ideal parameter size hosted on high-performance NVIDIA H100 clusters via Nebius Token Factory.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Tier 1: 4B Vision -->
+      <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col justify-between hover:border-primary/60 transition-all group">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-primary/20 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">photo_camera</span>
+          </div>
+          <span class="font-mono text-[10px] uppercase tracking-wider text-primary font-bold">TIER 1 • MULTIMODAL VISION</span>
+          <h3 class="font-headline font-bold text-xl text-on-surface mt-1 mb-2">Nemotron-Vision-4B</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
+            Ultra-fast visual classification of field and drone imagery. Detects corrosion grading, physical deformation, coating failures, and timber dunnage patterns.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-outline-variant/20 font-mono text-xs flex justify-between items-center text-on-surface">
+          <span>Latency: <strong class="text-primary">~240ms</strong></span>
+          <span class="px-2 py-0.5 rounded bg-surface-container-high text-[10px] text-outline">SKILL 1</span>
+        </div>
+      </div>
+
+      <!-- Tier 2: 8B Instruct -->
+      <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col justify-between hover:border-secondary/60 transition-all group">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">document_scanner</span>
+          </div>
+          <span class="font-mono text-[10px] uppercase tracking-wider text-secondary font-bold">TIER 2 • STRUCTURED EXTRACTION</span>
+          <h3 class="font-headline font-bold text-xl text-on-surface mt-1 mb-2">Nemotron-8B</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
+            Deterministic OCR parsing for Bills of Lading, shipping manifests, and stowage plans. Validates ISO 6346 container check-digits and reconciles shortages.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-outline-variant/20 font-mono text-xs flex justify-between items-center text-on-surface">
+          <span>Latency: <strong class="text-secondary">~420ms</strong></span>
+          <span class="px-2 py-0.5 rounded bg-surface-container-high text-[10px] text-outline">SKILL 2 & 3</span>
+        </div>
+      </div>
+
+      <!-- Tier 3: 70B Instruct -->
+      <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col justify-between hover:border-tertiary/60 transition-all group">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-tertiary/20 text-tertiary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-2xl">gavel</span>
+          </div>
+          <span class="font-mono text-[10px] uppercase tracking-wider text-tertiary font-bold">TIER 3 • STATUTORY REASONING</span>
+          <h3 class="font-headline font-bold text-xl text-on-surface mt-1 mb-2">Nemotron-70B-Instruct</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
+            Reserved exclusively for single-pass statutory warranty reporting. Produces formal maritime legal prose conforming to IMO CSS Annex 13 and P&I Club rules.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-outline-variant/20 font-mono text-xs flex justify-between items-center text-on-surface">
+          <span>Latency: <strong class="text-tertiary">~1,850ms</strong></span>
+          <span class="px-2 py-0.5 rounded bg-surface-container-high text-[10px] text-outline">SKILL 4</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAVILY GROUNDING SECTION ==================== -->
+  <section id="grounding" class="py-20 bg-surface-container-lowest border-y border-outline-variant/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-widest text-primary font-semibold">ZERO-HALLUCINATION RAG</span>
+          <h2 class="font-headline text-3xl sm:text-4xl font-extrabold text-on-surface mt-2 mb-6">
+            Real-Time Fact Grounding with Tavily AI
+          </h2>
+          <p class="font-body text-on-surface-variant text-sm sm:text-base leading-relaxed mb-6">
+            Static LLMs cannot know if it rained at Berth 120 yesterday at 02:00 AM, nor if a vessel was recently sanctioned. Tavily transforms Nemotron into an active maritime agent with sub-second verified web intelligence:
+          </p>
+
+          <div class="space-y-4">
+            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/30">
+              <span class="material-symbols-outlined text-primary text-xl mt-0.5">verified_user</span>
+              <div>
+                <h4 class="font-headline font-semibold text-sm text-on-surface">Vessel IMO & Sanctions Screening</h4>
+                <p class="font-body text-xs text-on-surface-variant mt-0.5">Validates deadweight, beam, draft limits, and cross-checks OFAC / EU maritime blacklists.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/30">
+              <span class="material-symbols-outlined text-secondary text-xl mt-0.5">thunderstorm</span>
+              <div>
+                <h4 class="font-headline font-semibold text-sm text-on-surface">Berth Metocean Reconstruction</h4>
+                <p class="font-body text-xs text-on-surface-variant mt-0.5">Fetches timestamped weather data during cargo discharge windows as objective evidence for P&I insurance claims.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/30">
+              <span class="material-symbols-outlined text-tertiary text-xl mt-0.5">menu_book</span>
+              <div>
+                <h4 class="font-headline font-semibold text-sm text-on-surface">P&I Loss Prevention Precedents</h4>
+                <p class="font-body text-xs text-on-surface-variant mt-0.5">Direct retrieval of Gard, Skuld, and UK P&I circulars for steel coil rust and dangerous goods segregation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Output Simulation -->
+        <div class="rounded-2xl bg-surface-container-low border border-outline-variant/50 p-6 shadow-2xl font-mono text-xs">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-outline-variant/20">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-error"></div>
+              <div class="w-3 h-3 rounded-full bg-tertiary"></div>
+              <div class="w-3 h-3 rounded-full bg-primary"></div>
+              <span class="text-outline text-[11px] ml-2">tavily_engine.py — maritime query</span>
+            </div>
+            <span class="text-primary text-[10px]">LIVE CLI</span>
+          </div>
+
+          <div class="space-y-2 text-on-surface-variant">
+            <div><span class="text-primary">$</span> tvly search "Port of Constanta weather 2026-06-24 precipitation wind" --json</div>
+            <div class="text-outline text-[11px]">// Grounded JSON response in 680ms:</div>
+            <pre class="text-[11px] text-on-surface bg-surface-container-lowest p-3 rounded-lg overflow-x-auto text-secondary">{
+  "query": "Port of Constanta weather 2026-06-24",
+  "answer": "Sunny, clear sky, 0.0mm rainfall, wind SE 12 km/h",
+  "results": [
+    {
+      "title": "Historical Weather Station Constanta Sud",
+      "url": "https://weather.meteo.ro/archive/constanta-2026",
+      "content": "No precipitation observed during cargo discharge."
+    }
+  ],
+  "response_time": 0.68
+}</pre>
+            <div class="text-primary font-bold pt-2">✓ Grounding injected into Nemotron-70B prompt context.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONSOLE MODULES SHOWCASE ==================== -->
+  <section id="console-preview" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="font-mono text-xs uppercase tracking-widest text-primary font-semibold">COMPLETE MARITIME SUITE</span>
+      <h2 class="font-headline text-3xl sm:text-4xl font-extrabold text-on-surface mt-2 mb-4">
+        5 Integrated Operational Consoles
+      </h2>
+      <p class="font-body text-on-surface-variant text-sm sm:text-base">
+        Everything a marine surveyor needs—from field tally and optical defect analysis to final statutory report issuance—in one unified dark workspace.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Module 1: Overview Dashboard -->
+      <a href="login.html" class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 hover:border-primary transition-all group flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-lg bg-surface-container-high text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-background transition-colors">
+            <span class="material-symbols-outlined text-xl">grid_view</span>
+          </div>
+          <h3 class="font-headline font-bold text-lg text-on-surface mb-2">Overview Dashboard</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+            Fleet operations overview, active cargo surveys, live telemetry status, and incoming pipeline queue for multiple vessels.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between font-mono text-xs text-primary">
+          <span>Open in Console</span>
+          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Module 2: Survey Detail -->
+      <a href="login.html" class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 hover:border-primary transition-all group flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-lg bg-surface-container-high text-secondary flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-background transition-colors">
+            <span class="material-symbols-outlined text-xl">directions_boat</span>
+          </div>
+          <h3 class="font-headline font-bold text-lg text-on-surface mb-2">Survey Detail Workspace</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+            Detailed 60/40 workbench for active inspections (MV Atlantic Pioneer). Stage progression stepper, cargo tally, and quick voice dictation.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between font-mono text-xs text-secondary">
+          <span>Open in Console</span>
+          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Module 3: Evidence & Neural HUD -->
+      <a href="login.html" class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 hover:border-primary transition-all group flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-lg bg-surface-container-high text-tertiary flex items-center justify-center mb-4 group-hover:bg-tertiary group-hover:text-background transition-colors">
+            <span class="material-symbols-outlined text-xl">deployed_code</span>
+          </div>
+          <h3 class="font-headline font-bold text-lg text-on-surface mb-2">Evidence & Neural HUD</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+            Photographic survey cards with tactical optical reticle overlays, silver nitrate tests, coaming inspections, and deep optical zoom.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between font-mono text-xs text-tertiary">
+          <span>Open in Console</span>
+          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Module 4: Report Studio -->
+      <a href="login.html" class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 hover:border-primary transition-all group flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-lg bg-surface-container-high text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-background transition-colors">
+            <span class="material-symbols-outlined text-xl">summarize</span>
+          </div>
+          <h3 class="font-headline font-bold text-lg text-on-surface mb-2">Report Studio & Paper Emulation</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+            Dual-engine split 50/50: structured accordion editor on the left and live high-fidelity paper document simulation on the right.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between font-mono text-xs text-primary">
+          <span>Open in Console</span>
+          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Module 5: AI Survey Assistant -->
+      <a href="login.html" class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 hover:border-primary transition-all group flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-lg bg-surface-container-high text-secondary flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-background transition-colors">
+            <span class="material-symbols-outlined text-xl">smart_toy</span>
+          </div>
+          <h3 class="font-headline font-bold text-lg text-on-surface mb-2">AI Survey Assistant</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+            3-column interactive assistant with live knowledge graph telemetry, clause staging buffer, and direct push-to-report integration.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between font-mono text-xs text-secondary">
+          <span>Open in Console</span>
+          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Card 6: Statutory A4 Report -->
+      <a href="survey.html" target="_blank" class="p-6 rounded-2xl bg-surface-container-low border border-primary/40 hover:border-primary transition-all group flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-background transition-colors">
+            <span class="material-symbols-outlined text-xl">print</span>
+          </div>
+          <h3 class="font-headline font-bold text-lg text-on-surface mb-2">Statutory Survey Report (A4)</h3>
+          <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+            Full 15-page formal discharging survey report for MV WAN FU (SRV062_2026) with print styles, running headers, and high-res attachments.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-outline-variant/20 flex items-center justify-between font-mono text-xs text-primary">
+          <span>Open Sample PDF</span>
+          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">open_in_new</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-surface-container-lowest border-t border-outline-variant/30 py-12 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+          LW
+        </div>
+        <div class="flex flex-col">
+          <span class="font-headline font-semibold text-sm text-on-surface">LeeWu AI Maritime Operating Harness</span>
+          <span class="font-mono text-[10px] text-outline">NVIDIA Nemotron Suite • Nebius Token Factory • Tavily AI Grounded</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6 font-mono text-xs text-on-surface-variant">
+        <a href="login.html" class="hover:text-primary transition-colors">Mission Console</a>
+        <a href="survey.html" target="_blank" class="hover:text-primary transition-colors">Sample A4 Report</a>
+        <a href="https://github.com/imlazar/leeWuAI_harness_public" target="_blank" class="hover:text-primary transition-colors">GitHub Repository</a>
+      </div>
+
+      <div class="font-mono text-xs text-outline">
+        © 2026 LeeWu Maritime Survey S.R.L.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

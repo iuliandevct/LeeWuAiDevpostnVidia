@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Loading Survey - Cover Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 210mm;
+            height: 297mm;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: white;
+            margin: 0;
+            padding: 0;
+            width: 210mm;
+            height: 297mm;
+        }
+
+        .cover-container {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 15mm;
+            left: 15mm;
+            z-index: 10;
+        }
+
+        .logo {
+            width: 25mm;
+            height: 25mm;
+            background: #1a3a52;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo::before {
+            content: '';
+            width: 12mm;
+            height: 12mm;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .company-name {
+            color: #1a3a52;
+            font-size: 3.5mm;
+            font-weight: 500;
+            margin-top: 2mm;
+            letter-spacing: 0.2mm;
+            text-align: center;
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40mm 20mm 20mm;
+            position: relative;
+            z-index: 5;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22mm;
+            font-weight: 900;
+            color: #1a3a52;
+            line-height: 1.1;
+            margin-bottom: 7mm;
+            letter-spacing: -0.3mm;
+        }
+
+        .title-line-1 {
+            display: block;
+        }
+
+        .subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4.5mm;
+            font-weight: 300;
+            color: #6c757d;
+            line-height: 1.7;
+            max-width: 140mm;
+            margin: 0 auto;
+        }
+
+        .ship-container {
+            position: relative;
+            width: 100%;
+            height: 130mm;
+            background: linear-gradient(180deg, #e3f2fd 0%, #90caf9 50%, #1a3a52 100%);
+            overflow: hidden;
+        }
+
+        .ship-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center bottom;
+            display: block;
+        }
+
+        .footer-text {
+            position: absolute;
+            bottom: 7mm;
+            left: 15mm;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 3.5mm;
+            font-weight: 300;
+            letter-spacing: 0.2mm;
+            z-index: 10;
+        }
+
+        .wave-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40mm;
+            background: linear-gradient(180deg, transparent 0%, rgba(26, 58, 82, 0.3) 100%);
+            pointer-events: none;
+        }
+
+        @media print {
+            html, body {
+                background: white;
+                padding: 0;
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+            }
+            
+            .cover-container {
+                box-shadow: none;
+                page-break-after: always;
+            }
+            
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <div class="logo"></div>
+            <div class="company-name">LeeWu Maritime</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-area">
+            <h1>
+                <span class="title-line-1">Report no.3-VX03-2026</span>
+            </h1>
+            <p class="subtitle">
+                Maritime Loading Survey Report
+            </p>
+        </div>
+
+        <!-- Ship Image Section -->
+        <div class="ship-container">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect fill='%2390caf9' width='800' height='600'/%3E%3C/svg%3E" alt="Container Ship" class="ship-image">
+            <div class="wave-overlay"></div>
+            <div class="footer-text">Util aliqua! Corp fod parligerent oisluant the Speslforango gloves and multical fijopers Strriallional Valle</div>
+        </div>
+    </div>
+</body>
+</html>

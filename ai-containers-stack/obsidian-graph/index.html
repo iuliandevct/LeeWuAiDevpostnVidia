@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Michael's Second Brain — Skill Graph</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#05060b;
+  --bg2:#0a0d16;
+  --line:rgba(255,255,255,0.14);
+  --line-bright:rgba(255,255,255,0.55);
+  --dot:#d8dae2;
+  --dot-dim:#6b7080;
+  --online:#62f3a5;
+  --degraded:#f5c451;
+  --offline:#ff5f6d;
+  --text:#e9eaf0;
+  --text-dim:#7a7f92;
+}
+
+*{box-sizing:border-box;}
+html,body{
+  margin:0;padding:0;width:100%;height:100%;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 45%, var(--bg2) 0%, var(--bg) 65%);
+  font-family:'Space Grotesk',sans-serif;
+  color:var(--text);
+}
+
+#stage{
+  position:relative;
+  width:100%;height:100%;
+}
+
+canvas#stars{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;
+}
+
+svg#graph{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  cursor:grab;
+}
+svg#graph.dragging{cursor:grabbing;}
+
+.branch-line{
+  fill:none;
+  stroke:var(--line);
+  stroke-width:1;
+  transition:stroke 0.25s ease, stroke-width 0.25s ease;
+}
+.branch-line.lit{
+  stroke:var(--line-bright);
+  stroke-width:1.4;
+}
+
+.node-core-dot{
+  fill:#fff;
+  opacity:0.9;
+}
+
+.node{
+  cursor:pointer;
+}
+.node circle.dot{
+  fill:var(--dot);
+  transition:fill 0.2s ease, r 0.2s ease, filter 0.2s ease;
+}
+.node.leaf circle.dot{ fill:var(--dot-dim); }
+.node.live-online circle.dot{
+  fill:var(--online);
+  filter:drop-shadow(0 0 8px rgba(98,243,165,0.9));
+}
+.node.live-degraded circle.dot{
+  fill:var(--degraded);
+  filter:drop-shadow(0 0 8px rgba(245,196,81,0.9));
+}
+.node.live-offline circle.dot{
+  fill:var(--offline);
+  filter:drop-shadow(0 0 8px rgba(255,95,109,0.9));
+}
+.node:hover circle.dot, .node.lit circle.dot{
+  fill:#ffffff;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,0.9));
+}
+.node.category circle.dot{
+  fill:#0b0c12;
+  stroke:#e9eaf0;
+  stroke-width:1.5;
+}
+.node.category:hover circle.dot, .node.category.lit circle.dot{
+  stroke:#ffffff;
+  filter:drop-shadow(0 0 10px rgba(255,255,255,0.85));
+}
+
+text.cat-label{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:0.14em;
+  fill:#f1f2f6;
+  opacity:0.92;
+  pointer-events:none;
+}
+text.cat-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:0.08em;
+  fill:var(--text-dim);
+  pointer-events:none;
+}
+.eth-symbol{
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px;
+  font-weight:700;
+  fill:#f4c76a;
+  text-anchor:middle;
+  dominant-baseline:middle;
+  pointer-events:none;
+  filter:drop-shadow(0 0 9px rgba(244,199,106,0.65));
+}
+.autobot-node circle.dot{
+  fill:#0b0c12;
+  stroke:#f4c76a;
+  stroke-width:1.6;
+  filter:drop-shadow(0 0 8px rgba(244,199,106,0.4));
+}
+.autobot-mark{
+  fill:none;
+  stroke:#f4c76a;
+  stroke-width:1.35;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
+}
+.hermes-mark{
+  fill:none;
+  stroke:#7ee7ff;
+  stroke-width:1.45;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
+  filter:drop-shadow(0 0 7px rgba(126,231,255,0.72));
+}
+.jay-node circle.dot{
+  fill:#0b0c12;
+  stroke:#ff72c7;
+  stroke-width:1.6;
+  filter:drop-shadow(0 0 8px rgba(255,114,199,0.42));
+}
+.jay-mark{
+  fill:none;
+  stroke:#ff72c7;
+  stroke-width:1.35;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  pointer-events:none;
+}
+.automaton-metric circle.dot{
+  fill:#111521;
+  stroke:#f4c76a;
+  stroke-width:1.15;
+  filter:drop-shadow(0 0 5px rgba(244,199,106,0.38));
+}
+.metric-label{
+  fill:#8b91a3;
+  font-family:'JetBrains Mono',monospace;
+  font-size:6.5px;
+  pointer-events:none;
+}
+.automaton-summary{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid rgba(255,255,255,0.12);
+}
+.automaton-summary .summary-kicker{
+  color:#f4c76a;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+}
+.automaton-summary h3{
+  margin:6px 0 4px;
+  font-size:12px;
+  color:#f1f2f6;
+}
+.automaton-summary p{
+  margin:0;
+  color:#858a9b;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  line-height:1.55;
+}
+.card-link{
+  display:inline-block;
+  margin:12px 8px 0 0;
+  padding:8px 10px;
+  border:1px solid rgba(244,199,106,0.32);
+  border-radius:7px;
+  color:#f4c76a;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  text-decoration:none;
+}
+.card-link:hover{border-color:#f4c76a;background:rgba(244,199,106,0.07);}
+.data-pulse{
+  fill:#f4c76a;
+  opacity:0.85;
+  filter:drop-shadow(0 0 8px rgba(244,199,106,0.85));
+}
+
+#hub-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  fill:#9a9db0;
+  letter-spacing:0.2em;
+  pointer-events:none;
+}
+
+/* HUD */
+#hud-top{
+  position:absolute; top:28px; left:32px; right:32px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+  pointer-events:none;
+  z-index:5;
+}
+#hud-top .brand{
+  font-size:13px; letter-spacing:0.18em; color:#9a9db0; font-family:'JetBrains Mono',monospace;
+}
+#hud-top .brand b{color:#f1f2f6; letter-spacing:0.04em;}
+#hud-top .count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:#6b7080; text-align:right;
+}
+
+#caption{
+  position:absolute; bottom:26px; left:0; right:0;
+  text-align:center;
+  pointer-events:none;
+  z-index:5;
+}
+#caption h1{
+  font-size:20px; font-weight:700; margin:0; letter-spacing:0.01em;
+  color:#f1f2f6;
+}
+#caption p{
+  margin:6px 0 0; font-size:12px; color:#6b7080; font-family:'JetBrains Mono',monospace;
+  letter-spacing:0.04em;
+}
+
+#tooltip{
+  position:absolute;
+  max-width:230px;
+  background:rgba(10,12,20,0.96);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:2px;
+  padding:10px 12px;
+  font-size:12px;
+  color:#e9eaf0;
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-120%);
+  transition:opacity 0.12s ease;
+  z-index:20;
+  line-height:1.45;
+}
+#tooltip .t-title{
+  font-weight:700; font-size:12.5px; margin-bottom:3px; color:#fff;
+  font-family:'Space Grotesk',sans-serif;
+}
+#tooltip .t-cat{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px; letter-spacing:0.1em; color:#7a7f92; text-transform:uppercase;
+  margin-bottom:5px;
+}
+
+#controls{
+  position:absolute; bottom:24px; right:326px;
+  display:flex; gap:8px; z-index:6;
+}
+#controls button{
+  width:30px;height:30px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.14);
+  color:#e9eaf0;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:15px;
+  border-radius:2px;
+  cursor:pointer;
+}
+#controls button:hover{background:rgba(255,255,255,0.1);}
+
+/* Side info cards */
+.info-card{
+  position:absolute;
+  top:96px;
+  transform:none;
+  width:238px;
+  max-height:calc(100vh - 132px);
+  overflow:auto;
+  background:rgba(14,16,24,0.5);
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:18px 20px 16px;
+  z-index:6;
+  box-shadow:0 8px 32px rgba(0,0,0,0.35);
+  pointer-events:auto;
+}
+#card-left{ left:28px; }
+#card-right{ right:28px; }
+
+#card-left{
+  width:278px;
+  max-height:calc(100vh - 132px);
+  overflow:hidden;
+}
+#card-right{
+  width:278px;
+  display:flex;
+  flex-direction:column;
+}
+.live-section{
+  margin-top:10px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.live-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:12px;
+  margin-bottom:9px;
+}
+.live-head strong{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:#c7c9d4;
+}
+.live-head span{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:#7a7f92;
+}
+.live-grid{ display:grid; gap:5px; }
+.live-row{
+  display:grid;
+  grid-template-columns:10px 1fr auto;
+  align-items:center;
+  gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:#c7c9d4;
+}
+.live-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#6b7080;
+}
+.live-row[data-state="online"] .live-dot{background:var(--online); box-shadow:0 0 8px rgba(98,243,165,0.8);}
+.live-row[data-state="degraded"] .live-dot{background:var(--degraded); box-shadow:0 0 8px rgba(245,196,81,0.8);}
+.live-row[data-state="offline"] .live-dot{background:var(--offline); box-shadow:0 0 8px rgba(255,95,109,0.8);}
+.live-state{
+  color:#7a7f92;
+  text-transform:uppercase;
+}
+
+.info-card .card-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  letter-spacing:0.16em;
+  color:#7a7f92;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.info-card h2{
+  font-size:16px;
+  font-weight:700;
+  margin:0 0 7px;
+  color:#f1f2f6;
+  letter-spacing:0.01em;
+}
+.info-card p{
+  font-size:12px;
+  line-height:1.45;
+  color:#b6b9c6;
+  margin:0 0 10px;
+}
+.info-card .stat-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  padding:6px 0;
+  border-top:1px solid rgba(255,255,255,0.07);
+}
+.info-card .stat-row:first-of-type{ border-top:none; }
+.info-card .stat-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:#7a7f92;
+  letter-spacing:0.04em;
+}
+.info-card .stat-value{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:#f1f2f6;
+}
+.info-card .divider{
+  height:1px;
+  background:rgba(255,255,255,0.08);
+  margin:12px 0;
+}
+.info-card .skill-tag{
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  color:#c7c9d4;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:20px;
+  padding:3px 9px;
+  margin:3px 4px 0 0;
+}
+#card-right #right-tags{
+  display:grid;
+  gap:6px;
+}
+#card-right .skill-tag{
+  display:block;
+  border-radius:6px;
+  padding:6px 8px;
+  margin:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.market-board{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+.market-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:8px;
+}
+.market-head strong{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  color:#c7c9d4;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+}
+.market-head span{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:#7a7f92;
+}
+.market-row{
+  display:grid;
+  grid-template-columns:42px 1fr auto 24px;
+  align-items:center;
+  gap:8px;
+  padding:6px 0;
+  border-top:1px solid rgba(255,255,255,0.06);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+}
+.market-row:first-of-type{ border-top:none; }
+.market-price{ color:#f1f2f6; text-align:right; }
+.market-change.up{ color:var(--online); }
+.market-change.down{ color:var(--offline); }
+.favorite-btn{
+  width:22px;
+  height:22px;
+  border-radius:4px;
+  border:1px solid rgba(244,199,106,0.35);
+  background:rgba(244,199,106,0.06);
+  color:#f4c76a;
+  cursor:pointer;
+  line-height:18px;
+}
+.favorite-btn.active{
+  background:rgba(244,199,106,0.18);
+  box-shadow:0 0 8px rgba(244,199,106,0.3);
+}
+.position-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding-top:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:#9a9db0;
+}
+.position-row b{ color:#f1f2f6; }
+.detail-list{
+  display:grid;
+  gap:7px;
+}
+.detail-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:7px 0;
+  border-top:1px solid rgba(255,255,255,0.07);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:#c7c9d4;
+}
+.detail-row:first-child{ border-top:none; }
+.detail-row span:last-child{
+  color:#7a7f92;
+  text-transform:uppercase;
+}
+.detail-row[data-state="online"] span:last-child{ color:var(--online); }
+.detail-row[data-state="degraded"] span:last-child{ color:var(--degraded); }
+.detail-row[data-state="offline"] span:last-child{ color:var(--offline); }
+.info-card .empty-hint{
+  font-size:11.5px;
+  color:#5c6070;
+  font-style:italic;
+}
+
+@media (max-width: 980px){
+  .info-card{ display:none; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="stars"></canvas>
+  <svg id="graph" viewBox="0 0 1600 1600"></svg>
+
+  <div id="hud-top">
+    <div class="brand"><b>LP MARITIME SERVICES</b> // second brain</div>
+    <div class="count" id="node-count"></div>
+  </div>
+
+  <div id="caption">
+    <h1 id="caption-title">Maritime intelligence: documente → Supabase → Hermes → decizii verificabile</h1>
+    <p>scroll pentru zoom · trage pentru pan · click pe nod pentru detalii</p>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <div class="info-card" id="card-left">
+    <div class="card-eyebrow">Overview</div>
+    <h2>Second Brain · Jay</h2>
+    <p>Harta operațională a stivei locale. Pulsurile cyan urmăresc fluxul bibliotecii maritime, de la surse la retrieval și skillurile Hermes.</p>
+    <div class="stat-row">
+      <span class="stat-label">DIRECȚII</span>
+      <span class="stat-value" id="stat-categories">7</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">UNELTE MAPATE</span>
+      <span class="stat-value" id="stat-tools">—</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">ACTUALIZAT</span>
+      <span class="stat-value">aug. 2026</span>
+    </div>
+    <div class="live-section">
+      <div class="live-head">
+        <strong>Live Stack</strong>
+        <span id="live-updated">connecting</span>
+      </div>
+      <div class="live-grid" id="live-grid"></div>
+    </div>
+    <div class="live-section">
+      <div class="live-head">
+        <strong>Knowledge Flow</strong>
+        <span id="knowledge-updated">connecting</span>
+      </div>
+      <div class="live-grid" id="knowledge-grid"></div>
+    </div>
+  </div>
+
+  <div class="info-card" id="card-right">
+    <div class="card-eyebrow" id="right-eyebrow">Direcție</div>
+    <h2 id="right-title">Explorează harta</h2>
+    <p id="right-desc" class="empty-hint">Treci cu mouse-ul peste un nod sau dă click pentru detalii aici.</p>
+    <div class="divider" id="right-divider" style="display:none;"></div>
+    <div id="right-tags"></div>
+    <div class="market-board">
+      <div class="market-head">
+        <strong>Market Watch</strong>
+        <span id="market-source">mock</span>
+      </div>
+      <div id="market-list"></div>
+      <div class="market-head" style="margin-top:12px;">
+        <strong>Poziții</strong>
+        <span>mock</span>
+      </div>
+      <div id="position-list"></div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button id="zoom-in">+</button>
+    <button id="zoom-out">–</button>
+    <button id="reset">⟳</button>
+  </div>
+</div>
+
+<script>
+/* ---------- DATA: Jay's local second brain ---------- */
+const CATEGORIES = [
+  {
+    name: "LIVE STACK",
+    sub: "docker · health · servicii",
+    live: true,
+    skills: [
+      "Grafana","InfluxDB","Telegraf","Supabase DB","Supabase Meta","Supabase Studio",
+      "WordPress","WordPress DB","Vibe Trading API","Vibe Trading UI","Hermes","OpenClaw","Obsidian Graph"
+    ]
+  },
+  {
+    name: "AUTOMATION",
+    sub: "n8n · agenți · orchestrare",
+    skills: [
+      "Social Media Agency","n8n workflows","OpenClaw agent core","email-intake skill","report-builder skill",
+      "drive-organizer skill","field-ops skill","report-status skill","approval-flow (WIP)",
+      "oblio-invoice (WIP)","Telegram bot FSM","aiogram v3","inline keyboards",
+      "Gemini primary","Qwen local fallback","provider fallback routing"
+    ]
+  },
+  {
+    name: "DATA & RAG",
+    sub: "supabase · chunks · retrieval",
+    skills: [
+      "Supabase self-host","knowledge_documents","knowledge_chunks","384-d multilingual embeddings",
+      "cosine semantic retrieval","checksum deduplication","page-aware ingestion","PDF/DOCX/XLSX extraction",
+      "maritime document metadata","Romanian ↔ English search","ships_registry","discharge surveys",
+      "Google Docs batchUpdate","UUID handling","schema validation"
+    ]
+  },
+  {
+    name: "MARITIME AI",
+    sub: "project cargo · MetaCAD · MWS",
+    skills: [
+      "Cargo source documents","Ingestion pipeline","Supabase maritime library","Semantic search",
+      "MetaCAD router","MetaCAD Loading Computer","MetaCAD Stability","Sea Fastening Survey",
+      "CSS Annex 13","IMO IS Code","DNV-ST-N001 boundary","MWS evidence pack",
+      "Caspian Harmony","Wind turbine blades","Heavy-lift cargo","Preliminary engineering guardrails"
+    ]
+  },
+  {
+    name: "CLIENTS",
+    sub: "Gabriel · sales gateway · LP maritime",
+    skills: [
+      "Gabriel · Sales Gateway (Acer)","LeeWu Maritime Services","LeeWu Maritime HP laptop (remote)","Alexandru Radu ops","discharge survey reports","IT implementation guides",
+      "leewuai.ro","BunBun Maritime Website","Sirius AI Crewing","Roxx Social Media",
+      "Monsson Inspection","YOLOv8 drone AI","PX4 / MAVSDK","FastAPI + Flutter",
+      "Hack A Ton pitch","investor whitepapers","truck dispatch coord."
+    ]
+  },
+  {
+    name: "CONTENT",
+    sub: "youtube · social · brand",
+    skills: [
+      "YouTube AI channel","Shorts optimization","OpusClip pipeline","editorial calendar (30)",
+      "Instagram content","motivational format","Romanian SMB education","Gabriela's pipeline",
+      "Gemini script segments","piano sketch — pop RO","brand design system","ReportLab PDFs",
+      "workflow guides","print-friendly layout","social media guides"
+    ]
+  },
+  {
+    name: "HARDWARE",
+    sub: "esp32 · 3d print · dj",
+    skills: [
+      "ESP32-S3 smart home","BOM + RON pricing","ESP8266 wiring","Arduino Mega",
+      "voltage dividers","OpenSCAD modeling","O-ring groove design","pipe clamp (2-piece)",
+      "manifold geometry fixes","Traktor 4","stem workflows","iNELS BMS",
+      "Fan-Coil config","HVAC + shading","Hackintosh OpenCore"
+    ]
+  },
+  {
+    name: "TRADING",
+    sub: "binance · okx · bots",
+    skills: [
+      "Bitsense trading bot","Binance Futures API","OKX API v5","StochRSI fixes",
+      "Telegram control","n8n auto-trading","roadmap PDF","risk parameters",
+      "crypto market watch","strategy backtests"
+    ]
+  },
+  {
+    name: "INFRA",
+    sub: "cloudflare live · docker · win srv",
+    skills: [
+      "Cloudflare API activity","Cloudflare Tunnel pnl-web","Cloudflare DNS leewuai.ro",
+      "Docker stack","Windows Server setup","IIS hosting",
+      "n8n + Supabase infra","Notion workspace","project docs (multi-client)",
+      "hardware evaluation","backup + uptime","tunnel troubleshooting"
+    ]
+  }
+];
+
+/* ---------- Layout math ---------- */
+const CX = 800, CY = 800;
+const CAT_RADIUS = 300;
+const svg = document.getElementById('graph');
+const svgNS = "http://www.w3.org/2000/svg";
+
+function polar(cx, cy, r, angleDeg){
+  const a = (angleDeg - 90) * Math.PI/180;
+  return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
+}
+
+function makeEl(tag, attrs){
+  const el = document.createElementNS(svgNS, tag);
+  for(const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function curvePath(x1,y1,x2,y2){
+  const mx = (x1+x2)/2, my=(y1+y2)/2;
+  const dx = x2-x1, dy = y2-y1;
+  const nx = -dy*0.12, ny = dx*0.12;
+  return `M ${x1} ${y1} Q ${mx+nx} ${my+ny} ${x2} ${y2}`;
+}
+
+let totalLeaf = 0;
+const tradingPulsePaths = [];
+const infraPulsePaths = [];
+const automationPulsePaths = [];
+const maritimePulsePaths = [];
+const layerG = makeEl('g', {id:'layers'});
+svg.appendChild(layerG);
+const linesG = makeEl('g', {id:'lines'});
+const nodesG = makeEl('g', {id:'nodes'});
+const labelsG = makeEl('g', {id:'labels'});
+layerG.appendChild(linesG);
+layerG.appendChild(nodesG);
+layerG.appendChild(labelsG);
+
+/* ---------- Center core cluster (dense fuzzy hub) ---------- */
+const coreDots = [];
+for(let i=0;i<70;i++){
+  const rr = Math.random()*55;
+  const aa = Math.random()*360;
+  const [x,y] = polar(CX,CY,rr,aa);
+  coreDots.push([x,y]);
+  const c = makeEl('circle', {cx:x, cy:y, r: (Math.random()*1.3+0.4).toFixed(2), class:'node-core-dot'});
+  c.style.opacity = (Math.random()*0.5+0.3).toFixed(2);
+  nodesG.appendChild(c);
+}
+// faint interconnects in core
+for(let i=0;i<45;i++){
+  const a = coreDots[Math.floor(Math.random()*coreDots.length)];
+  const b = coreDots[Math.floor(Math.random()*coreDots.length)];
+  const line = makeEl('path', {d: curvePath(a[0],a[1],b[0],b[1]), class:'branch-line'});
+  line.style.strokeWidth = 0.5;
+  line.style.opacity = 0.35;
+  linesG.appendChild(line);
+}
+svg.appendChild(makeEl('text', Object.assign({x:CX, y:CY-6, 'text-anchor':'middle', id:'hub-label'}, {})));
+document.querySelector('#hub-label').textContent = "LP";
+const hubSub = makeEl('text', {x:CX, y:CY+10, 'text-anchor':'middle', id:'hub-label'});
+hubSub.textContent = "second brain";
+hubSub.style.fontSize = "7px";
+hubSub.style.opacity = "0.6";
+svg.appendChild(hubSub);
+
+/* ---------- Build each category branch ---------- */
+const angleStep = 360 / CATEGORIES.length;
+const SERVICE_BY_SKILL = {
+  "Grafana":"grafana",
+  "InfluxDB":"influxdb",
+  "Telegraf":"telegraf",
+  "Supabase DB":"supabase-db",
+  "Supabase Meta":"supabase-meta",
+  "Supabase Studio":"supabase-studio",
+  "WordPress":"wordpress",
+  "WordPress DB":"wordpress-db",
+  "Vibe Trading API":"vibe-trading",
+  "Vibe Trading UI":"vibe-trading-ui",
+  "Hermes":"hermes",
+  "OpenClaw":"openclaw",
+  "Obsidian Graph":"obsidian-graph"
+  ,"Social Media Agency":"social-media-agency"
+};
+const URL_BY_SKILL = {
+  "BunBun Maritime Website":"http://localhost:4173",
+  "Supabase maritime library":"http://localhost:54323",
+  "MetaCAD Loading Computer":"https://metacad.io/en/loading/computer/",
+  "MetaCAD Stability":"https://metacad.io/en/stability/",
+  "Sea Fastening Survey":"https://metacad.io/en/commercial/sea-fastening-survey/"
+  ,"Social Media Agency":"https://github.com/iuliandevct/social_media_agency"
+};
+let liveServices = {};
+const COMPUTE_BY_CATEGORY = {
+  "LIVE STACK": [
+    {name:"docker-desktop", role:"orchestrator", state:"online"},
+    {name:"macbook-host", role:"host gateway", state:"online"},
+    {name:"compose-net", role:"service mesh", state:"online"}
+  ],
+  "AUTOMATION": [
+    {name:"agent-runner-01", role:"workflows", state:"online"},
+    {name:"queue-worker-01", role:"jobs", state:"degraded"},
+    {name:"ollama-node", role:"local llm", state:"online"}
+  ],
+  "DATA & RAG": [
+    {name:"supabase-db", role:"postgres", state:"online"},
+    {name:"knowledge_documents", role:"9 maritime sources", state:"online"},
+    {name:"knowledge_chunks", role:"350 embedded chunks", state:"online"}
+  ],
+  "MARITIME AI": [
+    {name:"document-ingest", role:"PDF · DOCX · XLSX", state:"online"},
+    {name:"semantic-retrieval", role:"384-d multilingual", state:"online"},
+    {name:"hermes-maritime", role:"4 guarded skills", state:"online"}
+  ],
+  "CLIENTS": [
+    {name:"gabriel-acer", role:"primary sales gateway · low resources", state:"planned"},
+    {name:"lp-maritime-hp-remote", role:"secure link to second brain", state:"offline"},
+    {name:"sales-tools", role:"leads · follow-up · CRM", state:"planned"}
+  ],
+  "CONTENT": [
+    {name:"media-pipeline", role:"render", state:"mock"},
+    {name:"social-scheduler", role:"publish", state:"mock"}
+  ],
+  "HARDWARE": [
+    {name:"esp-lab", role:"iot", state:"mock"},
+    {name:"cad-node", role:"openscad", state:"mock"}
+  ],
+  "TRADING": [
+    {name:"market-feed-01", role:"binance stream", state:"online"},
+    {name:"strategy-runner", role:"backtest", state:"mock"},
+    {name:"risk-engine", role:"positions", state:"mock"}
+  ],
+  "INFRA": [
+    {name:"cloudflare-edge", role:"tunnel", state:"mock"},
+    {name:"docker-host", role:"containers", state:"online"},
+    {name:"backup-node", role:"snapshots", state:"mock"}
+  ]
+};
+
+CATEGORIES.forEach((cat, ci) => {
+  const catAngle = ci * angleStep;
+  const [catX, catY] = polar(CX, CY, CAT_RADIUS, catAngle);
+
+  // line from core edge to category node
+  const [coreEdgeX, coreEdgeY] = polar(CX, CY, 58, catAngle);
+  const catLine = makeEl('path', {d: curvePath(coreEdgeX, coreEdgeY, catX, catY), class:'branch-line', 'data-branch': ci});
+  linesG.appendChild(catLine);
+  if(cat.name === "TRADING") tradingPulsePaths.push(catLine);
+  if(cat.name === "INFRA") infraPulsePaths.push(catLine);
+  if(cat.name === "AUTOMATION") automationPulsePaths.push(catLine);
+  if(cat.name === "MARITIME AI") maritimePulsePaths.push(catLine);
+
+  // category node
+  const catG = makeEl('g', {class:`node category${cat.live ? ' live-category' : ''}`, 'data-branch': ci});
+  const catCircle = makeEl('circle', {cx:catX, cy:catY, r:14, class:'dot'});
+  catG.appendChild(catCircle);
+  if(cat.name === "TRADING"){
+    catG.appendChild(makeEl('text', {x:catX, y:catY+1, class:'eth-symbol'}));
+    catG.querySelector('.eth-symbol').textContent = 'Ξ';
+  }
+  if(cat.name === "AUTOMATION"){
+    catG.appendChild(makeEl('path', {
+      d:'M -5 -6 L -9 -8 M -5 -3 L -10 -3 M 5 -6 L 9 -8 M 5 -3 L 10 -3 M -4 -7 L -4 7 M 4 -7 L 4 7 M -4 -1 L 4 -1 M 0 -7 L 0 7 M -2 7 L 2 7',
+      class:'hermes-mark',
+      transform:`translate(${catX} ${catY})`
+    }));
+  }
+  catG.addEventListener('mouseenter', () => highlightBranch(ci, true));
+  catG.addEventListener('mouseleave', () => highlightBranch(ci, false));
+  catG.addEventListener('click', () => {
+    showTooltip(catX, catY, cat.name, cat.sub, `${cat.skills.length} noduri în această direcție`);
+    showCategoryDetails(cat);
+  });
+  nodesG.appendChild(catG);
+
+  // label position: push outward past leaves, rotate along angle for readability
+  const labelR = CAT_RADIUS + 240;
+  const [lx, ly] = polar(CX, CY, labelR, catAngle);
+  let rot = catAngle;
+  if(rot > 90 && rot < 270) rot += 180;
+  const labelText = makeEl('text', {x:lx, y:ly, class:'cat-label', 'text-anchor':'middle',
+    transform:`rotate(${rot-90 >= -90 && rot-90 <=90 ? 0:0} ${lx} ${ly})`});
+  // simpler: keep horizontal, just position around circle
+  labelText.setAttribute('transform','');
+  labelText.textContent = cat.name;
+  labelsG.appendChild(labelText);
+
+  const subText = makeEl('text', {x:lx, y:ly+16, class:'cat-sub', 'text-anchor':'middle'});
+  subText.textContent = cat.sub;
+  labelsG.appendChild(subText);
+
+  // sub-branch: distribute skills across an arc around catAngle, two depth levels
+  const arcSpread = angleStep * 0.9;
+  const n = cat.skills.length;
+  const branchAngles = [];
+  const groups = Math.min(4, Math.max(2, Math.round(n/4)));
+  for(let g=0; g<groups; g++){
+    branchAngles.push(catAngle - arcSpread/2 + (arcSpread/(groups-1||1))*g + (Math.random()-0.5)*6);
+  }
+
+  let skillIdx = 0;
+  for(let g=0; g<groups; g++){
+    const midAngle = branchAngles[g];
+    const midR = CAT_RADIUS + 55 + Math.random()*20;
+    const [mx, my] = polar(CX, CY, midR, midAngle);
+    const midLine = makeEl('path', {d: curvePath(catX, catY, mx, my), class:'branch-line', 'data-branch': ci});
+    linesG.appendChild(midLine);
+    if(cat.name === "TRADING") tradingPulsePaths.push(midLine);
+    if(cat.name === "INFRA") infraPulsePaths.push(midLine);
+    if(cat.name === "AUTOMATION") automationPulsePaths.push(midLine);
+    if(cat.name === "MARITIME AI") maritimePulsePaths.push(midLine);
+    const isAutomatonNode = cat.name === "TRADING" && g === 0;
+    const isJayNode = cat.name === "AUTOMATION" && g === 0;
+    const midG = makeEl('g', {
+      class:`node${isAutomatonNode ? ' autobot-node' : ''}${isJayNode ? ' jay-node' : ''}`,
+      'data-branch': ci,
+      ...(isAutomatonNode ? {'data-automaton':'true'} : {}),
+      ...(isJayNode ? {'data-jay-social':'true'} : {})
+    });
+    const midCircle = makeEl('circle', {cx:mx, cy:my, r:(isAutomatonNode || isJayNode) ? 11.9 : 3.5, class:'dot'});
+    midG.appendChild(midCircle);
+    if(isAutomatonNode){
+      const autobot = makeEl('path', {
+        d:'M -6 -6 L -2 -8 L 0 -6 L 2 -8 L 6 -6 L 5 -1 L 3 1 L 3 6 L 0 8 L -3 6 L -3 1 L -5 -1 Z M -3 -2 L -1 -1 M 3 -2 L 1 -1 M -2 3 L 0 4 L 2 3',
+        class:'autobot-mark',
+        transform:`translate(${mx} ${my}) scale(0.82)`
+      });
+      midG.appendChild(autobot);
+    }
+    if(isJayNode){
+      const jayMark = makeEl('path', {
+        d:'M -3 -6 L 2 -6 L 2 2 Q 2 7 -3 7 Q -7 7 -7 3 M 5 -4 Q 9 0 5 4 M 7 -7 Q 13 0 7 7',
+        class:'jay-mark',
+        transform:`translate(${mx} ${my}) scale(0.78)`
+      });
+      midG.appendChild(jayMark);
+    }
+    midG.addEventListener('mouseenter', () => highlightBranch(ci, true));
+    midG.addEventListener('mouseleave', () => highlightBranch(ci, false));
+    midG.addEventListener('click', () => {
+      if(isAutomatonNode){
+        showTooltip(mx, my, 'Conway Automaton', cat.name, 'agent autonom izolat · Supabase activity');
+        showAutomatonDetails();
+        return;
+      }
+      if(isJayNode){
+        showTooltip(mx, my, 'Jay Social Media', cat.name, 'social automation · activity live');
+        showJayDetails();
+        return;
+      }
+      showTooltip(mx, my, `Compute ${g+1}`, cat.name, "nod intermediar · click pentru resurse");
+      showComputeDetails(cat, g);
+    });
+    nodesG.appendChild(midG);
+
+    if(isAutomatonNode){
+      const automatonMetrics = [
+        {name:'Grafana', detail:'dashboard live', url:'http://localhost:3000/d/automaton-observability'},
+        {name:'Supabase', detail:'automaton_activity', url:'http://localhost:54323'},
+        {name:'Heartbeat', detail:'30 sec', url:'http://localhost:8090/automaton.html'},
+        {name:'Health', detail:'container status', url:'http://localhost:8091/status'}
+      ];
+      automatonMetrics.forEach((metric, metricIndex) => {
+        const metricAngle = midAngle - 16 + metricIndex * 10.5;
+        const metricR = midR + 54 + (metricIndex % 2) * 12;
+        const [metricX, metricY] = polar(CX, CY, metricR, metricAngle);
+        const metricLine = makeEl('path', {
+          d:curvePath(mx,my,metricX,metricY),
+          class:'branch-line',
+          'data-branch':ci,
+          'data-automaton-metric':metric.name
+        });
+        linesG.appendChild(metricLine);
+        tradingPulsePaths.push(metricLine);
+
+        const metricG = makeEl('g', {
+          class:'node automaton-metric',
+          'data-branch':ci,
+          'data-automaton-metric':metric.name
+        });
+        metricG.appendChild(makeEl('circle', {cx:metricX,cy:metricY,r:4.4,class:'dot'}));
+        metricG.addEventListener('mouseenter',()=>highlightBranch(ci,true));
+        metricG.addEventListener('mouseleave',()=>highlightBranch(ci,false));
+        metricG.addEventListener('click',()=>{
+          showTooltip(metricX,metricY,metric.name,'CONWAY METRICS',metric.detail);
+          showAutomatonMetricDetails(metric);
+        });
+        nodesG.appendChild(metricG);
+
+        const metricText = makeEl('text', {
+          x:metricX + 8,
+          y:metricY + 2,
+          class:'metric-label',
+          'data-branch':ci
+        });
+        metricText.textContent = metric.name;
+        labelsG.appendChild(metricText);
+        totalLeaf++;
+      });
+    }
+
+    const leavesHere = Math.ceil(n/groups);
+    for(let l=0; l<leavesHere && skillIdx<n; l++, skillIdx++){
+      const leafAngle = midAngle + (l - leavesHere/2)*7 + (Math.random()-0.5)*4;
+      const leafR = midR + 60 + Math.random()*90;
+      const [fx, fy] = polar(CX, CY, leafR, leafAngle);
+      const leafLine = makeEl('path', {d: curvePath(mx, my, fx, fy), class:'branch-line', 'data-branch': ci});
+      linesG.appendChild(leafLine);
+      if(cat.name === "TRADING") tradingPulsePaths.push(leafLine);
+      if(cat.name === "INFRA" && skillIdx < 3) infraPulsePaths.push(leafLine);
+      if(cat.name === "AUTOMATION" && skillIdx < 4) automationPulsePaths.push(leafLine);
+      if(cat.name === "MARITIME AI") maritimePulsePaths.push(leafLine);
+
+      const skillName = cat.skills[skillIdx];
+      const serviceId = SERVICE_BY_SKILL[skillName] || '';
+      const leafAttrs = {class:'node leaf', 'data-branch': ci, 'data-skill': skillName};
+      if(serviceId) leafAttrs['data-service'] = serviceId;
+      const leafG = makeEl('g', leafAttrs);
+      const leafCircle = makeEl('circle', {cx:fx, cy:fy, r:2.6, class:'dot'});
+      leafG.appendChild(leafCircle);
+      leafG.addEventListener('mouseenter', (e) => { highlightBranch(ci, true); });
+      leafG.addEventListener('mouseleave', () => highlightBranch(ci, false));
+      leafG.addEventListener('click', () => {
+        const svc = serviceId ? liveServices[serviceId] : null;
+        const skillUrl = URL_BY_SKILL[skillName] || '';
+        showTooltip(fx, fy, skillName, cat.name, "");
+        rightEyebrow.textContent = 'Unealtă';
+        rightTitle.textContent = skillName;
+        rightDesc.textContent = svc
+          ? `${svc.state.toUpperCase()} · ${svc.docker_status} · ${svc.endpoint}`
+          : `Parte din direcția ${cat.name.toLowerCase()}.`;
+        rightDesc.classList.remove('empty-hint');
+        rightDivider.style.display = 'block';
+        rightTags.innerHTML = svc
+          ? `<span class="skill-tag">${cat.name}</span><span class="skill-tag">${svc.container}</span><span class="skill-tag">${svc.endpoint}</span>`
+          : `<span class="skill-tag">${cat.name}</span>${skillUrl ? `<a class="card-link" href="${skillUrl}">Open resource</a>` : ''}`;
+      });
+      nodesG.appendChild(leafG);
+      totalLeaf++;
+    }
+  }
+});
+
+document.getElementById('node-count').textContent = `${totalLeaf} noduri · ${CATEGORIES.length} direcții`;
+document.getElementById('stat-tools').textContent = totalLeaf;
+document.getElementById('stat-categories').textContent = CATEGORIES.length;
+
+/* ---------- Live Docker/service status ---------- */
+const liveGrid = document.getElementById('live-grid');
+const liveUpdated = document.getElementById('live-updated');
+const knowledgeGrid = document.getElementById('knowledge-grid');
+const knowledgeUpdated = document.getElementById('knowledge-updated');
+const marketList = document.getElementById('market-list');
+const positionList = document.getElementById('position-list');
+const marketSource = document.getElementById('market-source');
+const favorites = new Set(JSON.parse(localStorage.getItem('marketFavorites') || '["ETH"]'));
+
+function stateLabel(state){
+  if(state === 'online') return 'ON';
+  if(state === 'degraded') return 'WARN';
+  if(state === 'offline') return 'OFF';
+  return '...';
+}
+
+function applyLiveStatus(payload){
+  liveServices = {};
+  for(const svc of payload.services || []){
+    liveServices[svc.id] = svc;
+    document.querySelectorAll(`[data-service="${svc.id}"]`).forEach(node => {
+      node.classList.remove('live-online','live-degraded','live-offline');
+      node.classList.add(`live-${svc.state}`);
+    });
+  }
+  liveGrid.innerHTML = (payload.services || []).map(s => (
+    `<div class="live-row" data-state="${s.state}">
+      <span class="live-dot"></span>
+      <span>${s.label}</span>
+      <span class="live-state">${stateLabel(s.state)}</span>
+    </div>`
+  )).join('');
+  const summary = payload.summary || {};
+  liveUpdated.textContent = `${summary.online || 0}/${summary.total || 0} online`;
+}
+
+async function refreshLiveStatus(){
+  try{
+    const response = await fetch('http://localhost:8091/status', {cache:'no-store'});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    applyLiveStatus(await response.json());
+  }catch(err){
+    liveUpdated.textContent = 'API offline';
+    liveGrid.innerHTML = '<div class="live-row" data-state="offline"><span class="live-dot"></span><span>graph-api</span><span class="live-state">OFF</span></div>';
+  }
+}
+refreshLiveStatus();
+setInterval(refreshLiveStatus, 5000);
+
+let liveKnowledge = null;
+function applyKnowledge(payload){
+  liveKnowledge = payload;
+  const summary = payload.summary || {};
+  knowledgeUpdated.textContent = payload.ok ? 'LIVE · Supabase' : 'fallback';
+  knowledgeGrid.innerHTML = [
+    ['Documente', summary.documents || 0],
+    ['Chunks', summary.chunks || 0],
+    ['Vector', `${summary.dimensions || 0}d`],
+    ['Skilluri', 4]
+  ].map(([label, value]) => `<div class="live-row" data-state="${payload.ok ? 'online' : 'degraded'}">
+    <span class="live-dot"></span><span>${label}</span><span class="live-state">${value}</span>
+  </div>`).join('');
+}
+
+async function refreshKnowledge(){
+  try{
+    const response = await fetch('http://localhost:8091/knowledge', {cache:'no-store'});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    applyKnowledge(await response.json());
+  }catch(err){
+    applyKnowledge({ok:false, summary:{documents:9, chunks:350, dimensions:384}, recent:[]});
+  }
+}
+refreshKnowledge();
+setInterval(refreshKnowledge, 5000);
+
+function fmtPrice(price){
+  return price >= 1000
+    ? `$${price.toLocaleString(undefined, {maximumFractionDigits:0})}`
+    : `$${price.toLocaleString(undefined, {maximumFractionDigits:2})}`;
+}
+
+function renderMarkets(payload){
+  marketSource.textContent = payload.source || 'mock';
+  marketList.innerHTML = (payload.markets || []).map(m => {
+    const up = m.change_24h >= 0;
+    const active = favorites.has(m.base);
+    return `<div class="market-row">
+      <span>${m.base}</span>
+      <span class="market-change ${up ? 'up' : 'down'}">${up ? '+' : ''}${m.change_24h.toFixed(2)}%</span>
+      <span class="market-price">${fmtPrice(m.price)}</span>
+      <button class="favorite-btn ${active ? 'active' : ''}" data-fav="${m.base}" title="Add favorite">★</button>
+    </div>`;
+  }).join('');
+  positionList.innerHTML = (payload.positions || []).map(p => (
+    `<div class="position-row">
+      <span><b>${p.base}</b> ${p.side}</span>
+      <span>${p.size ? `${p.size} · PnL ${fmtPrice(p.pnl)}` : 'watchlist'}</span>
+    </div>`
+  )).join('');
+  document.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const base = btn.getAttribute('data-fav');
+      if(favorites.has(base)) favorites.delete(base); else favorites.add(base);
+      localStorage.setItem('marketFavorites', JSON.stringify([...favorites]));
+      btn.classList.toggle('active', favorites.has(base));
+    });
+  });
+}
+
+async function refreshMarkets(){
+  try{
+    const response = await fetch('http://localhost:8091/markets', {cache:'no-store'});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    renderMarkets(await response.json());
+  }catch(err){
+    renderMarkets({
+      source:'mock',
+      markets:[
+        {base:'BTC', price:67240, change_24h:1.84},
+        {base:'ETH', price:3520, change_24h:2.31},
+        {base:'SOL', price:184, change_24h:-0.42}
+      ],
+      positions:[
+        {base:'ETH', side:'long', size:1.25, pnl:212.5},
+        {base:'SOL', side:'watch', size:0, pnl:0}
+      ]
+    });
+  }
+}
+refreshMarkets();
+setInterval(refreshMarkets, 10000);
+
+/* ---------- Highlight branch + side card update ---------- */
+const rightEyebrow = document.getElementById('right-eyebrow');
+const rightTitle = document.getElementById('right-title');
+const rightDesc = document.getElementById('right-desc');
+const rightDivider = document.getElementById('right-divider');
+const rightTags = document.getElementById('right-tags');
+
+function computeRows(catName){
+  return (COMPUTE_BY_CATEGORY[catName] || []).map(node => (
+    `<div class="detail-row" data-state="${node.state}">
+      <span>${node.name}</span><span>${node.role}</span>
+    </div>`
+  )).join('');
+}
+
+function serviceRows(){
+  return Object.values(liveServices).map(s => (
+    `<div class="detail-row" data-state="${s.state}">
+      <span>${s.label}</span><span>${stateLabel(s.state)}</span>
+    </div>`
+  )).join('');
+}
+
+function automatonSummary(){
+  return `<div class="automaton-summary">
+    <div class="summary-kicker">Summary</div>
+    <h3>Conway Automaton</h3>
+    <p>Agent autonom izolat într-un container separat. Activitatea este sincronizată într-un tabel Supabase dedicat; fără Docker socket, fără cheile principale și fără auto-replicare activată.</p>
+  </div>`;
+}
+
+function showCategoryDetails(cat){
+  rightEyebrow.textContent = 'Direcție';
+  rightTitle.textContent = cat.name;
+  rightDesc.textContent = `${cat.sub} · ${cat.skills.length} noduri mapate.`;
+  rightDesc.classList.remove('empty-hint');
+  rightDivider.style.display = 'block';
+  if(cat.name === 'MARITIME AI' && liveKnowledge){
+    const summary = liveKnowledge.summary || {};
+    const recent = (liveKnowledge.recent || []).slice(0, 5);
+    rightTags.innerHTML = `<div class="detail-list">
+      <div class="detail-row" data-state="online"><span>Knowledge documents</span><span>${summary.documents || 0}</span></div>
+      <div class="detail-row" data-state="online"><span>Embedded chunks</span><span>${summary.chunks || 0}</span></div>
+      <div class="detail-row" data-state="online"><span>Embedding space</span><span>${summary.dimensions || 0}D</span></div>
+      ${recent.map(doc => `<div class="detail-row"><span>${doc.filename}</span><span>${doc.page_count || 0}p</span></div>`).join('')}
+    </div><a class="card-link" href="http://localhost:54323">Open Supabase Studio</a>`;
+    return;
+  }
+  rightTags.innerHTML = cat.live
+    ? `<div class="detail-list">${serviceRows()}</div>`
+    : `<div class="detail-list">${computeRows(cat.name)}</div>${cat.name === 'TRADING' ? automatonSummary() : ''}`;
+}
+
+function showAutomatonDetails(){
+  rightEyebrow.textContent = 'Trading · Agent';
+  rightTitle.textContent = 'Conway Automaton';
+  rightDesc.textContent = 'Agent autonom persistent, instalat izolat și conectat numai la jurnalul său din Supabase.';
+  rightDesc.classList.remove('empty-hint');
+  rightDivider.style.display = 'block';
+  rightTags.innerHTML = `<div class="detail-list">
+    <div class="detail-row" data-state="offline"><span>automaton-agent</span><span>SETUP</span></div>
+    <div class="detail-row"><span>Supabase activity</span><span>DEDICATED</span></div>
+    <div class="detail-row"><span>Auto-replication</span><span>OFF</span></div>
+  </div>${automatonSummary()}
+  <a class="card-link" href="/automaton.html">Open Conway webpage</a>
+  <a class="card-link" href="http://localhost:3000/d/automaton-observability">Open Grafana</a>`;
+}
+
+function showAutomatonMetricDetails(metric){
+  rightEyebrow.textContent = 'Trading · Conway metrics';
+  rightTitle.textContent = metric.name;
+  rightDesc.textContent = `${metric.detail} · al treilea layer de observabilitate Conway.`;
+  rightDesc.classList.remove('empty-hint');
+  rightDivider.style.display = 'block';
+  rightTags.innerHTML = `<div class="detail-list">
+    <div class="detail-row" data-state="online"><span>Activity</span><span>LIVE</span></div>
+    <div class="detail-row"><span>Source</span><span>${metric.name}</span></div>
+  </div><a class="card-link" href="${metric.url}">Open ${metric.name}</a>`;
+}
+
+function showJayDetails(){
+  rightEyebrow.textContent = 'Automation · Social';
+  rightTitle.textContent = 'Jay Social Media';
+  rightDesc.textContent = 'Nod de automatizare social media coordonat prin ramura Hermes.';
+  rightDesc.classList.remove('empty-hint');
+  rightDivider.style.display = 'block';
+  rightTags.innerHTML = `<div class="detail-list">
+    <div class="detail-row" data-state="online"><span>Hermes routing</span><span>LIVE</span></div>
+    <div class="detail-row"><span>Content queue</span><span>READY</span></div>
+    <div class="detail-row"><span>Publishing</span><span>GUARDED</span></div>
+  </div><div class="automaton-summary">
+    <div class="summary-kicker" style="color:#ff72c7">Summary</div>
+    <h3>Jay Social Media</h3>
+    <p>Planificare, rutare și monitorizare pentru fluxurile social media. Pulsurile roz indică activitatea ramurii Automation, fără a publica automat conținut.</p>
+  </div>`;
+}
+
+function showComputeDetails(cat, index){
+  const nodes = COMPUTE_BY_CATEGORY[cat.name] || [];
+  const node = nodes[index % Math.max(nodes.length, 1)] || {name:`${cat.name.toLowerCase()}-node`, role:'compute', state:'mock'};
+  rightEyebrow.textContent = 'Compute Node';
+  rightTitle.textContent = node.name;
+  rightDesc.textContent = `${node.role} · rulează pentru ${cat.name.toLowerCase()}. Statusul este ${node.state}.`;
+  rightDesc.classList.remove('empty-hint');
+  rightDivider.style.display = 'block';
+  rightTags.innerHTML = cat.live
+    ? `<div class="detail-list">${serviceRows()}</div>`
+    : `<div class="detail-list">${cat.skills.slice(0,6).map(s => `<div class="detail-row"><span>${s}</span><span>svc</span></div>`).join('')}</div>`;
+}
+
+const initialFocus = new URLSearchParams(window.location.search).get('focus');
+if(initialFocus === 'automaton') showAutomatonDetails();
+if(initialFocus === 'jay') showJayDetails();
+
+function highlightBranch(idx, on){
+  document.querySelectorAll(`[data-branch="${idx}"]`).forEach(el => {
+    if(el.tagName === 'path'){ el.classList.toggle('lit', on); }
+    if(el.tagName === 'g'){ el.classList.toggle('lit', on); }
+  });
+  if(on) updateRightCard(idx);
+}
+
+function updateRightCard(idx){
+  const cat = CATEGORIES[idx];
+  showCategoryDetails(cat);
+}
+
+/* ---------- Tooltip ---------- */
+const tooltip = document.getElementById('tooltip');
+const stage = document.getElementById('stage');
+function showTooltip(x, y, title, cat, extra){
+  // convert svg coords to screen coords accounting for current transform
+  const pt = svg.createSVGPoint();
+  pt.x = x; pt.y = y;
+  const screenPt = pt.matrixTransform(layerG.getCTM());
+  const stageRect = stage.getBoundingClientRect();
+  tooltip.style.left = (screenPt.x - stageRect.left) + 'px';
+  tooltip.style.top = (screenPt.y - stageRect.top) + 'px';
+  tooltip.innerHTML = `<div class="t-cat">${cat}</div><div class="t-title">${title}</div>${extra ? `<div>${extra}</div>`:''}`;
+  tooltip.style.opacity = '1';
+  clearTimeout(showTooltip._t);
+  showTooltip._t = setTimeout(()=>{ tooltip.style.opacity='0'; }, 2600);
+}
+
+/* ---------- Pan & zoom ---------- */
+let scale = 0.62, tx = 0, ty = 0;
+let isDragging = false, lastX=0, lastY=0;
+
+function applyTransform(){
+  layerG.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+}
+function fitInitial(){
+  scale = 0.62;
+  tx = (1600 - 1600*scale)/2;
+  ty = (1600 - 1600*scale)/2;
+  applyTransform();
+}
+fitInitial();
+
+svg.addEventListener('mousedown', (e)=>{
+  isDragging = true; lastX = e.clientX; lastY = e.clientY;
+  svg.classList.add('dragging');
+});
+window.addEventListener('mouseup', ()=>{ isDragging=false; svg.classList.remove('dragging'); });
+window.addEventListener('mousemove', (e)=>{
+  if(!isDragging) return;
+  tx += (e.clientX - lastX);
+  ty += (e.clientY - lastY);
+  lastX = e.clientX; lastY = e.clientY;
+  applyTransform();
+});
+svg.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  const delta = -e.deltaY * 0.001;
+  const newScale = Math.min(2.2, Math.max(0.3, scale + delta));
+  scale = newScale;
+  applyTransform();
+}, {passive:false});
+
+document.getElementById('zoom-in').addEventListener('click', ()=>{ scale = Math.min(2.2, scale+0.15); applyTransform(); });
+document.getElementById('zoom-out').addEventListener('click', ()=>{ scale = Math.max(0.3, scale-0.15); applyTransform(); });
+document.getElementById('reset').addEventListener('click', fitInitial);
+
+/* ---------- Live activity pulses: trading + Cloudflare INFRA ---------- */
+const pulseG = makeEl('g', {id:'trading-pulses'});
+layerG.appendChild(pulseG);
+const animatedPaths = [
+  ...tradingPulsePaths.slice(0, 22).map(path => ({path, kind:'trading'})),
+  ...infraPulsePaths.slice(0, 12).map(path => ({path, kind:'cloudflare'})),
+  ...automationPulsePaths.slice(0, 14).map(path => ({path, kind:'automation'})),
+  ...maritimePulsePaths.map(path => ({path, kind:'maritime'}))
+];
+const pulses = animatedPaths.map(({path, kind}, i) => {
+  const dot = makeEl('circle', {r:2.8, class:'data-pulse'});
+  if(kind === 'cloudflare'){
+    dot.style.fill = '#f48120';
+    dot.style.filter = 'drop-shadow(0 0 4px #f48120)';
+  }
+  if(kind === 'automation'){
+    dot.style.fill = '#ff72c7';
+    dot.style.filter = 'drop-shadow(0 0 4px #ff72c7)';
+  }
+  if(kind === 'maritime'){
+    dot.style.fill = '#39e6d0';
+    dot.style.filter = 'drop-shadow(0 0 5px #39e6d0)';
+  }
+  pulseG.appendChild(dot);
+  return {
+    path,
+    dot,
+    kind,
+    speed: 0.00016 + (i % 5) * 0.000035,
+    offset: (i * 0.137) % 1,
+    reverse: i % 3 === 0
+  };
+});
+
+function renderPulses(now){
+  for(const p of pulses){
+    const len = p.path.getTotalLength();
+    let t = (now * p.speed + p.offset) % 1;
+    if(p.reverse) t = 1 - t;
+    const point = p.path.getPointAtLength(len * t);
+    p.dot.setAttribute('cx', point.x);
+    p.dot.setAttribute('cy', point.y);
+    p.dot.style.opacity = String(0.35 + Math.sin(t * Math.PI) * 0.55);
+  }
+  requestAnimationFrame(renderPulses);
+}
+requestAnimationFrame(renderPulses);
+
+/* ---------- Starfield background ---------- */
+const starCanvas = document.getElementById('stars');
+const ctx = starCanvas.getContext('2d');
+function resizeCanvas(){
+  starCanvas.width = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+  drawStars();
+}
+let stars = [];
+function drawStars(){
+  stars = [];
+  const count = Math.floor((starCanvas.width*starCanvas.height)/9000);
+  for(let i=0;i<count;i++){
+    stars.push({
+      x: Math.random()*starCanvas.width,
+      y: Math.random()*starCanvas.height,
+      r: Math.random()*1.1+0.2,
+      o: Math.random()*0.5+0.15,
+      tw: Math.random()*0.02+0.005
+    });
+  }
+}
+function renderStars(){
+  ctx.clearRect(0,0,starCanvas.width, starCanvas.height);
+  ctx.fillStyle = '#fff';
+  for(const s of stars){
+    s.o += s.tw;
+    const op = (Math.sin(s.o)*0.3+0.5) * s.o;
+    ctx.globalAlpha = Math.max(0.05, Math.min(0.7, (Math.sin(performance.now()*0.0005 + s.x)*0.3+0.5)*0.6));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(renderStars);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+requestAnimationFrame(renderStars);
+</script>
+</body>
+</html>
