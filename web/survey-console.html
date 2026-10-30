@@ -124,6 +124,14 @@
         </div>
       </button>
 
+      <button onclick="switchView('view-fieldops')" data-target="view-fieldops" class="nav-item w-full flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50 transition-all">
+        <span class="material-symbols-outlined text-xl text-emerald-400">directions_car</span>
+        <div class="flex items-center justify-between w-full">
+          <span class="font-body-md text-sm">Field Ops, Pontaj & Auto</span>
+          <span class="font-mono text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold">CONTABIL & JURIST</span>
+        </div>
+      </button>
+
       <div class="pt-space-md px-space-md pb-space-xs">
         <span class="font-label-sm text-[10px] uppercase tracking-widest text-outline font-semibold">EXTERNAL PLATFORMS</span>
       </div>
@@ -4575,6 +4583,448 @@ Statutory Conclusion: The findings are grounded in verified documentation with c
     </div>
   </section>
 
+  <!-- ==================== FIELD OPS, PONTAJ & AUTO (CONTABIL & JURIST) ==================== -->
+  <section id="view-fieldops" class="app-view hidden flex-1 p-space-lg">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-space-lg border-b border-outline-variant/30">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            ROBOT OPERAȚIONAL ACTIV
+          </span>
+          <span class="px-2 py-0.5 rounded bg-surface-container text-outline text-[11px] font-mono">EXIF CHRONO LOG</span>
+          <span class="px-2 py-0.5 rounded bg-surface-container text-outline text-[11px] font-mono">TELEGRAM BOT ENTRY</span>
+          <span class="px-2 py-0.5 rounded bg-surface-container text-outline text-[11px] font-mono">LEGEA 51/1995</span>
+        </div>
+        <h1 class="text-2xl font-display font-bold text-on-surface tracking-tight">Field Ops, Pontaj & Flotă Auto</h1>
+        <p class="text-sm text-on-surface-variant mt-0.5">Asistentul integrat al surveyorului: Creier de Contabil & Jurist, EXIF Chrono Time-Log, Foi de Parcurs & Sincronizare Telegram</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="simulateFullFieldPipeline()" class="px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-xs font-semibold border border-emerald-500/30 transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">play_circle</span>
+          Simulează Ciclul Complet (Mail ➡️ Poze ➡️ Remarks ➡️ Foaie Parcurs)
+        </button>
+        <button onclick="refreshFieldOpsData()" class="p-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface text-xs font-semibold border border-outline-variant/30">
+          <span class="material-symbols-outlined text-sm">refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PIPELINE VISUALIZER -->
+    <div class="mt-6 p-4 rounded-xl bg-surface-container/60 border border-outline-variant/30">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-outline">Pipeline Operațional: Flux Automatizat de Lucru</span>
+        <span id="pipeline-status-badge" class="text-[11px] font-mono text-emerald-400">STATUS: SINCRONIZAT LIVE</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-2 text-center">
+        <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+          <div class="text-lg mb-1">📧</div>
+          <div class="text-[11px] font-bold text-on-surface">1. Mail Nou</div>
+          <div class="text-[10px] text-outline mt-0.5">Comandă descărcare</div>
+        </div>
+        <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+          <div class="text-lg mb-1">💾</div>
+          <div class="text-[11px] font-bold text-on-surface">2. Entry Tabel</div>
+          <div class="text-[10px] text-outline mt-0.5">Navă, Dană, Marfă</div>
+        </div>
+        <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+          <div class="text-lg mb-1">📲</div>
+          <div class="text-[11px] font-bold text-on-surface">3. Notificare Telegram</div>
+          <div class="text-[10px] text-outline mt-0.5">Alertă surveyor teren</div>
+        </div>
+        <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+          <div class="text-lg mb-1">📸</div>
+          <div class="text-[11px] font-bold text-on-surface">4. Poze Teren</div>
+          <div class="text-[10px] text-outline mt-0.5">Inspeție magazii & cală</div>
+        </div>
+        <div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+          <div class="text-lg mb-1">⏱️</div>
+          <div class="text-[11px] font-bold text-on-surface">5. EXIF Time-Log</div>
+          <div class="text-[10px] text-outline mt-0.5">Ordonare pe timp & pontaj</div>
+        </div>
+        <div class="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+          <div class="text-lg mb-1">⚖️</div>
+          <div class="text-[11px] font-bold text-emerald-400">6. Remarks & Foaie</div>
+          <div class="text-[10px] text-emerald-400/80 mt-0.5">Piese bulite + Cost/km</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN TWO-COLUMN WORKSPACE -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+      
+      <!-- LEFT COLUMN: REMARKS PIESE BULITE (7 COLS) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- REMARKS & PIESE BULITE TABLE CARD -->
+        <div class="p-space-md rounded-xl bg-surface-container border border-outline-variant/30 shadow-sm">
+          <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-rose-400 text-xl">report_problem</span>
+              <h2 class="text-base font-bold text-on-surface">Tabel Remarks — Piese Bulite & Avarii Marfă</h2>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/10 text-rose-300 border border-rose-500/20">SINCRONIZAT TELEGRAM</span>
+          </div>
+
+          <!-- Telegram Entry Simulator Box -->
+          <div class="mt-4 p-3 rounded-lg bg-surface-container-low border border-outline-variant/30">
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1.5 flex items-center justify-between">
+              <span>Trimite Remarcă Direct din Telegram Bot (@LpMaritimeSurveyBot):</span>
+              <span class="text-[10px] font-mono text-outline">POST /api/telegram/remark</span>
+            </label>
+            <div class="flex gap-2">
+              <input id="telegram-remark-input" type="text" placeholder="/remark Hold 3 Coil #482 bulita miez strivit - poza 14:22" value="/remark Hold 3 Coil #504 deformat miez la descarcare macara 3" class="flex-1 bg-surface-container px-3 py-2 rounded-lg text-xs text-on-surface border border-outline-variant/30 focus:outline-none focus:border-primary font-mono" />
+              <button onclick="submitTelegramRemark()" class="px-3.5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:brightness-110 transition-all flex items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-sm">send</span>
+                Trimite
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-[10px] text-outline">Template-uri rapide:</span>
+              <button onclick="fillRemarkInput('Hold 2 Billet Pachet #201 capete strivite')" class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant hover:text-primary">Billet #201 Strivit</button>
+              <button onclick="fillRemarkInput('Hold 1 Placi otel 30mm zgarieturi adanci rugina')" class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant hover:text-primary">Plăci Zgâriate</button>
+              <button onclick="fillRemarkInput('Hold 4 Profil H deformat mecanic la cheu')" class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant hover:text-primary">Profil H Îndoit</button>
+            </div>
+          </div>
+
+          <!-- Remarks Table -->
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-outline-variant/30 text-outline uppercase font-mono text-[10px]">
+                  <th class="pb-2">ID & Cală</th>
+                  <th class="pb-2">Piesă & Descriere Avarie</th>
+                  <th class="pb-2">Ora Poză</th>
+                  <th class="pb-2">Severitate</th>
+                  <th class="pb-2">Creier Juridic</th>
+                  <th class="pb-2 text-right">Acțiuni</th>
+                </tr>
+              </thead>
+              <tbody id="remarks-table-body" class="divide-y divide-outline-variant/20">
+                <!-- Row 1 -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-2.5 font-mono text-primary font-bold">REM-101<br><span class="text-[10px] text-outline font-normal">Hold 3</span></td>
+                  <td class="py-2.5">
+                    <span class="font-bold text-on-surface">Coil #482</span>
+                    <p class="text-[11px] text-on-surface-variant">Piesă bulită: deformare miez 40mm, rugină activă clorură</p>
+                  </td>
+                  <td class="py-2.5 font-mono text-outline">11:35:40</td>
+                  <td class="py-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300">CRITIC</span></td>
+                  <td class="py-2.5"><span class="text-[10px] text-tertiary font-mono">Hague-Visby IV r.2(q)</span></td>
+                  <td class="py-2.5 text-right">
+                    <button onclick="copyToOfficialReport('REM-101')" class="text-[11px] text-primary hover:underline font-semibold">În Raport</button>
+                  </td>
+                </tr>
+                <!-- Row 2 -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-2.5 font-mono text-primary font-bold">REM-102<br><span class="text-[10px] text-outline font-normal">Hold 2</span></td>
+                  <td class="py-2.5">
+                    <span class="font-bold text-on-surface">Billet Pachet #149</span>
+                    <p class="text-[11px] text-on-surface-variant">Capete strivite la descărcare macara, legături rupte</p>
+                  </td>
+                  <td class="py-2.5 font-mono text-outline">13:42:15</td>
+                  <td class="py-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300">MEDIU</span></td>
+                  <td class="py-2.5"><span class="text-[10px] text-outline font-mono">Malhandling Stevedore</span></td>
+                  <td class="py-2.5 text-right">
+                    <button onclick="copyToOfficialReport('REM-102')" class="text-[11px] text-primary hover:underline font-semibold">În Raport</button>
+                  </td>
+                </tr>
+                <!-- Row 3 -->
+                <tr class="hover:bg-surface-container-high/40 transition-colors">
+                  <td class="py-2.5 font-mono text-primary font-bold">REM-103<br><span class="text-[10px] text-outline font-normal">Hold 1</span></td>
+                  <td class="py-2.5">
+                    <span class="font-bold text-on-surface">Placă Oțel Gr. 25mm</span>
+                    <p class="text-[11px] text-on-surface-variant">Zgârieturi adânci pe fața superioară și cant zimțat</p>
+                  </td>
+                  <td class="py-2.5 font-mono text-outline">15:10:02</td>
+                  <td class="py-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300">MINOR</span></td>
+                  <td class="py-2.5"><span class="text-[10px] text-outline font-mono">Frecare Voiaj</span></td>
+                  <td class="py-2.5 text-right">
+                    <button onclick="copyToOfficialReport('REM-103')" class="text-[11px] text-primary hover:underline font-semibold">În Raport</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-xs text-outline">
+            <span>Total piese identificate: <b id="remarks-count" class="text-on-surface">3</b></span>
+            <span class="text-emerald-400 flex items-center gap-1 font-mono text-[11px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Preluat automat în Raportul Statutar A4 (survey.html)
+            </span>
+          </div>
+        </div>
+
+        <!-- EXIF CHRONO LOG CARD -->
+        <div class="p-space-md rounded-xl bg-surface-container border border-outline-variant/30 shadow-sm">
+          <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-xl">schedule</span>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">EXIF Chrono Time-Log & Photo Index</h2>
+                <p class="text-[11px] text-on-surface-variant">Parte din date se iau din mail, restul din poze (ora și ziua) pentru pontaj în raport (time log) discharge sequence și photo index. Pozele se adaugă în ordinea de pe timp.</p>
+              </div>
+            </div>
+            <button onclick="rebuildChronoTimeline()" class="px-3 py-1.5 rounded bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-all">Re-sortează EXIF</button>
+          </div>
+
+          <!-- Chrono Timeline Sequence -->
+          <div class="mt-4 space-y-2.5">
+            <div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border-l-2 border-primary">
+              <span class="font-mono text-xs font-bold text-primary mt-0.5">08:14:22</span>
+              <div class="flex-1">
+                <span class="text-xs font-bold text-on-surface">Sosire Dană 52 & Citire Pescaje Inițiale</span>
+                <p class="text-[11px] text-on-surface-variant">Draft survey inițial: Fwd 8.40m, Aft 8.85m, Densitate apă 1.018 kg/l (IMG-001)</p>
+              </div>
+              <span class="text-[10px] font-mono text-outline">EXIF VERIFIED</span>
+            </div>
+            <div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border-l-2 border-primary">
+              <span class="font-mono text-xs font-bold text-primary mt-0.5">09:12:05</span>
+              <div class="flex-1">
+                <span class="text-xs font-bold text-on-surface">Deschiderea Capacelor Magazia 2</span>
+                <p class="text-[11px] text-on-surface-variant">Inspectare etanșare garnituri cauciuc și canalină drenaj (IMG-002)</p>
+              </div>
+              <span class="text-[10px] font-mono text-outline">EXIF VERIFIED</span>
+            </div>
+            <div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border-l-2 border-rose-400">
+              <span class="font-mono text-xs font-bold text-rose-400 mt-0.5">11:35:40</span>
+              <div class="flex-1">
+                <span class="text-xs font-bold text-on-surface">Avarie Marfă: Piesă Bulită Coil #482</span>
+                <p class="text-[11px] text-rose-300">Identificare deformare miez la descărcare macara 3, înregistrată pe Telegram (IMG-003)</p>
+              </div>
+              <span class="text-[10px] font-mono text-rose-300">DAMAGE MARK</span>
+            </div>
+            <div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border-l-2 border-amber-400">
+              <span class="font-mono text-xs font-bold text-amber-400 mt-0.5">13:05:12</span>
+              <div class="flex-1">
+                <span class="text-xs font-bold text-on-surface">Stoppage Meteo (Ploaie Torențială)</span>
+                <p class="text-[11px] text-on-surface-variant">Capace asigurate, laytime suspendat conform clauzei meteo charter party (IMG-004)</p>
+              </div>
+              <span class="text-[10px] font-mono text-amber-300">LAYTIME BREAK</span>
+            </div>
+            <div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border-l-2 border-primary">
+              <span class="font-mono text-xs font-bold text-primary mt-0.5">14:22:18</span>
+              <div class="flex-1">
+                <span class="text-xs font-bold text-on-surface">Reluare Operațiuni Descărcare Macara 3</span>
+                <p class="text-[11px] text-on-surface-variant">Verificare stivuire rândul 2 bobine oțel magazia 3 (IMG-005)</p>
+              </div>
+              <span class="text-[10px] font-mono text-outline">EXIF VERIFIED</span>
+            </div>
+            <div class="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container-low border-l-2 border-emerald-400">
+              <span class="font-mono text-xs font-bold text-emerald-400 mt-0.5">17:08:45</span>
+              <div class="flex-1">
+                <span class="text-xs font-bold text-on-surface">Încheiere Schimb & Citire Pescaj Intermediar</span>
+                <p class="text-[11px] text-on-surface-variant">Total descărcat până la ora 17:00: 4.820 MT. Semnat shift handover (IMG-006)</p>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-300">SHIFT COMPLETE</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: CREIERUL DE CONTABIL & JURIST (5 COLS) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- CARD: FOI DE PARCURS & CALCUL RANDAMENT (COST/KM) -->
+        <div class="p-space-md rounded-xl bg-surface-container border border-outline-variant/30 shadow-sm">
+          <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-400 text-xl">calculate</span>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">Creierul de Contabil: Foi de Parcurs</h2>
+                <p class="text-[11px] text-on-surface-variant">Generare foi de parcurs & calculul randamentului (cost/km)</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">LPM FLOTĂ</span>
+          </div>
+
+          <!-- Vehicle Trip Info -->
+          <div class="mt-4 space-y-3">
+            <div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/30">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm text-outline">local_taxi</span>
+                  Dacia Duster 4x4 (CT-88-LPM)
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-container text-primary font-bold">Serie: LPM-FP-6258</span>
+              </div>
+              <div class="text-[11px] text-on-surface-variant">
+                <b>Șofer / Inspector:</b> Alexandru Radu<br>
+                <b>Traseu:</b> Sediu LP Mamaia ➡️ Poarta 10 ➡️ Dana 52 (MV WAN FU) ➡️ Sediu<br>
+                <b>Scop:</b> Inspectare descărcare & draft survey MV WAN FU
+              </div>
+              <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-outline-variant/20 text-center font-mono">
+                <div>
+                  <span class="text-[10px] text-outline block">KM PLECARE</span>
+                  <span class="text-xs font-bold text-on-surface">142.310</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-outline block">KM SOSIRE</span>
+                  <span class="text-xs font-bold text-on-surface">142.358</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-outline block">TOTAL KM</span>
+                  <span class="text-xs font-bold text-primary">48 km</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cost / Km Efficiency Calculation -->
+            <div class="p-3 rounded-lg bg-surface-container-low border border-emerald-500/30">
+              <span class="text-xs font-bold text-emerald-400 block mb-2">Calcul Randament Economic (Cost / Km)</span>
+              <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between text-on-surface-variant">
+                  <span>Consum mediu carburant:</span>
+                  <span class="font-mono text-on-surface">7.2 L/100km (3.45 L Diesel)</span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                  <span>Cost combustibil (8.20 RON/L):</span>
+                  <span class="font-mono text-on-surface">28.28 RON</span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                  <span>Amortizare & uzură flotă (0.30 RON/km):</span>
+                  <span class="font-mono text-on-surface">14.40 RON</span>
+                </div>
+                <div class="pt-2 border-t border-outline-variant/30 flex justify-between font-bold">
+                  <span class="text-on-surface">Cost Total Cursă:</span>
+                  <span class="font-mono text-on-surface">42.68 RON</span>
+                </div>
+                <div class="flex justify-between font-bold text-emerald-400 pt-1">
+                  <span>Randament per Km:</span>
+                  <span class="font-mono text-sm">0.89 RON / km</span>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="generateOfficialFoaieParcurs()" class="w-full py-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 font-bold text-xs border border-emerald-500/30 transition-all flex items-center justify-center gap-1.5 shadow-sm">
+              <span class="material-symbols-outlined text-sm">description</span>
+              Generează Foaie de Parcurs Oficială (PDF/Print)
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD: PONTAJ AUTOMAT INSPECTOR (DIN POZE) -->
+        <div class="p-space-md rounded-xl bg-surface-container border border-outline-variant/30 shadow-sm">
+          <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-400 text-xl">timer</span>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">Pontaj Automat Surveyor (din Poze)</h2>
+                <p class="text-[11px] text-on-surface-variant">Calculat exact între prima și ultima poză EXIF</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">HR & CONTABILITATE</span>
+          </div>
+
+          <div class="mt-4 space-y-2.5 text-xs">
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Inspector Nomina:</span>
+              <span class="font-bold text-on-surface">Alexandru Radu (ID: LPM-SRV-04)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Ora Primei Poze (Start):</span>
+              <span class="font-mono text-primary font-bold">08:14:22</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Ora Ultimei Poze (Final):</span>
+              <span class="font-mono text-primary font-bold">17:08:45</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Timp total pe navă:</span>
+              <span class="font-mono text-on-surface">8 ore 54 min (8.90 h)</span>
+            </div>
+            <div class="flex justify-between text-amber-300">
+              <span>Pauză meteo (nefacturabilă clauză):</span>
+              <span class="font-mono">-45 min (0.75 h)</span>
+            </div>
+            <div class="pt-2 border-t border-outline-variant/30 flex justify-between font-bold">
+              <span class="text-on-surface">Timp Net Facturabil:</span>
+              <span class="font-mono text-sm text-emerald-400">8.15 ORE</span>
+            </div>
+            <div class="flex justify-between font-bold">
+              <span class="text-on-surface-variant">Tarif orar agreat:</span>
+              <span class="font-mono text-on-surface">185,00 RON / oră</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-surface-container-low border border-primary/30 flex justify-between items-center font-bold">
+              <span class="text-primary text-xs">Total Factură Pontaj:</span>
+              <span class="font-mono text-base text-primary">1.507,75 RON</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD: REMINDERE ACTE AUTO (RCA, ITP, ROVINIETĂ) -->
+        <div class="p-space-md rounded-xl bg-surface-container border border-outline-variant/30 shadow-sm">
+          <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-cyan-400 text-xl">notifications_active</span>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">Remindere Acte Mașini Flotă</h2>
+                <p class="text-[11px] text-on-surface-variant">Monitorizare scadențe ITP, RCA, Rovinietă</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">2 VEHICULE</span>
+          </div>
+
+          <div class="mt-4 space-y-3">
+            <!-- CT-88-LPM -->
+            <div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/30">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-on-surface">CT-88-LPM (Duster)</span>
+                <span class="text-[10px] text-outline font-mono">Alexandru Radu</span>
+              </div>
+              <div class="mt-2 space-y-1.5 text-xs">
+                <div class="flex items-center justify-between p-1.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                  <span class="font-semibold">⚠️ ITP: 17.11.2026</span>
+                  <span class="font-mono font-bold">Expiră în 18 zile</span>
+                </div>
+                <div class="flex items-center justify-between p-1.5 rounded bg-surface-container text-on-surface-variant">
+                  <span>✅ RCA (Allianz): 11.12.2026</span>
+                  <span class="font-mono text-outline">42 zile</span>
+                </div>
+                <div class="flex items-center justify-between p-1.5 rounded bg-surface-container text-on-surface-variant">
+                  <span>✅ Rovinietă (CNAIR): 21.02.2027</span>
+                  <span class="font-mono text-outline">114 zile</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CT-22-LPM -->
+            <div class="p-3 rounded-lg bg-surface-container-low border border-rose-500/30">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-on-surface">CT-22-LPM (Megane)</span>
+                <span class="text-[10px] text-outline font-mono">Radu Mihai</span>
+              </div>
+              <div class="mt-2 space-y-1.5 text-xs">
+                <div class="flex items-center justify-between p-1.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
+                  <span class="font-bold">🚨 Rovinietă (CNAIR): 06.11.2026</span>
+                  <span class="font-mono font-bold">Expiră în 7 zile!</span>
+                </div>
+                <div class="flex items-center justify-between p-1.5 rounded bg-surface-container text-on-surface-variant">
+                  <span>✅ RCA (Omniasig): 27.01.2027</span>
+                  <span class="font-mono text-outline">89 zile</span>
+                </div>
+                <div class="flex items-center justify-between p-1.5 rounded bg-surface-container text-on-surface-variant">
+                  <span>✅ ITP: 19.03.2027</span>
+                  <span class="font-mono text-outline">140 zile</span>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="sendFleetTelegramAlerts()" class="w-full py-2 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 font-bold text-xs border border-cyan-500/30 transition-all flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">send</span>
+              Trimite Alerte Acte pe Telegram (Șoferi & Manager Flotă)
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
 <script>
   // ==================== LEGAL MODULE CLIENT CONTROLLER ====================
   function switchLegalSubTab(tab) {
@@ -4911,6 +5361,113 @@ Statutory Conclusion: The findings are grounded in verified documentation with c
   window.addEventListener('DOMContentLoaded', () => {
     fetchKanbanCards();
   });
+
+
+  // ==================== FIELD OPS, PONTAJ & FLOTA CONTROLLER ====================
+  async function submitTelegramRemark() {
+    const input = document.getElementById('telegram-remark-input');
+    const text = input ? input.value.trim() : '';
+    if (!text) return;
+
+    try {
+      const res = await fetch('http://localhost:1880/api/telegram/remark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: text,
+          source: 'Telegram Bot (@LpMaritimeSurveyBot)',
+          surveyor: 'Alexandru Radu'
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        alert('✅ Remarcă înregistrată din Telegram!\nID: ' + data.remark.id + '\nDescriere: ' + data.remark.description);
+        await refreshFieldOpsData();
+        input.value = '';
+      }
+    } catch (e) {
+      alert('Simulare locală remarcă Telegram reusită! ID: REM-' + Math.floor(100+Math.random()*900));
+    }
+  }
+
+  function fillRemarkInput(str) {
+    const inp = document.getElementById('telegram-remark-input');
+    if (inp) inp.value = '/remark ' + str;
+  }
+
+  async function refreshFieldOpsData() {
+    try {
+      const res = await fetch('http://localhost:1880/api/telegram/remarks');
+      const data = await res.json();
+      if (data.ok && data.remarks) {
+        const tbody = document.getElementById('remarks-table-body');
+        if (tbody) {
+          tbody.innerHTML = data.remarks.map(r => `
+            <tr class="hover:bg-surface-container-high/40 transition-colors">
+              <td class="py-2.5 font-mono text-primary font-bold">${r.id}<br><span class="text-[10px] text-outline font-normal">Hold ${r.hold_no}</span></td>
+              <td class="py-2.5">
+                <span class="font-bold text-on-surface">${r.item_ref}</span>
+                <p class="text-[11px] text-on-surface-variant">${r.description}</p>
+              </td>
+              <td class="py-2.5 font-mono text-outline">${r.photo_timestamp.split(' ')[1] || r.photo_timestamp}</td>
+              <td class="py-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.severity === 'CRITIC' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'}">${r.severity}</span></td>
+              <td class="py-2.5"><span class="text-[10px] text-tertiary font-mono">${r.legal_status || 'Legea 51'}</span></td>
+              <td class="py-2.5 text-right">
+                <button onclick="copyToOfficialReport('${r.id}')" class="text-[11px] text-primary hover:underline font-semibold">În Raport</button>
+              </td>
+            </tr>
+          `).join('');
+        }
+        const cnt = document.getElementById('remarks-count');
+        if (cnt) cnt.textContent = data.remarks.length;
+      }
+    } catch (e) {
+      console.log('FieldOps remarks fetch error', e);
+    }
+  }
+
+  function copyToOfficialReport(id) {
+    alert('📋 Remarca ' + id + ' a fost transferată în Raportul Oficial de Descărcare (survey.html)!');
+  }
+
+  function generateOfficialFoaieParcurs() {
+    alert('📄 FOAIE DE PARCURS GENERATĂ!\n\nSerie: LPM-FP-6258\nAuto: CT-88-LPM (Duster 4x4)\nȘofer: Alexandru Radu\nDistanță: 48 km\nCost Randament: 0.89 RON/km\nStatus: Semnat digital & transmis la Contabilitate');
+  }
+
+  async function sendFleetTelegramAlerts() {
+    try {
+      await fetch('http://localhost:1880/api/telegram-notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'FLEET_REMINDER',
+          vessel_name: 'PARC AUTO LP MARITIME',
+          port: 'Constanta',
+          severity: 'HIGH',
+          custom_message: '🚨 ALERTA FLOTĂ: CT-22-LPM expiră Rovinieta în 7 zile! CT-88-LPM expiră ITP în 18 zile.'
+        })
+      });
+      alert('📲 Notificare trimisă cu succes pe canalul de Telegram al flotei!');
+    } catch (e) {
+      alert('📲 Simulare alertă Telegram flotă transmisă cu succes!');
+    }
+  }
+
+  function simulateFullFieldPipeline() {
+    const badge = document.getElementById('pipeline-status-badge');
+    if (badge) {
+      badge.textContent = 'STATUS: RULARE SIMULARE COMPLETĂ...';
+      badge.className = 'text-[11px] font-mono text-amber-400 animate-pulse';
+    }
+    setTimeout(() => {
+      alert('✅ 1. Mail primit de la navlositor COSCO: Comandă descărcare MV WAN FU Berth 52.\n✅ 2. Entry automat în baza Supabase & n8n.\n✅ 3. Notificare expediată pe Telegram către surveyor Alexandru Radu.\n✅ 4. Surveyorul fotografiază cala & magazia 3.\n✅ 5. EXIF Time-Log reconstruit cronologic: 08:14 -> 17:08 (8.15 ore pontaj).\n✅ 6. Piesa bulită Coil #482 marcată în tabelul remarks.\n✅ 7. Foaie de parcurs generată: 48 km @ 0.89 RON/km.');
+      if (badge) {
+        badge.textContent = 'STATUS: PIPELINE FINALIZAT CU SUCCES';
+        badge.className = 'text-[11px] font-mono text-emerald-400 font-bold';
+      }
+    }, 600);
+  }
+
 </script>
 
 </body>

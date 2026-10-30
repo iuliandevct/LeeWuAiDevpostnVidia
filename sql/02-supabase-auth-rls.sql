@@ -508,3 +508,118 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+
+
+-- ==============================================================================
+-- 7. FIELD SURVEYOR OPERATIONS, REMARKS, FLEET & ACCOUNTING BRAIN
+-- ==============================================================================
+
+-- 7.1 Tabel Remarks Piese Bulite & Avarii (Sincronizat Telegram)
+CREATE TABLE IF NOT EXISTS public.survey_damage_remarks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    survey_id UUID REFERENCES public.surveys(id) ON DELETE CASCADE,
+    hold_no INT NOT NULL,
+    item_ref TEXT NOT NULL,
+    description TEXT NOT NULL,
+    photo_timestamp TIMESTAMPTZ NOT NULL,
+    severity TEXT NOT NULL DEFAULT 'CRITIC' CHECK (severity IN ('CRITIC', 'MEDIU', 'MINOR')),
+    attributed_party TEXT,
+    hague_visby_article TEXT DEFAULT 'Art. III r.2 (Custody & Care of Cargo)',
+    created_via TEXT DEFAULT 'Telegram Bot (@LpMaritimeSurveyBot)',
+    surveyor_name TEXT DEFAULT 'Alexandru Radu',
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW())
+);
+
+ALTER TABLE public.survey_damage_remarks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone authenticated can view damage remarks"
+    ON public.survey_damage_remarks FOR SELECT
+    TO authenticated
+    USING (true);
+
+CREATE POLICY "Surveyors and admins can insert damage remarks"
+    ON public.survey_damage_remarks FOR INSERT
+    TO authenticated
+    WITH CHECK (
+        public.current_app_role() IN ('admin', 'surveyor')
+    );
+
+-- 7.2 Pontaj Automat Surveyor (Reconstruit din EXIF Poze)
+CREATE TABLE IF NOT EXISTS public.surveyor_timesheets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    survey_id UUID REFERENCES public.surveys(id) ON DELETE CASCADE,
+    surveyor_id UUID REFERENCES auth.users(id),
+    surveyor_name TEXT NOT NULL DEFAULT 'Alexandru Radu',
+    work_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    first_photo_time TIMESTAMPTZ NOT NULL,
+    last_photo_time TIMESTAMPTZ NOT NULL,
+    total_on_site_hours NUMERIC(5,2) NOT NULL,
+    weather_stoppage_hours NUMERIC(5,2) DEFAULT 0.00,
+    net_billable_hours NUMERIC(5,2) NOT NULL,
+    hourly_rate_ron NUMERIC(8,2) DEFAULT 185.00,
+    total_amount_ron NUMERIC(10,2) GENERATED ALWAYS AS (net_billable_hours * hourly_rate_ron) STORED,
+    accounting_status TEXT DEFAULT 'APPROVED' CHECK (accounting_status IN ('PENDING', 'APPROVED', 'INVOICED')),
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW())
+);
+
+ALTER TABLE public.surveyor_timesheets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone authenticated can view timesheets"
+    ON public.surveyor_timesheets FOR SELECT
+    TO authenticated
+    USING (true);
+
+-- 7.3 Flotă Auto LeeWu Maritime & Remindere Acte (ITP, RCA, Rovinietă)
+CREATE TABLE IF NOT EXISTS public.fleet_vehicles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    plate_no TEXT UNIQUE NOT NULL,
+    model TEXT NOT NULL,
+    assigned_driver TEXT NOT NULL,
+    odometer_km INT NOT NULL DEFAULT 0,
+    fuel_type TEXT NOT NULL DEFAULT 'Diesel',
+    rca_expiry DATE NOT NULL,
+    rca_insurer TEXT DEFAULT 'Allianz-Tiriac',
+    itp_expiry DATE NOT NULL,
+    rovinieta_expiry DATE NOT NULL,
+    casco_expiry DATE,
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW())
+);
+
+ALTER TABLE public.fleet_vehicles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Authenticated users can view fleet vehicles"
+    ON public.fleet_vehicles FOR SELECT
+    TO authenticated
+    USING (true);
+
+-- 7.4 Foi de Parcurs & Calcul Randament (Cost / Km)
+CREATE TABLE IF NOT EXISTS public.fleet_logbooks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    foaie_serie TEXT UNIQUE NOT NULL,
+    vehicle_plate TEXT REFERENCES public.fleet_vehicles(plate_no) ON DELETE RESTRICT,
+    driver_name TEXT NOT NULL,
+    trip_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    route_desc TEXT NOT NULL,
+    mission_purpose TEXT NOT NULL,
+    km_start INT NOT NULL,
+    km_end INT NOT NULL,
+    distance_km INT GENERATED ALWAYS AS (km_end - km_start) STORED,
+    fuel_liters NUMERIC(6,2) NOT NULL,
+    fuel_cost_ron NUMERIC(8,2) NOT NULL,
+    maintenance_cost_ron NUMERIC(8,2) NOT NULL,
+    total_trip_cost_ron NUMERIC(8,2) NOT NULL,
+    cost_per_km_ron NUMERIC(6,2) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW())
+);
+
+ALTER TABLE public.fleet_logbooks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Authenticated users can view logbooks"
+    ON public.fleet_logbooks FOR SELECT
+    TO authenticated
+    USING (true);
+
+-- Seed Data pentru Flotă & Remindere
+INSERT INTO public.fleet_vehicles (plate_no, model, assigned_driver, odometer_km, fuel_type, rca_expiry, itp_expiry, rovinieta_expiry)
+VALUES
+    ('CT-88-LPM', 'Dacia Duster 4x4 1.5 dCi', 'Alexandru Radu', 142358, 'Diesel', '2026-12-11', '2026-11-17', '2027-02-21'),
+    ('CT-22-LPM', 'Renault Megane Estate 1.3 TCe', 'Radu Mihai', 89410, 'Benzina', '2027-01-27', '2027-03-19', '2026-11-06')
+ON CONFLICT (plate_no) DO NOTHING;

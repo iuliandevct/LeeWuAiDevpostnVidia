@@ -12,6 +12,15 @@
 [![Telegram Bot Engine](https://img.shields.io/badge/Field%20Ops-Telegram%20Surveyor%20Bots-24A1DE?logo=telegram&logoColor=white)](https://telegram.org)
 [![Maritime Law 51/1995](https://img.shields.io/badge/Compliance-Law%2051%2F1995%20Bar%20Gate-FFB800)](#statutory-maritime-law)
 
+
+### 9. Autonomous Field Surveyor Operations: Accounting Brain + Legal Brain + EXIF Chrono Log
+LeeWu AI closes the gap between raw physical inspection on cargo holds and back-office statutory accounting:
+- **The Core Event Loop**: `Mail (Comandă Nouă) ➡️ Ingestie n8n ➡️ Notificare Telegram ➡️ Inspectorul face poze ➡️ EXIF Time-Log (Reconstituire cronologică descărcare) ➡️ Remarks Piese Bulite ➡️ Foaie de Parcurs & Pontaj ➡️ Raport Semnat`.
+- **Tabel Remarks Sincronizat Live cu Telegram**: Surveyorul trimite comenzi pe teren (e.g. `/remark Hold 3 Coil #482 miez bulit`), iar robotul adaugă înregistrarea în timp real în tabelul oficial de avarii, corelând-o cu articolul de răspundere Hague-Visby.
+- **Creierul de Contabil — Foi de Parcurs & Randament**: Calculează automat distanțele parcurse (sediu ➡️ dană ➡️ retur), consumul de carburant și generează foi de parcurs oficiale (seria LPM-FP) cu un **randament de 0.89 RON/km**.
+- **Pontaj Automat Reconstituit din Poze**: Calculează exact durata efectivă a schimbului între timestamp-ul primei poze (`08:14`) și ultima poză (`17:08`), deducând pauzele meteo (laytime) și calculând suma facturabilă (8.15 ore @ 185 RON/h = 1.507,75 RON).
+- **Remindere Acte Flotă Auto**: Monitorizare proactivă a scadențelor ITP, RCA și Rovinietă pentru mașinile de intervenție (`CT-88-LPM` și `CT-22-LPM`), cu alerte automate pe Telegram înainte de expirare.
+
 ---
 
 ## Executive Summary & Devpost Pitch

@@ -920,5 +920,252 @@
     "x": 700,
     "y": 280,
     "wires": []
+  },
+  {
+    "id": "tab_fieldops",
+    "type": "tab",
+    "label": "Field Surveyor & Fleet Ops (Contabil & Jurist)",
+    "disabled": false,
+    "info": "Telegram remarks entries (piese bulite), foi de parcurs, pontaje si remindere auto"
+  },
+  {
+    "id": "remark_post_in",
+    "type": "http in",
+    "z": "tab_fieldops",
+    "name": "POST /api/telegram/remark",
+    "url": "/api/telegram/remark",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 80,
+    "wires": [
+      [
+        "remark_post_fn"
+      ]
+    ]
+  },
+  {
+    "id": "remark_post_fn",
+    "type": "function",
+    "z": "tab_fieldops",
+    "name": "Append Damage Remark",
+    "func": "const fs = global.get('fs') || require('fs');\nconst path = global.get('path') || require('path');\nconst root = global.get('projectRoot') || '.';\nconst dataDir = path.join(root, 'data');\nconst remarksPath = path.join(dataDir, 'survey_remarks.json');\n\nconst input = msg.payload || {};\nmsg.headers = { 'content-type': 'application/json' };\n\nconst newRemark = {\n  id: \"REM-\" + (Math.floor(100 + Math.random() * 900)),\n  hold_no: input.hold_no || input.hold || 3,\n  item_ref: input.item_ref || input.item || \"Steel Coil #\" + Math.floor(100 + Math.random()*800),\n  description: input.description || input.text || \"Piesa bulita la descarcare - miez deformat, bavuri adanci\",\n  photo_timestamp: input.photo_timestamp || input.photo_time || new Date().toISOString().replace('T', ' ').slice(0, 19),\n  severity: input.severity || \"CRITIC\",\n  attributed_party: input.attributed_party || \"Manipulare defectuoasa macara cheu (Stevedore)\",\n  legal_status: \"Hague-Visby Art. III r.2 (Notificare P&I initiata)\",\n  created_via: input.source || \"Telegram Bot (@LpMaritimeSurveyBot)\",\n  surveyor: input.surveyor || \"Alexandru Radu\",\n  created_at: new Date().toISOString()\n};\n\nlet remarks = [];\ntry {\n  if (fs.existsSync(remarksPath)) {\n    remarks = JSON.parse(fs.readFileSync(remarksPath, 'utf8'));\n  }\n} catch (e) { remarks = []; }\n\nif (remarks.length === 0) {\n  remarks = [\n    {\n      id: \"REM-101\",\n      hold_no: 3,\n      item_ref: \"Coil #482\",\n      description: \"Piesa bulita: deformare miez interior 40mm, rugina activa clorurata pe fetele exterioare\",\n      photo_timestamp: \"2026-10-29 11:35:40\",\n      severity: \"CRITIC\",\n      attributed_party: \"Stevedore macara cheu (chingi metalice neprotejate)\",\n      legal_status: \"Legea 51/1995 Nota Protest emisa\",\n      created_via: \"Telegram Bot (@LpMaritimeSurveyBot)\",\n      surveyor: \"Alexandru Radu\"\n    },\n    {\n      id: \"REM-102\",\n      hold_no: 2,\n      item_ref: \"Billet Pachet #149\",\n      description: \"Capete strivite si flambate la descarcare, legaturi sarma rupte\",\n      photo_timestamp: \"2026-10-29 13:42:15\",\n      severity: \"MEDIU\",\n      attributed_party: \"Stivuire defectuoasa port incarcare\",\n      legal_status: \"Inregistrat in Raport Tehnic\",\n      created_via: \"Telegram Bot (@LpMaritimeSurveyBot)\",\n      surveyor: \"Alexandru Radu\"\n    },\n    {\n      id: \"REM-103\",\n      hold_no: 1,\n      item_ref: \"Placa Otel Gr. 25mm\",\n      description: \"Zgarieturi adanci pe fata superioara si cant zimtat\",\n      photo_timestamp: \"2026-10-29 15:10:02\",\n      severity: \"MINOR\",\n      attributed_party: \"Frecare in cala in timpul voiajului\",\n      legal_status: \"Acceptat conditionat de primitor\",\n      created_via: \"Telegram Bot (@LpMaritimeSurveyBot)\",\n      surveyor: \"Alexandru Radu\"\n    }\n  ];\n}\n\nremarks.unshift(newRemark);\n\ntry {\n  fs.mkdirSync(dataDir, { recursive: true });\n  fs.writeFileSync(remarksPath, JSON.stringify(remarks, null, 2), 'utf8');\n} catch (e) {}\n\nmsg.statusCode = 201;\nmsg.payload = {\n  ok: true,\n  remark: newRemark,\n  total_remarks: remarks.length,\n  message: \"Remarca inregistrata cu succes in tabelul de piese bulite!\"\n};\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 80,
+    "wires": [
+      [
+        "remark_post_out"
+      ]
+    ]
+  },
+  {
+    "id": "remark_post_out",
+    "type": "http response",
+    "z": "tab_fieldops",
+    "name": "Remark Post Out",
+    "statusCode": "",
+    "headers": {},
+    "x": 700,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "remark_get_in",
+    "type": "http in",
+    "z": "tab_fieldops",
+    "name": "GET /api/telegram/remarks",
+    "url": "/api/telegram/remarks",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 160,
+    "wires": [
+      [
+        "remark_get_fn"
+      ]
+    ]
+  },
+  {
+    "id": "remark_get_fn",
+    "type": "function",
+    "z": "tab_fieldops",
+    "name": "Get Damage Remarks",
+    "func": "const fs = global.get('fs') || require('fs');\nconst path = global.get('path') || require('path');\nconst root = global.get('projectRoot') || '.';\nconst dataDir = path.join(root, 'data');\nconst remarksPath = path.join(dataDir, 'survey_remarks.json');\n\nmsg.headers = { 'content-type': 'application/json' };\n\nlet remarks = [];\ntry {\n  if (fs.existsSync(remarksPath)) {\n    remarks = JSON.parse(fs.readFileSync(remarksPath, 'utf8'));\n  }\n} catch (e) { remarks = []; }\n\nif (remarks.length === 0) {\n  remarks = [\n    {\n      id: \"REM-101\",\n      hold_no: 3,\n      item_ref: \"Coil #482\",\n      description: \"Piesa bulita: deformare miez interior 40mm, rugina activa clorurata pe fetele exterioare\",\n      photo_timestamp: \"2026-10-29 11:35:40\",\n      severity: \"CRITIC\",\n      attributed_party: \"Stevedore macara cheu (chingi metalice neprotejate)\",\n      legal_status: \"Legea 51/1995 Nota Protest emisa\",\n      created_via: \"Telegram Bot (@LpMaritimeSurveyBot)\",\n      surveyor: \"Alexandru Radu\"\n    },\n    {\n      id: \"REM-102\",\n      hold_no: 2,\n      item_ref: \"Billet Pachet #149\",\n      description: \"Capete strivite si flambate la descarcare, legaturi sarma rupte\",\n      photo_timestamp: \"2026-10-29 13:42:15\",\n      severity: \"MEDIU\",\n      attributed_party: \"Stivuire defectuoasa port incarcare\",\n      legal_status: \"Inregistrat in Raport Tehnic\",\n      created_via: \"Telegram Bot (@LpMaritimeSurveyBot)\",\n      surveyor: \"Alexandru Radu\"\n    },\n    {\n      id: \"REM-103\",\n      hold_no: 1,\n      item_ref: \"Placa Otel Gr. 25mm\",\n      description: \"Zgarieturi adanci pe fata superioara si cant zimtat\",\n      photo_timestamp: \"2026-10-29 15:10:02\",\n      severity: \"MINOR\",\n      attributed_party: \"Frecare in cala in timpul voiajului\",\n      legal_status: \"Acceptat conditionat de primitor\",\n      created_via: \"Telegram Bot (@LpMaritimeSurveyBot)\",\n      surveyor: \"Alexandru Radu\"\n    }\n  ];\n}\n\nmsg.statusCode = 200;\nmsg.payload = {\n  ok: true,\n  count: remarks.length,\n  remarks: remarks\n};\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 160,
+    "wires": [
+      [
+        "remark_get_out"
+      ]
+    ]
+  },
+  {
+    "id": "remark_get_out",
+    "type": "http response",
+    "z": "tab_fieldops",
+    "name": "Remark Get Out",
+    "statusCode": "",
+    "headers": {},
+    "x": 700,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "fleet_reminders_in",
+    "type": "http in",
+    "z": "tab_fieldops",
+    "name": "GET /api/fleet/reminders",
+    "url": "/api/fleet/reminders",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 240,
+    "wires": [
+      [
+        "fleet_reminders_fn"
+      ]
+    ]
+  },
+  {
+    "id": "fleet_reminders_fn",
+    "type": "function",
+    "z": "tab_fieldops",
+    "name": "Fleet Car Document Reminders",
+    "func": "msg.headers = { 'content-type': 'application/json' };\n\nconst today = new Date();\n\nconst vehicles = [\n  {\n    plate: \"CT-88-LPM\",\n    model: \"Dacia Duster 4x4 1.5 dCi\",\n    driver: \"Alexandru Radu (Senior Surveyor)\",\n    odometer: 142358,\n    fuel_type: \"Diesel\",\n    documents: [\n      { name: \"ITP\", expiry: \"2026-11-17\", days_left: 18, status: \"warning\", alert_msg: \"Expiră în 18 zile! Programare necesară la RAR Constanța.\" },\n      { name: \"RCA (Allianz-Țiriac)\", expiry: \"2026-12-11\", days_left: 42, status: \"valid\", alert_msg: \"Poliță activă.\" },\n      { name: \"Rovinietă (CNAIR)\", expiry: \"2027-02-21\", days_left: 114, status: \"valid\", alert_msg: \"Valabilă pe rețeaua națională.\" },\n      { name: \"CASCO (Omniasig)\", expiry: \"2027-06-01\", days_left: 214, status: \"valid\", alert_msg: \"Asigurare completă maritim/port.\" }\n    ]\n  },\n  {\n    plate: \"CT-22-LPM\",\n    model: \"Renault Megane Estate 1.3 TCe\",\n    driver: \"Radu Mihai (Junior Inspector)\",\n    odometer: 89410,\n    fuel_type: \"Benzină\",\n    documents: [\n      { name: \"Rovinietă (CNAIR)\", expiry: \"2026-11-06\", days_left: 7, status: \"critical\", alert_msg: \"ALERTA CRITICĂ: Expiră în 7 zile! Reînnoire obligatorie!\" },\n      { name: \"RCA (Omniasig)\", expiry: \"2027-01-27\", days_left: 89, status: \"valid\", alert_msg: \"Poliță activă.\" },\n      { name: \"ITP\", expiry: \"2027-03-19\", days_left: 140, status: \"valid\", alert_msg: \"Inspectie tehnica valabila.\" }\n    ]\n  }\n];\n\nmsg.statusCode = 200;\nmsg.payload = {\n  ok: true,\n  fleet_count: vehicles.length,\n  vehicles: vehicles,\n  critical_alerts: 1,\n  warning_alerts: 1\n};\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 240,
+    "wires": [
+      [
+        "fleet_reminders_out"
+      ]
+    ]
+  },
+  {
+    "id": "fleet_reminders_out",
+    "type": "http response",
+    "z": "tab_fieldops",
+    "name": "Fleet Reminders Out",
+    "statusCode": "",
+    "headers": {},
+    "x": 700,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "fleet_trip_in",
+    "type": "http in",
+    "z": "tab_fieldops",
+    "name": "POST /api/fleet/trip",
+    "url": "/api/fleet/trip",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 320,
+    "wires": [
+      [
+        "fleet_trip_fn"
+      ]
+    ]
+  },
+  {
+    "id": "fleet_trip_fn",
+    "type": "function",
+    "z": "tab_fieldops",
+    "name": "Calculate Cost/Km & Logbook",
+    "func": "const input = msg.payload || {};\nmsg.headers = { 'content-type': 'application/json' };\n\nconst km_start = Number(input.km_start || 142310);\nconst km_end = Number(input.km_end || 142358);\nconst distance_km = Math.max(1, km_end - km_start);\n\n// Parametri de cost contabil\nconst fuel_price_per_liter = 8.20; // RON/L Diesel\nconst consumption_per_100km = 7.2; // L/100km urban/port regim mixt\nconst fuel_liters = (distance_km * consumption_per_100km) / 100;\nconst fuel_cost = Number((fuel_liters * fuel_price_per_liter).toFixed(2));\n\nconst wear_and_tear_per_km = 0.30; // RON/km amortizare, anvelope, revizii\nconst maintenance_cost = Number((distance_km * wear_and_tear_per_km).toFixed(2));\n\nconst total_trip_cost = Number((fuel_cost + maintenance_cost).toFixed(2));\nconst cost_per_km = Number((total_trip_cost / distance_km).toFixed(2));\n\nconst trip = {\n  id: \"TRIP-\" + Date.now(),\n  plate: input.plate || \"CT-88-LPM\",\n  driver: input.driver || \"Alexandru Radu\",\n  date: input.date || \"2026-10-29\",\n  route: input.route || \"Sediul LeeWu Maritime (Bd. Mamaia) -> Poarta 10 Port Constanta -> Dana 52 (MV WAN FU) -> Sediul LeeWu Maritime\",\n  purpose: input.purpose || \"Inspectare descarcare & draft survey MV WAN FU (IMO 9482184)\",\n  km_start: km_start,\n  km_end: km_end,\n  distance_km: distance_km,\n  fuel_liters: Number(fuel_liters.toFixed(2)),\n  fuel_cost_ron: fuel_cost,\n  maintenance_cost_ron: maintenance_cost,\n  total_cost_ron: total_trip_cost,\n  cost_per_km_ron: cost_per_km,\n  efficiency_rating: cost_per_km <= 1.30 ? \"OPTIM (Randament Excelent)\" : \"ATENTIE (Consum Ridicat)\",\n  foaie_parcurs_serie: \"LPM-FP-\" + Math.floor(1000 + Math.random()*9000),\n  generated_at: new Date().toISOString()\n};\n\nmsg.statusCode = 200;\nmsg.payload = {\n  ok: true,\n  trip: trip,\n  message: \"Foaie de parcurs inregistrata si cost/km calculat cu succes!\"\n};\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 320,
+    "wires": [
+      [
+        "fleet_trip_out"
+      ]
+    ]
+  },
+  {
+    "id": "fleet_trip_out",
+    "type": "http response",
+    "z": "tab_fieldops",
+    "name": "Fleet Trip Out",
+    "statusCode": "",
+    "headers": {},
+    "x": 700,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "chrono_in",
+    "type": "http in",
+    "z": "tab_fieldops",
+    "name": "POST /api/survey/process-photos",
+    "url": "/api/survey/process-photos",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 400,
+    "wires": [
+      [
+        "chrono_fn"
+      ]
+    ]
+  },
+  {
+    "id": "chrono_fn",
+    "type": "function",
+    "z": "tab_fieldops",
+    "name": "EXIF Chrono & Timesheet Engine",
+    "func": "msg.headers = { 'content-type': 'application/json' };\n\nconst photos = [\n  {\n    id: \"IMG-001\",\n    time: \"08:14:22\",\n    date: \"2026-10-29\",\n    category: \"Pescaje & Sosire\",\n    caption: \"Initial draft reading at berth 52 prior to cargo discharge\",\n    hold_no: \"All\",\n    event: \"Sosire dana & citire pescaje initiale (Fwd 8.40m, Aft 8.85m)\"\n  },\n  {\n    id: \"IMG-002\",\n    time: \"09:12:05\",\n    date: \"2026-10-29\",\n    category: \"Capace Magazii\",\n    caption: \"Hold #2 hydraulic hatch coaming opening & rubber packing inspection\",\n    hold_no: \"Hold 2\",\n    event: \"Deschiderea capacelor magazia 2, inspectie etansare si canalina drenaj\"\n  },\n  {\n    id: \"IMG-003\",\n    time: \"11:35:40\",\n    date: \"2026-10-29\",\n    category: \"Avarii Marfa (Piesa Bulita)\",\n    caption: \"Coil #482 severely buckled at core upon sling extraction\",\n    hold_no: \"Hold 3\",\n    event: \"Identificare piesa bulita Coil #482 (deformare miez) - trimis pe Telegram\"\n  },\n  {\n    id: \"IMG-004\",\n    time: \"13:05:12\",\n    date: \"2026-10-29\",\n    category: \"Meteo Stoppage\",\n    caption: \"Rain showers over Constanta port - hatch covers secured for laytime stoppage\",\n    hold_no: \"All\",\n    event: \"Oprire descarcare din cauza ploii conform clauzei meteo din Charter Party\"\n  },\n  {\n    id: \"IMG-005\",\n    time: \"14:22:18\",\n    date: \"2026-10-29\",\n    category: \"Reluare Operatiuni\",\n    caption: \"Resumed discharge crane 3 - hold #3 second layer coil stowage inspection\",\n    hold_no: \"Hold 3\",\n    event: \"Reluare operatiuni descarcare macara cheu 3\"\n  },\n  {\n    id: \"IMG-006\",\n    time: \"17:08:45\",\n    date: \"2026-10-29\",\n    category: \"Final Tura & Pontaj\",\n    caption: \"Intermediate draft reading & surveyor shift handover\",\n    hold_no: \"All\",\n    event: \"Incheiere schimb, citire pescaje intermediare (Total descarcat: 4.820 MT)\"\n  }\n];\n\n// Sortare stricta cronologica dupa timestamp\nphotos.sort((a,b) => a.time.localeCompare(b.time));\n\n// Calcul pontaj contabil\nconst firstTime = photos[0].time; // 08:14\nconst lastTime = photos[photos.length - 1].time; // 17:08\n\nconst startH = 8 + 14/60;\nconst endH = 17 + 8/60;\nconst totalHours = Number((endH - startH).toFixed(2)); // ~8.90 ore (8h 54m)\nconst rainBreakHours = 0.75; // 45 min\nconst billableHours = Number((totalHours - rainBreakHours).toFixed(2)); // 8.15 ore\n\nconst hourlyRate = 185.00; // RON/ora\nconst billableAmount = Number((billableHours * hourlyRate).toFixed(2));\n\nmsg.statusCode = 200;\nmsg.payload = {\n  ok: true,\n  survey_id: \"SRV-2026-CONST-088\",\n  vessel: \"MV WAN FU\",\n  berth: \"Berth 52 Port Constanta\",\n  photos_count: photos.length,\n  chrono_photos: photos,\n  discharge_sequence_timeline: photos.map(p => ({\n    time: p.time,\n    operation: p.event,\n    hold: p.hold_no,\n    status: \"CONFIRMED\"\n  })),\n  surveyor_timesheet: {\n    surveyor: \"Alexandru Radu\",\n    date: \"2026-10-29\",\n    first_photo_time: firstTime,\n    last_photo_time: lastTime,\n    total_on_site_hours: totalHours,\n    weather_break_hours: rainBreakHours,\n    net_billable_hours: billableHours,\n    hourly_rate_ron: hourlyRate,\n    total_billable_ron: billableAmount,\n    accounting_status: \"Gata de Facturare\"\n  }\n};\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 400,
+    "wires": [
+      [
+        "chrono_out"
+      ]
+    ]
+  },
+  {
+    "id": "chrono_out",
+    "type": "http response",
+    "z": "tab_fieldops",
+    "name": "Chrono Out",
+    "statusCode": "",
+    "headers": {},
+    "x": 700,
+    "y": 400,
+    "wires": []
   }
 ]
