@@ -1,0 +1,47 @@
+# ==============================================================================
+# Cloudflare Tunnel Configuration - leewuai.ro
+# LeeWu AI - Autonomous Maritime Intelligence & Survey Console
+# ==============================================================================
+
+# Replace with your Cloudflare Tunnel UUID after creating it via dashboard or 'cloudflared tunnel create leewu-tunnel'
+tunnel: leewu-tunnel
+credentials-file: /etc/cloudflared/leewu-tunnel.json
+
+# Edge Ingress Dispatch Matrix
+ingress:
+  # 1. Main Production Landing & Prices
+  - hostname: leewuai.ro
+    service: http://localhost:8080
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+
+  - hostname: www.leewuai.ro
+    service: http://localhost:8080
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+
+  # 2. Surveyor Operations Mission Console
+  - hostname: console.leewuai.ro
+    service: http://localhost:8080/survey-console.html
+    originRequest:
+      connectTimeout: 15s
+      noTLSVerify: true
+
+  # 3. Node-RED Real-Time Webhooks & APIs
+  - hostname: api.leewuai.ro
+    service: http://localhost:1880
+    originRequest:
+      connectTimeout: 10s
+      noTLSVerify: true
+
+  # 4. n8n Autonomous Workflow Intake
+  - hostname: n8n.leewuai.ro
+    service: http://localhost:5678
+    originRequest:
+      connectTimeout: 15s
+      noTLSVerify: true
+
+  # 5. Catch-All Rule (HTTP 404)
+  - service: http_status:404

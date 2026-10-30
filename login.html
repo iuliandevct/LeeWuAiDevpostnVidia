@@ -83,6 +83,7 @@
       50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.8; }
     }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col justify-between selection:bg-primary/30 selection:text-primary relative overflow-x-hidden">
 
@@ -266,6 +267,8 @@
             </div>
           </div>
 
+          <!-- Cloudflare Turnstile CAPTCHA (Bot Protection) -->
+          <div class="cf-turnstile my-3" data-sitekey="0x4AAAAAAAxPlaceholderKey" data-theme="dark"></div>
           <button type="submit" id="btn-submit-login" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primary-container text-background font-headline font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(148,218,50,0.3)] transition-all">
             <span class="material-symbols-outlined text-lg">login</span>
             <span>Authenticate Session</span>

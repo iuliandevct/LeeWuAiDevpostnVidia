@@ -1,0 +1,19 @@
+; ==============================================================================
+; Cloudflare DNS Zone Export Template for leewuai.ro
+; Resolves Security Insights Findings (DMARC, SPF, Tunnel CNAMEs)
+; ==============================================================================
+
+; --- Cloudflare Tunnel Routing (Replace with your tunnel UUID) ---
+leewuai.ro.             300 IN  CNAME   <TUNNEL_UUID>.cfargotunnel.com.
+www.leewuai.ro.         300 IN  CNAME   <TUNNEL_UUID>.cfargotunnel.com.
+console.leewuai.ro.     300 IN  CNAME   <TUNNEL_UUID>.cfargotunnel.com.
+api.leewuai.ro.         300 IN  CNAME   <TUNNEL_UUID>.cfargotunnel.com.
+n8n.leewuai.ro.         300 IN  CNAME   <TUNNEL_UUID>.cfargotunnel.com.
+
+; --- Email Security (Fixes Cloudflare DMARC & SPF Error Findings) ---
+leewuai.ro.             300 IN  TXT     "v=spf1 include:_spf.mx.cloudflare.net ~all"
+_dmarc.leewuai.ro.      300 IN  TXT     "v=DMARC1; p=quarantine; sp=quarantine; rua=mailto:dmarc-reports@leewuai.ro; pct=100; aspf=r;"
+
+; --- Maritime Services Domain Alignment (leewuai.ro) ---
+_dmarc.leewuai.ro. 300 IN TXT "v=DMARC1; p=quarantine; sp=quarantine; rua=mailto:dmarc-reports@leewuai.ro; pct=100; aspf=r;"
+leewuai.ro.        300 IN TXT "v=spf1 include:_spf.mx.cloudflare.net ~all"

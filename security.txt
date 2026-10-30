@@ -1,0 +1,12 @@
+# ==============================================================================
+# Security.txt - RFC 9116 Compliant Vulnerability Disclosure Policy
+# Domain: leewuai.ro & leewuai.ro
+# ==============================================================================
+Contact: mailto:security@leewuai.ro
+Contact: mailto:security@leewuai.ro
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, ro
+Canonical: https://leewuai.ro/.well-known/security.txt
+Policy: https://leewuai.ro/security-policy
+Acknowledgments: https://leewuai.ro/hall-of-fame
+Hiring: https://leewuai.ro/careers

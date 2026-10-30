@@ -14,6 +14,20 @@
 
 
 
+
+### 11. Cloudflare Zero Trust Tunnel & Security Audit Architecture (leewuai.ro)
+Integrated end-to-end Cloudflare edge proxy protection and automated security auditing:
+- **Cloudflare Ingress Routing Matrix (`cloudflare/config.yml`)**:
+  - `leewuai.ro` & `www.leewuai.ro` -> `http://localhost:8080` (Landing page, index, prices)
+  - `console.leewuai.ro` -> `http://localhost:8080/survey-console.html` (Surveyor Mission Console)
+  - `api.leewuai.ro` -> `http://localhost:1880` (Node-RED webhooks & dispatch endpoints)
+  - `n8n.leewuai.ro` -> `http://localhost:5678` (Autonomous Gmail intake engine)
+- **Automated Security Insights Remediation**:
+  - **RFC 9116 `/.well-known/security.txt`**: Deployed for responsible disclosure compliance.
+  - **DMARC & SPF Zone Alignment (`cloudflare/dns_zone_leewuai.ro.txt`)**: Full quarantine policy preventing email spoofing on `leewuai.ro` and `leewuai.ro`.
+  - **Cloudflare Turnstile CAPTCHA**: Integrated into `login.html` for anti-bot protection without user friction.
+- **Antigravity Skill `cloudflare-security-audit`**: Automated CLI tool (`scripts/cloudflare_security_audit.js`) validating local configuration against Cloudflare CSV Security Insights reports.
+
 ### 10. Enterprise Cloud & GPU Pricing Gateway (leewuai.ro/prices)
 Integrated dedicated infrastructure pricing page ([prices.html](file:///prices.html)) reflecting wholesale Nebius bare-metal rates with our proprietary **+20% Enterprise Maritime SLA markup**:
 - **NVIDIA GPU Compute Instances**:
