@@ -1,56 +1,36 @@
 # ==============================================================================
-# Cloudflare Tunnel Configuration - leewuai.ro
-# LeeWu AI - Autonomous Maritime Intelligence & Survey Infrastructure
-#
-# REMEDIATED ARCHITECTURE:
-# - Frontend (leewuai.ro, www.leewuai.ro, console.leewuai.ro):
-#   Served directly by Cloudflare Pages (Anycast Edge CDN). No tunnel required.
-# - Python REST API (api.leewuai.ro):
-#   Mapped to local port 8080 (leewu_mvp_server.py).
-# - Node-RED Field Automation (automation.leewuai.ro):
-#   Mapped to local port 1880 (Node-RED runtime).
-# - n8n Workflow Ingestion (n8n.leewuai.ro):
-#   Mapped to local port 5678 (n8n autonomous intake).
+# Cloudflare Tunnel Configuration — LeeWu AI (v1.0.0-rc1 Reconciled Architecture)
+# ==============================================================================
+# ARCHITECTURE BOUNDARIES:
+# 1. Frontend Static Assets (Cloudflare Pages):
+#    Served directly by Cloudflare Pages CDN. No tunnel required for HTML/CSS/JS.
+# 2. Local Python REST API (api.leewuai.ro):
+#    Exposes ONLY /api/* routes mapped to http://127.0.0.1:8080 (leewu_mvp_server.py).
+#    SQLite database and Telegram Bot daemon remain strictly local and are never
+#    exposed directly.
+# 3. Reconciled Legacy Services (DEACTIVATED FOR SECURITY):
+#    - automation.leewuai.ro (Node-RED :1880) -> REMOVED from public ingress to
+#      prevent accidental exposure of administrative flow editors.
+#    - n8n.leewuai.ro (n8n :5678) -> REMOVED from public ingress to prevent
+#      accidental exposure of workflow automation consoles.
 # ==============================================================================
 
-# Replace with your Cloudflare Tunnel UUID after creating it via:
-# 'cloudflared tunnel create leewu-tunnel'
 tunnel: leewu-tunnel
 credentials-file: /etc/cloudflared/leewu-tunnel.json
 
-# Edge Ingress Dispatch Matrix
 ingress:
-  # 1. Python REST API Gateway (Maritime Survey Intelligence MVP)
-  # Corrected from 1880 -> 8080 to match leewu_mvp_server.py
+  # 1. Python REST API Gateway — Strictly scoped to /api/* routes only
   - hostname: api.leewuai.ro
-    service: http://localhost:8080
+    path: ^/api/.*
+    service: http://127.0.0.1:8080
     originRequest:
       connectTimeout: 15s
       noTLSVerify: true
 
-  # 2. Node-RED Field Automation & Telegram Webhooks
-  # Moved from api.leewuai.ro to dedicated automation subdomain
-  - hostname: automation.leewuai.ro
-    service: http://localhost:1880
-    originRequest:
-      connectTimeout: 10s
-      noTLSVerify: true
+  # [RECONCILED & DISABLED] Legacy Node-RED (localhost:1880) and n8n (localhost:5678)
+  # administrative interfaces are intentionally excluded from public Tunnel ingress.
+  # - hostname: automation.leewuai.ro (DISABLED — local-only 127.0.0.1:1880)
+  # - hostname: n8n.leewuai.ro        (DISABLED — local-only 127.0.0.1:5678)
 
-  # 3. n8n Autonomous Workflow Intake
-  - hostname: n8n.leewuai.ro
-    service: http://localhost:5678
-    originRequest:
-      connectTimeout: 15s
-      noTLSVerify: true
-
-  # 4. Local Development Fallbacks (Optional)
-  # Note: In production, leewuai.ro and www.leewuai.ro are served directly by
-  # Cloudflare Pages CDN at the edge with 0ms tunnel overhead.
-  - hostname: dev-local.leewuai.ro
-    service: http://localhost:8080
-    originRequest:
-      connectTimeout: 10s
-      noTLSVerify: true
-
-  # 5. Catch-All Rule (HTTP 404)
+  # 2. Default Catch-All Rule (Fail-Closed HTTP 404)
   - service: http_status:404

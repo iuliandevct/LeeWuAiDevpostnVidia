@@ -182,7 +182,7 @@ class TestCloudflarePreflight(unittest.TestCase):
             self.assertEqual(code, 200, f"Endpoint {ep} failed with HTTP {code}")
 
     def test_03_tunnel_configuration_and_routes(self):
-        """3. Tunnel: Validate `cloudflare/config.yml` syntax, hostnames, local ports, and 404 catch-all."""
+        """3. Tunnel: Validate reconciled `cloudflare/config.yml` (API-only ingress, Node-RED/n8n excluded, 404 catch-all)."""
         cfg_path = PROJECT_ROOT / "cloudflare" / "config.yml"
         self.assertTrue(cfg_path.exists())
         cfg_text = cfg_path.read_text(encoding="utf-8")
@@ -190,17 +190,17 @@ class TestCloudflarePreflight(unittest.TestCase):
         self.assertIn("tunnel: leewu-tunnel", cfg_text)
         self.assertIn("credentials-file: /etc/cloudflared/leewu-tunnel.json", cfg_text)
         self.assertIn("hostname: api.leewuai.ro", cfg_text)
-        self.assertIn("http://localhost:8080", cfg_text)
-        self.assertIn("hostname: automation.leewuai.ro", cfg_text)
-        self.assertIn("http://localhost:1880", cfg_text)
-        self.assertIn("hostname: n8n.leewuai.ro", cfg_text)
-        self.assertIn("http://localhost:5678", cfg_text)
+        self.assertIn("path: ^/api/.*", cfg_text)
+        self.assertIn("http://127.0.0.1:8080", cfg_text)
 
-        # Ensure final ingress rule is catch-all http_status:404
+        # Verify active (uncommented) lines do NOT expose Node-RED (:1880) or n8n (:5678)
         non_comment_lines = [
             line.strip() for line in cfg_text.splitlines()
             if line.strip() and not line.strip().startswith("#")
         ]
+        active_block = "\n".join(non_comment_lines)
+        self.assertNotIn("1880", active_block, "Node-RED port 1880 must not be exposed in active Tunnel ingress!")
+        self.assertNotIn("5678", active_block, "n8n port 5678 must not be exposed in active Tunnel ingress!")
         self.assertEqual(non_comment_lines[-1], "- service: http_status:404")
 
     def test_04_security_headers_and_secrets_hygiene(self):

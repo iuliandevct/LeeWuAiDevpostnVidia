@@ -256,6 +256,7 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("X-Frame-Options", "SAMEORIGIN")
         self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
         self.send_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        self.send_header("Content-Security-Policy", "default-src 'self' https: data: blob: 'unsafe-inline'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'")
         super().end_headers()
 
     def do_OPTIONS(self):
