@@ -258,13 +258,15 @@ class TestAIOpsObservability(unittest.TestCase):
                 self.headers = headers
                 self.client_address = (client_ip, 50000)
 
-        # Case 1: Localhost without ADMIN_API_KEY env set -> Authorized in dev mode
+        # Case 1: Localhost without ADMIN_API_KEY env set -> Must fail closed (P0 loopback bypass removed)
+        os.environ.pop("ADMIN_API_KEY", None)
         h_local = MockHandler({}, "127.0.0.1")
         url_local = urllib.parse.urlparse("/api/ai-ops/overview")
-        self.assertTrue(check_admin_auth(h_local, url_local))
+        self.assertFalse(check_admin_auth(h_local, url_local))
 
-        # Case 2: External client without token when ADMIN_API_KEY configured
+        # Case 2: External or loopback client without token when ADMIN_API_KEY configured -> Rejected
         os.environ["ADMIN_API_KEY"] = "super-secret-admin-token-2026"
+        self.assertFalse(check_admin_auth(h_local, url_local))
         h_ext = MockHandler({}, "198.51.100.25")
         self.assertFalse(check_admin_auth(h_ext, url_local))
 

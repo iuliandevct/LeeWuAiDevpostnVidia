@@ -65,34 +65,63 @@ except ImportError:
     from ai_ops_service import AIOpsService
     ai_ops_service = AIOpsService.get_instance(DB_PATH)
 
-def check_admin_auth(handler, parsed_url) -> bool:
-    """
-    Verifies administrator authorization for AI Operations Observability.
-    
-    Security Controls:
-    1. Bearer token in Authorization header with constant-time comparison (secrets.compare_digest).
-    2. Zero query-string credentials (rejects ?admin_key= or ?token=).
-    3. If ADMIN_API_KEY is configured, valid Bearer token is strictly required.
-    4. If ADMIN_API_KEY is unset, strictly restricts access to loopback (127.0.0.1/::1) for local demo.
-    """
-    admin_key = os.getenv("ADMIN_API_KEY", "").strip()
-    auth_header = handler.headers.get("Authorization", "")
+FORBIDDEN_QUERY_CREDENTIAL_KEYS = {
+    "admin_key",
+    "token",
+    "api_key",
+    "apikey",
+    "key",
+    "access_token",
+    "auth",
+    "bearer",
+    "password",
+    "secret",
+}
 
-    if auth_header.startswith("Bearer "):
-        token = auth_header.split(" ", 1)[1].strip()
-        if admin_key and secrets.compare_digest(token, admin_key):
-            return True
-        if not admin_key and token == "demo-admin-local":
-            return True
 
-    # When no ADMIN_API_KEY is set in environment, allow local loopback inspection only
-    if not admin_key:
-        client_ip = getattr(handler, "client_address", ("0.0.0.0", 0))[0]
-        if client_ip in ("127.0.0.1", "localhost", "::1"):
+def has_query_credentials(parsed_url) -> bool:
+    """Returns True if the URL query string contains any credential-like parameter."""
+    if not parsed_url or not getattr(parsed_url, "query", ""):
+        return False
+    qs = urllib.parse.parse_qs(parsed_url.query, keep_blank_values=True)
+    for k in qs.keys():
+        if k.strip().lower() in FORBIDDEN_QUERY_CREDENTIAL_KEYS:
             return True
-
-    # Reject non-loopback requests and query-string API keys
     return False
+
+
+def check_admin_auth(handler, parsed_url=None) -> bool:
+    """
+    Verifies server-side Bearer token authentication for protected AI Ops and write endpoints.
+
+    Security Controls (Fail-Closed):
+    1. Rejects any request carrying credentials in URL query strings (?admin_key=, ?token=, etc.).
+    2. Requires ADMIN_API_KEY to be explicitly configured in the server environment; fails closed if missing/empty.
+    3. Never trusts loopback addresses (127.0.0.1, localhost, ::1) or proxy headers (X-Forwarded-For, CF-Connecting-IP).
+    4. Requires 'Authorization: Bearer <token>' header verified using constant-time secrets.compare_digest.
+    """
+    if parsed_url is None and hasattr(handler, "path"):
+        parsed_url = urllib.parse.urlparse(handler.path)
+
+    if has_query_credentials(parsed_url):
+        return False
+
+    admin_key = os.getenv("ADMIN_API_KEY", "").strip()
+    if not admin_key:
+        return False
+
+    if not hasattr(handler, "headers") or handler.headers is None:
+        return False
+
+    auth_header = handler.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return False
+
+    token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        return False
+
+    return secrets.compare_digest(token.encode("utf-8"), admin_key.encode("utf-8"))
 
 # Allowed Origins Configuration for Production & Staging
 DEFAULT_ALLOWED_ORIGINS = {
@@ -244,6 +273,13 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
+        if has_query_credentials(parsed):
+            self.send_json(401, {
+                "error": "Unauthorized: Credentials in URL query strings are strictly rejected.",
+                "status": "AUTH_REQUIRED"
+            })
+            return
+
         if path == "/api/health":
             self.send_json(200, {
                 "status": "ok",
@@ -366,30 +402,30 @@ class LeeWuMVPHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+        length = int(self.headers.get("Content-Length", 0))
 
-        # Security: Guard write endpoints against unauthenticated non-demo mutations
-        DEMO_SURVEY_ID = "LW-DEMO-001"
-        REQUIRE_AUTH_FOR_WRITES = os.getenv("REQUIRE_AUTH_FOR_WRITES", "false").lower() in ("true", "1")
-        ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "").strip()
+        # Security (P0): Fail-closed write protection across ALL write operations (including LW-DEMO-001 and /api/ai-ops/*).
+        # Default REQUIRE_AUTH_FOR_WRITES is strictly True (fail-closed).
+        REQUIRE_AUTH_FOR_WRITES = os.getenv("REQUIRE_AUTH_FOR_WRITES", "true").strip().lower() not in ("false", "0")
+        if has_query_credentials(parsed):
+            if 0 < length <= 65536:
+                self.rfile.read(length)
+            self.send_json(401, {
+                "error": "Unauthorized: Credentials in URL query strings are strictly rejected.",
+                "status": "AUTH_REQUIRED"
+            })
+            return
 
-        is_demo_write = path.startswith(f"/api/surveys/{DEMO_SURVEY_ID}/")
-        is_ai_ops = path.startswith("/api/ai-ops/")
-
-        if not is_ai_ops and (REQUIRE_AUTH_FOR_WRITES or not is_demo_write):
-            auth_header = self.headers.get("Authorization", "")
-            authorized = False
-            if auth_header.startswith("Bearer "):
-                token = auth_header.split(" ", 1)[1].strip()
-                if ADMIN_API_KEY and secrets.compare_digest(token, ADMIN_API_KEY):
-                    authorized = True
-            if not authorized:
+        if REQUIRE_AUTH_FOR_WRITES or not check_admin_auth(self, parsed):
+            if not check_admin_auth(self, parsed):
+                if 0 < length <= 65536:
+                    self.rfile.read(length)
                 self.send_json(401, {
                     "error": "Unauthorized: Valid Bearer token required for write operations.",
                     "status": "AUTH_REQUIRED"
                 })
                 return
 
-        length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(length) if length > 0 else b""
 
         payload = {}

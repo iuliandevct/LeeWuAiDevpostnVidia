@@ -436,15 +436,28 @@
     }
   }
 
+  function getOperatorHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    const token = sessionStorage.getItem("leewu_admin_token") || localStorage.getItem("leewu_admin_token");
+    if (token) {
+      headers["Authorization"] = "Bearer " + token.trim();
+    }
+    return headers;
+  }
+
   async function uploadPhoto() {
     showToast("📸 Processing and hashing cargo photograph for TR-001...");
     try {
       const res = await fetch("/api/surveys/LW-DEMO-001/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}) // triggers sample high-res transformer photo copy & hash
+        headers: getOperatorHeaders(),
+        body: JSON.stringify({})
       });
       const data = await res.json();
+      if (res.status === 401) {
+        showToast("🔒 Read-Only Public Demo: Valid Bearer token (ADMIN_API_KEY) required for upload.");
+        return;
+      }
       if (data.success) {
         showToast("✅ Photograph stored and linked to Survey LW-DEMO-001 & Item TR-001!");
         loadState();
@@ -455,7 +468,7 @@
   }
 
   function verifyTelemetry() {
-    showToast("⚡ Telemetry verified: N2=0.25 bar, Impact Recorders=0.8G (Within 1.5G threshold)");
+    showToast("⚡ Telemetry verified (Read-Only): N2=0.25 bar, Impact Recorders=0.8G (Within 1.5G threshold)");
   }
 
   async function runAiAssessment() {
@@ -464,7 +477,7 @@
     try {
       const res = await fetch("/api/surveys/LW-DEMO-001/ai-inspect", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getOperatorHeaders(),
         body: JSON.stringify({
           nitrogen_pressure: "0.25 bar",
           impact_recorder_g: "0.8 G (longitudinal), 0.4 G (transverse)",
@@ -473,6 +486,11 @@
         })
       });
       const data = await res.json();
+      if (res.status === 401) {
+        document.getElementById("btn-ai").textContent = "🧠 Generate AI Note";
+        showToast("🔒 Read-Only Public Demo: Valid Bearer token (ADMIN_API_KEY) required for AI inference.");
+        return;
+      }
       if (data.success) {
         showToast("✅ NVIDIA Nemotron statutory warranty assessment generated!");
         loadState();
@@ -487,7 +505,7 @@
     try {
       const res = await fetch("/api/surveys/LW-DEMO-001/approve", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getOperatorHeaders(),
         body: JSON.stringify({
           surveyor_name: "Ing. Alexandru Radu",
           license_number: "DEMO-MWS-2026-001",
@@ -495,6 +513,10 @@
         })
       });
       const data = await res.json();
+      if (res.status === 401) {
+        showToast("🔒 Read-Only Public Demo: Valid Bearer token (ADMIN_API_KEY) required for approval.");
+        return;
+      }
       if (data.success) {
         showToast("🎉 Survey officially approved & cryptographically sealed with SHA-256!");
         loadState();
@@ -506,7 +528,14 @@
 
   async function resetDemo() {
     if (confirm("Reset synthetic demo survey LW-DEMO-001 to clean initial state?")) {
-      await fetch("/api/surveys/LW-DEMO-001/reset", { method: "POST" });
+      const res = await fetch("/api/surveys/LW-DEMO-001/reset", {
+        method: "POST",
+        headers: getOperatorHeaders()
+      });
+      if (res.status === 401) {
+        showToast("🔒 Read-Only Public Demo: Valid Bearer token (ADMIN_API_KEY) required for reset.");
+        return;
+      }
       location.reload();
     }
   }

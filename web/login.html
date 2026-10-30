@@ -339,12 +339,12 @@
           </button>
         </form>
 
-        <!-- DIVIDER: QUICK DEMO ROLE SWITCHER -->
+        <!-- DIVIDER: READ-ONLY UI ROLE PREVIEW -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/30"></div></div>
           <div class="relative flex justify-center text-xs uppercase">
             <span class="bg-surface-container-low px-2 font-mono text-[10px] text-outline tracking-widest font-semibold">
-              OR INSTANT ROLE SWITCH (ONE-CLICK DEMO)
+              OR READ-ONLY UI ROLE PREVIEW (UNAUTHENTICATED DEMO)
             </span>
           </div>
         </div>
@@ -398,8 +398,8 @@
 
         <div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center justify-between font-mono text-[11px] text-outline">
           <span class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-xs text-primary">lock_clock</span>
-            <span>All sessions signed via SHA-256</span>
+            <span class="material-symbols-outlined text-xs text-primary">visibility</span>
+            <span>Read-only UI preview • Backend writes require Bearer auth</span>
           </span>
           <a href="survey.html" target="_blank" class="hover:text-primary transition-colors flex items-center gap-1">
             <span>A4 Sample Report</span>
@@ -604,22 +604,49 @@
       document.getElementById("alert-box").classList.add("hidden");
     }
 
-    // Complete Session & Transition to Survey Console
-    function completeAuth(userProfile, token = "demo-jwt-token") {
-      showAlert("success", "Authentication verified! Initializing RLS boundary for " + userProfile.full_name + " (" + userProfile.role.toUpperCase() + ")...");
-      
-      // Store in LocalStorage
-      localStorage.setItem("leewu_user_profile", JSON.stringify(userProfile));
+    // Complete Verified Backend Session & Transition to Survey Console
+    function completeAuth(userProfile, token) {
+      if (!token) {
+        showAlert("error", "Authentication rejected: No valid backend session token was issued.");
+        return;
+      }
+      const authProfile = Object.assign({}, userProfile, { authenticated: true, read_only: false });
+      showAlert("success", "Backend session verified for " + authProfile.full_name + " (" + authProfile.role.toUpperCase() + ").");
+
+      localStorage.setItem("leewu_user_profile", JSON.stringify(authProfile));
       localStorage.setItem("leewu_auth_token", token);
+      localStorage.setItem("leewu_demo_mode", "AUTHENTICATED_SESSION");
       localStorage.setItem("leewu_auth_timestamp", new Date().toISOString());
 
-      // Redirect after brief visual HUD transition
       setTimeout(() => {
         window.location.href = "survey-console.html";
       }, 1000);
     }
 
-    // 1. Email Sign In
+    // Enter Unauthenticated Read-Only UI Preview (Never described as real authentication)
+    function enterReadOnlyDemoPreview(userProfile) {
+      const previewProfile = Object.assign({}, userProfile, {
+        authenticated: false,
+        read_only: true,
+        mode: "READ_ONLY_PREVIEW"
+      });
+      showAlert(
+        "success",
+        "Read-Only UI Preview Mode active for " + previewProfile.full_name +
+        " — Client-side preview only (NOT authenticated). Backend write operations and AI inference require server-side Bearer credentials."
+      );
+
+      localStorage.setItem("leewu_user_profile", JSON.stringify(previewProfile));
+      localStorage.removeItem("leewu_auth_token");
+      localStorage.setItem("leewu_demo_mode", "READ_ONLY_PREVIEW");
+      localStorage.setItem("leewu_auth_timestamp", new Date().toISOString());
+
+      setTimeout(() => {
+        window.location.href = "survey-console.html";
+      }, 1000);
+    }
+
+    // 1. Email Sign In (Strict backend verification; arbitrary password fallbacks removed)
     async function handleEmailSignIn(e) {
       e.preventDefault();
       const email = document.getElementById("login-email").value.trim();
@@ -633,10 +660,9 @@
         if (supabaseClient) {
           const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
           if (error) throw error;
-          
-          if (data && data.user) {
-            // Fetch profile
-            const { data: prof, error: pErr } = await supabaseClient
+
+          if (data && data.user && data.session && data.session.access_token) {
+            const { data: prof } = await supabaseClient
               .from('profiles')
               .select('*')
               .eq('id', data.user.id)
@@ -650,26 +676,24 @@
               company: data.user.user_metadata?.company || "LeeWu Maritime Survey"
             };
 
-            completeAuth(profile, data.session?.access_token);
+            completeAuth(profile, data.session.access_token);
             return;
           }
         }
       } catch (err) {
-        console.warn("[Supabase] Real sign-in failed, checking demo accounts fallback:", err.message);
+        console.warn("[Supabase] Authentication error:", err.message);
       }
 
-      // Check Demo Accounts match
-      const matched = Object.values(DEMO_ACCOUNTS).find(acc => acc.email.toLowerCase() === email.toLowerCase());
-      if (matched && (password.length >= 6)) {
-        completeAuth(matched);
-      } else {
-        showAlert("error", "Invalid credentials or Supabase server unreachable. Tip: Use instant demo buttons below or password 'demo-session-auth'.");
-        btn.disabled = false;
-        btn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span><span>Authenticate Session</span>';
-      }
+      // Fail closed: reject arbitrary passwords and never fall back to client-side password acceptance
+      showAlert(
+        "error",
+        "Authentication rejected: Invalid credentials or authentication server unreachable. Arbitrary client-side passwords are not accepted. For unauthenticated read-only UI inspection, select a Read-Only Role Preview below."
+      );
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span><span>Authenticate Session</span>';
     }
 
-    // 2. User Sign Up
+    // 2. User Sign Up (Strict backend verification; offline fake JWT fallback removed)
     async function handleSignUp(e) {
       e.preventDefault();
       const email = document.getElementById("signup-email").value.trim();
@@ -693,30 +717,28 @@
           });
           if (error) throw error;
 
-          const newProfile = {
-            id: data.user?.id || ("usr-" + Date.now()),
-            email,
-            full_name,
-            role,
-            company: company || "Maritime Cargo Partner"
-          };
-          showAlert("success", "Account created successfully! Session initialized.");
-          completeAuth(newProfile, data.session?.access_token || "mock-token-signup");
-          return;
+          if (data && data.session && data.session.access_token) {
+            const newProfile = {
+              id: data.user?.id || ("usr-" + Date.now()),
+              email,
+              full_name,
+              role,
+              company: company || "Maritime Cargo Partner"
+            };
+            completeAuth(newProfile, data.session.access_token);
+            return;
+          }
         }
       } catch (err) {
         console.warn("[Supabase] Sign-up API error:", err.message);
       }
 
-      // Offline creation fallback
-      const fallbackProfile = {
-        id: "demo-new-" + Date.now(),
-        email,
-        full_name,
-        role,
-        company: company || "Independent Maritime Contractor"
-      };
-      completeAuth(fallbackProfile, "local-demo-jwt");
+      showAlert(
+        "error",
+        "Registration rejected: Authentication backend unreachable. Offline account creation is disabled."
+      );
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-lg">person_add</span><span>Create Profile & Apply RLS Policy</span>';
     }
 
     // 3. Magic Link
@@ -747,13 +769,13 @@
       btn.innerHTML = '<span class="material-symbols-outlined text-lg">forward_to_inbox</span><span>Send Supabase Magic Link</span>';
     }
 
-    // 4. Instant Demo Role Switcher
+    // 4. Read-Only UI Role Preview Selector (Unauthenticated client-side preview only)
     function quickLogin(roleKey) {
       const acc = DEMO_ACCOUNTS[roleKey];
       if (!acc) return;
       document.getElementById("login-email").value = acc.email;
-      document.getElementById("login-password").value = "demo-session-auth";
-      completeAuth(acc);
+      document.getElementById("login-password").value = "";
+      enterReadOnlyDemoPreview(acc);
     }
 
     // Supabase Config Modal Helpers

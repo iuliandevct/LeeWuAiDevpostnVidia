@@ -387,8 +387,10 @@ class TestIsolatedSQLiteCRUDRegression(unittest.TestCase):
         env = os.environ.copy()
         env["PORT"] = str(port)
         env["HOST"] = "127.0.0.1"
+        admin_key = "isolated-crud-admin-key-2026"
         env["DATA_DIR"] = str(self.isolated_data_dir)
         env["LEEWU_DB_PATH"] = str(self.isolated_db_path)
+        env["ADMIN_API_KEY"] = admin_key
         env["NEBIUS_API_KEY"] = ""  # Use deterministic offline fallback during CRUD test
 
         proc = subprocess.Popen(
@@ -415,7 +417,9 @@ class TestIsolatedSQLiteCRUDRegression(unittest.TestCase):
 
             def req_json(path, method="GET", payload=None):
                 data = json.dumps(payload).encode("utf-8") if payload is not None else None
-                headers = {"Content-Type": "application/json"} if data is not None else {}
+                headers = {"Authorization": f"Bearer {admin_key}"}
+                if data is not None:
+                    headers["Content-Type"] = "application/json"
                 req = urllib.request.Request(f"{base_url}{path}", data=data, headers=headers, method=method)
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     return resp.status, json.loads(resp.read().decode("utf-8"))
