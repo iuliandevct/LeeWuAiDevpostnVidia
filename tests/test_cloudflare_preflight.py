@@ -247,11 +247,17 @@ class TestCloudflarePreflight(unittest.TestCase):
         srv_code = (PROJECT_ROOT / "leewu_mvp_server.py").read_text(encoding="utf-8")
         self.assertIn('HOST = os.getenv("HOST", "127.0.0.1")', srv_code)
 
-        # Confirm cloudflared is not active
-        res = subprocess.run(
-            ["powershell", "-NoProfile", "-Command", "Get-Process cloudflared -ErrorAction SilentlyContinue"],
-            capture_output=True, text=True
-        )
+        # Confirm cloudflared is not active (cross-platform Windows + Linux)
+        if os.name == "nt":
+            res = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", "Get-Process cloudflared -ErrorAction SilentlyContinue"],
+                capture_output=True, text=True
+            )
+        else:
+            res = subprocess.run(
+                ["pgrep", "-x", "cloudflared"],
+                capture_output=True, text=True
+            )
         self.assertEqual(res.stdout.strip(), "", "cloudflared process should not be active during preflight!")
 
 
