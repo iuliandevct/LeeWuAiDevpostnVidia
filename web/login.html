@@ -660,7 +660,7 @@
 
       // Check Demo Accounts match
       const matched = Object.values(DEMO_ACCOUNTS).find(acc => acc.email.toLowerCase() === email.toLowerCase());
-      if (matched && (password === "demo-session-auth" || password.length >= 6)) {
+      if (matched && (password.length >= 6)) {
         completeAuth(matched);
       } else {
         showAlert("error", "Invalid credentials or Supabase server unreachable. Tip: Use instant demo buttons below or password 'demo-session-auth'.");

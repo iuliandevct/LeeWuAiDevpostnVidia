@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeeWu AI — Demonstrable Maritime MVP | Synthetic Survey LW-DEMO-001</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070c18;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(51, 65, 85, 0.5);
+      --primary: #94da32;
+      --primary-glow: rgba(148, 218, 50, 0.25);
+      --yellow: #ffd700;
+      --yellow-glow: rgba(255, 215, 0, 0.2);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --cyan: #38bdf8;
+      --success: #10b981;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #172554 0%, #070c18 65%);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 42px; height: 42px;
+      background: rgba(148, 218, 50, 0.15);
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .brand-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .brand-sub { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+    .nav-links { display: flex; gap: 14px; }
+    .nav-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: rgba(30, 41, 59, 0.5);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .hero-banner {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-progress { background: rgba(254, 240, 138, 0.15); color: var(--yellow); border: 1px solid rgba(254, 240, 138, 0.4); }
+    .badge-approved { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 12px rgba(16, 185, 129, 0.3); }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      backdrop-filter: blur(10px);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 10px;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px dashed rgba(255,255,255,0.06);
+      font-size: 13px;
+    }
+    .meta-label { color: var(--text-muted); }
+    .meta-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #e2e8f0; }
+
+    /* Workflow Steps */
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 900px) { .steps-container { grid-template-columns: 1fr; } }
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+    }
+    .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; margin-bottom: 10px;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .step-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .step-desc { font-size: 11px; color: var(--text-muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 14px;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #070c18;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-yellow {
+      background: var(--yellow);
+      color: #070c18;
+      box-shadow: 0 0 20px var(--yellow-glow);
+    }
+    .btn-yellow:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+    
+    .evidence-preview {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      margin-top: 12px;
+      display: none;
+    }
+    .evidence-preview img { width: 100%; height: auto; display: block; }
+    
+    .ai-output-box {
+      background: rgba(6, 78, 59, 0.25);
+      border-left: 3px solid var(--primary);
+      padding: 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #d1fae5;
+      margin-top: 14px;
+      display: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .seal-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px dashed var(--primary);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      margin-top: 14px;
+      display: none;
+      word-break: break-all;
+    }
+    .status-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: #0f172a;
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🚢</div>
+      <div>
+        <div class="brand-title">LeeWu AI</div>
+        <div class="brand-sub">Autonomous Maritime Intelligence • Local MVP</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/survey-console.html" class="nav-btn">Mission Console</a>
+      <a href="/landing.html" class="nav-btn">Landing Page</a>
+      <a href="/survey.html" target="_blank" class="nav-btn">Sample A4 Report</a>
+      <button onclick="resetDemo()" class="nav-btn" style="cursor:pointer; color:#f87171; border-color:#f87171;">Reset Demo</button>
+    </div>
+  </header>
+
+  <!-- Hero Status Banner -->
+  <div class="hero-banner">
+    <div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+        <h1 style="font-size:22px; font-weight:800;">Survey: LW-DEMO-001</h1>
+        <span id="survey-badge" class="badge badge-progress">IN PROGRESS</span>
+      </div>
+      <div style="font-size:13px; color:var(--text-muted);">
+        Vessel: <b style="color:#fff;">MV DEMO CARRIER</b> | Cargo: <b style="color:#fff;">Industrial Transformer (TR-001)</b> | Port: <b style="color:#fff;">Port of Constanta (Berth 120)</b>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a href="/api/surveys/LW-DEMO-001/export" target="_blank" id="btn-export" class="nav-btn" style="background:var(--primary); color:#000; font-weight:700; border:none; display:none;">
+        📄 Export Certified Report
+      </a>
+    </div>
+  </div>
+
+  <!-- 4 Step Interactive Execution Pipeline -->
+  <div class="steps-container">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-title">Upload Evidence</div>
+      <div class="step-desc">Attach high-res photo of Transformer TR-001 & compute SHA-256 hash.</div>
+      <button id="btn-upload" onclick="uploadPhoto()" class="btn btn-outline">📸 Upload Photo</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-title">Telemetry Data</div>
+      <div class="step-desc">Inspect N2 positive pressure (0.25 bar) and tri-axial impact shock G-forces.</div>
+      <button onclick="verifyTelemetry()" class="btn btn-outline">⚡ Verify Telemetry</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-title">AI Assessment</div>
+      <div class="step-desc">Invoke live NVIDIA Nemotron 30B model to generate statutory inspection note.</div>
+      <button id="btn-ai" onclick="runAiAssessment()" class="btn btn-yellow" disabled style="opacity:0.6;">🧠 Generate AI Note</button>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-title">Human Sign-off</div>
+      <div class="step-desc">Marine Warranty Surveyor approval & statutory cryptographic seal.</div>
+      <button id="btn-approve" onclick="approveSurvey()" class="btn btn-primary" disabled style="opacity:0.6;">✍️ Certify & Sign</button>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid-2">
+    <!-- Left: Cargo Item & Evidence -->
+    <div class="card">
+      <div class="card-title">
+        <span>📦 Cargo Item Specification (TR-001)</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Cargo Item Code:</span>
+        <span class="meta-val">TR-001</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Description:</span>
+        <span class="meta-val">110kV Heavy Power Transformer</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Gross Tonnage:</span>
+        <span class="meta-val">124.5 MT</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Nitrogen Positive Pressure:</span>
+        <span class="meta-val" id="disp-n2">0.25 bar (Target: 0.15 - 0.35 bar)</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Shock Recorder (Impact):</span>
+        <span class="meta-val" id="disp-impact">0.8G Long. / 0.4G Trans. (Max: 1.5G)</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-label">Lashing System:</span>
+        <span class="meta-val">8 x Grade 80 16mm Chains (45° angle)</span>
+      </div>
+
+      <!-- Uploaded Photo Preview -->
+      <div id="evidence-box" class="evidence-preview">
+        <img id="evidence-img" src="" alt="Cargo Evidence TR-001">
+        <div id="evidence-meta" style="padding:10px; font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--text-muted); background:rgba(0,0,0,0.4);">
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: AI Intelligence & Marine Surveyor Certification -->
+    <div class="card">
+      <div class="card-title">
+        <span>🤖 NVIDIA Nemotron AI Assessment & Statutory Seal</span>
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+        Model: <b style="color:var(--yellow); font-family:'JetBrains Mono';">nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B</b> via Nebius Token Factory
+      </div>
+
+      <!-- Placeholder or Output -->
+      <div id="ai-placeholder" style="padding:40px 20px; text-align:center; color:var(--text-muted); border:1px dashed var(--card-border); border-radius:8px; font-size:13px;">
+        Click <b>"Generate AI Note"</b> to perform automated maritime warranty assessment on TR-001.
+      </div>
+
+      <div id="ai-result" class="ai-output-box"></div>
+
+      <!-- Seal & Approval Box -->
+      <div id="seal-box" class="seal-box">
+        <div style="color:var(--success); font-weight:700; margin-bottom:4px;">✅ STATUTORY WARRANTY SIGNATURE CERTIFIED:</div>
+        <div>Surveyor: <b style="color:#fff;" id="seal-surveyor">Ing. Alexandru Radu</b> (License: DEMO-MWS-2026-001)</div>
+        <div>Timestamp: <span id="seal-time" style="color:var(--cyan);"></span></div>
+        <div style="margin-top:8px;">SHA-256 Digest:</div>
+        <div style="color:var(--yellow); font-size:10px;" id="seal-hash"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="status-toast"></div>
+
+<script>
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    setTimeout(() => { t.style.display = "none"; }, 3500);
+  }
+
+  async function loadState() {
+    try {
+      const res = await fetch("/api/surveys/LW-DEMO-001");
+      if (!res.ok) return;
+      const data = await res.json();
+      
+      // Update badge
+      const badge = document.getElementById("survey-badge");
+      if (data.status === "APPROVED") {
+        badge.className = "badge badge-approved";
+        badge.textContent = "APPROVED & SEALED";
+        document.getElementById("btn-export").style.display = "inline-flex";
+      } else {
+        badge.className = "badge badge-progress";
+        badge.textContent = "IN PROGRESS";
+      }
+
+      // Check evidence
+      if (data.evidence && data.evidence.length > 0) {
+        const ev = data.evidence[data.evidence.length - 1];
+        document.getElementById("evidence-img").src = ev.file_path;
+        document.getElementById("evidence-meta").innerHTML = `
+          SHA-256: ${ev.sha256}<br>
+          Dimensions: ${ev.dimensions} | File: ${ev.file_name} (${ev.file_size} bytes)<br>
+          Uploaded: ${ev.uploaded_at}
+        `;
+        document.getElementById("evidence-box").style.display = "block";
+        document.getElementById("btn-ai").disabled = false;
+        document.getElementById("btn-ai").style.opacity = "1";
+        document.getElementById("btn-upload").textContent = "✓ Photo Attached";
+        document.getElementById("btn-upload").style.borderColor = "var(--primary)";
+      }
+
+      // Check AI
+      if (data.ai_assessments && data.ai_assessments.length > 0) {
+        const ai = data.ai_assessments[data.ai_assessments.length - 1];
+        const aiBox = document.getElementById("ai-result");
+        aiBox.innerHTML = ai.assessment_text.replace(/\\n/g, "<br>");
+        aiBox.style.display = "block";
+        document.getElementById("ai-placeholder").style.display = "none";
+        document.getElementById("btn-approve").disabled = false;
+        document.getElementById("btn-approve").style.opacity = "1";
+        document.getElementById("btn-ai").textContent = "✓ AI Assessment Ready";
+      }
+
+      // Check Approval
+      if (data.status === "APPROVED" && data.cryptographic_hash) {
+        document.getElementById("seal-surveyor").textContent = data.approved_by + " (License: " + data.surveyor_license + ")";
+        document.getElementById("seal-time").textContent = data.approved_at;
+        document.getElementById("seal-hash").textContent = data.cryptographic_hash;
+        document.getElementById("seal-box").style.display = "block";
+        document.getElementById("btn-approve").textContent = "✓ Report Approved";
+      }
+    } catch (e) {
+      console.error("Error loading survey state:", e);
+    }
+  }
+
+  async function uploadPhoto() {
+    showToast("📸 Processing and hashing cargo photograph for TR-001...");
+    try {
+      const res = await fetch("/api/surveys/LW-DEMO-001/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}) // triggers sample high-res transformer photo copy & hash
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("✅ Photograph stored and linked to Survey LW-DEMO-001 & Item TR-001!");
+        loadState();
+      }
+    } catch (e) {
+      showToast("Upload failed: " + e.message);
+    }
+  }
+
+  function verifyTelemetry() {
+    showToast("⚡ Telemetry verified: N2=0.25 bar, Impact Recorders=0.8G (Within 1.5G threshold)");
+  }
+
+  async function runAiAssessment() {
+    showToast("🧠 Querying NVIDIA Nemotron 30B via Nebius Token Factory...");
+    document.getElementById("btn-ai").textContent = "⏳ Generating Assessment...";
+    try {
+      const res = await fetch("/api/surveys/LW-DEMO-001/ai-inspect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nitrogen_pressure: "0.25 bar",
+          impact_recorder_g: "0.8 G (longitudinal), 0.4 G (transverse)",
+          lashing_status: "8 x Grade 80 16mm chains verified at 45° angle with turnbuckles secured",
+          visual_remarks: "Transformer tank exterior clean, zero oil weeping on main bushings, desiccating breather silica gel is deep blue (active/dry), impact telltales intact."
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("✅ NVIDIA Nemotron statutory warranty assessment generated!");
+        loadState();
+      }
+    } catch (e) {
+      showToast("AI inference failed: " + e.message);
+    }
+  }
+
+  async function approveSurvey() {
+    showToast("✍️ Signing statutory warranty certificate...");
+    try {
+      const res = await fetch("/api/surveys/LW-DEMO-001/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          surveyor_name: "Ing. Alexandru Radu",
+          license_number: "DEMO-MWS-2026-001",
+          final_remarks: "Certified in full compliance with ANR Statutory Rules & Hague-Visby Article III."
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast("🎉 Survey officially approved & cryptographically sealed with SHA-256!");
+        loadState();
+      }
+    } catch (e) {
+      showToast("Approval failed: " + e.message);
+    }
+  }
+
+  async function resetDemo() {
+    if (confirm("Reset synthetic demo survey LW-DEMO-001 to clean initial state?")) {
+      await fetch("/api/surveys/LW-DEMO-001/reset", { method: "POST" });
+      location.reload();
+    }
+  }
+
+  // Initial load
+  loadState();
+</script>
+</body>
+</html>

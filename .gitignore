@@ -1,16 +1,117 @@
-.DS_Store
+# ==============================================================================
+# LeeWu AI - Git Ignore Configuration
+# ==============================================================================
+
+# 1. Environment & Credentials (CRITICAL)
 .env
 .env.*
 !.env.example
-auth.json
-*.dump
-*.backup
-*.bak
-backups/
-node_modules/
+*.pem
+*.key
+*.cert
+*.pfx
+cloudflared-credentials*.json
+cert.pem
+
+# 2. SQLite & Local Databases
+*.db
+*.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
+data/*.db
+data/tavily_cache.db
+data/leewu_mvp.db
+
+# 3. Dynamic Uploads, Evidence & Media Artifacts
+data/uploads/*
+!data/uploads/.gitkeep
+output/*
+!output/.gitkeep
+temp/
+tmp/
+*.mp4
+*.webm
+*.avi
+
+# 4. Python Environment & Bytecode
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 .venv/
 venv/
-supabase/.temp/
-**/supabase/.temp/
+ENV/
+env/
+
+# 5. Node.js & Web Build Tools
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+dist/
+dist-ssr/
+*.local
+.vite/
+.turbo/
+
+# 6. Aider & AI Agent Session Logs
+.aider*
+.aider.tags.cache.v3/
+.aider.chat.history.md
+.aider.input.history
+*.log
+logs/
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# 7. IDE & Operating System Artifacts
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# 8. Security Audit & Backup Exclusions
+*SecurityInsights*.csv
+Cloudflare_Account_SecurityInsights_*.csv
+data_backups/
+scratch/
+*.bak
+*.backup
+credentials.json
+*.db-shm
+data/telegram_chat_history.json*
+data/survey_remarks.json*

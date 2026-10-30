@@ -116,10 +116,6 @@
         </div>
       </button>
 
-      <a href="prices.html" target="_blank" class="w-full flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-primary hover:bg-primary/10 transition-all font-semibold text-xs border border-primary/30 my-2 shadow-[0_0_12px_rgba(148,218,50,0.15)]">
-        <span class="material-symbols-outlined text-sm text-primary">payments</span>
-        <span>Prețuri Cloud (leewuai.ro/prices)</span>
-      </a>
       <button onclick="switchView('view-kanban')" data-target="view-kanban" class="nav-item w-full flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50 transition-all">
         <span class="material-symbols-outlined text-xl">view_kanban</span>
         <div class="flex items-center justify-between w-full">
@@ -3880,7 +3876,7 @@ function stageClause() {
           <div>
             <label class="block text-outline text-[10px] uppercase mb-1">Telegram Bot Token</label>
             <div class="relative">
-              <input type="password" id="tg-bot-token" value="TELEGRAM_TOKEN_CONFIGURED_ON_SERVER" class="w-full pl-3 pr-8 py-2 rounded bg-surface-container-lowest border border-outline-variant/50 text-on-surface text-xs focus:border-primary focus:outline-none"/>
+              <input type="password" id="tg-bot-token" value="" placeholder="Configured on server via TELEGRAM_BOT_TOKEN" class="w-full pl-3 pr-8 py-2 rounded bg-surface-container-lowest border border-outline-variant/50 text-on-surface text-xs focus:border-primary focus:outline-none"/>
               <button onclick="togglePasswordVisibility('tg-bot-token')" class="absolute right-2.5 top-2 text-outline hover:text-on-surface">
                 <span class="material-symbols-outlined text-sm">visibility</span>
               </button>

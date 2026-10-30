@@ -1,0 +1,117 @@
+{
+  "version": "1.0.0",
+  "disclaimer": "Calculated costs are mathematical estimates derived from published provider token tariffs. Official invoices may reflect volume tiers, minimum billing increments, or promotional credits.",
+  "base_currency": "EUR",
+  "exchange_rates": {
+    "EUR_TO_USD": 1.08,
+    "USD_TO_EUR": 0.926,
+    "source": "European Central Bank (ECB) Reference Rate",
+    "rate_date": "2026-10-30"
+  },
+  "models": [
+    {
+      "provider": "nebius",
+      "model_id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "display_name": "NVIDIA Nemotron 3 Nano (30B A3B)",
+      "category": "Reasoning & Document Extraction",
+      "input_price_per_million": 0.15,
+      "output_price_per_million": 0.30,
+      "cached_input_price_per_million": 0.075,
+      "currency": "EUR",
+      "effective_date": "2026-01-01",
+      "source_url": "https://tokenfactory.nebius.com/pricing",
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "VERIFIED"
+    },
+    {
+      "provider": "nebius",
+      "model_id": "nvidia/Nemotron-3.5-Super-VL",
+      "display_name": "NVIDIA Nemotron 3.5 Super-VL",
+      "category": "Multimodal Cargo Vision",
+      "input_price_per_million": 0.40,
+      "output_price_per_million": 0.80,
+      "cached_input_price_per_million": 0.20,
+      "currency": "EUR",
+      "effective_date": "2026-01-01",
+      "source_url": "https://tokenfactory.nebius.com/pricing",
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "VERIFIED"
+    },
+    {
+      "provider": "nebius",
+      "model_id": "nvidia/nemotron-3-super-120b-a12b",
+      "display_name": "NVIDIA Nemotron 3 Super (120B A12B)",
+      "category": "Damage Causality Analysis",
+      "input_price_per_million": 0.60,
+      "output_price_per_million": 1.50,
+      "cached_input_price_per_million": 0.30,
+      "currency": "EUR",
+      "effective_date": "2026-01-01",
+      "source_url": "https://tokenfactory.nebius.com/pricing",
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "VERIFIED"
+    },
+    {
+      "provider": "nebius",
+      "model_id": "nvidia/Nemotron-3-Ultra-550b-a55b",
+      "display_name": "NVIDIA Nemotron 3 Ultra (550B A55B)",
+      "category": "Flagship Statutory Dossiers",
+      "input_price_per_million": 1.80,
+      "output_price_per_million": 4.50,
+      "cached_input_price_per_million": 0.90,
+      "currency": "EUR",
+      "effective_date": "2026-01-01",
+      "source_url": "https://tokenfactory.nebius.com/pricing",
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "VERIFIED"
+    },
+    {
+      "provider": "nebius",
+      "model_id": "NousResearch/Hermes-4-405B",
+      "display_name": "Hermes 4 (405B)",
+      "category": "Autonomous Maritime Agent",
+      "input_price_per_million": 1.50,
+      "output_price_per_million": 3.50,
+      "cached_input_price_per_million": 0.75,
+      "currency": "EUR",
+      "effective_date": "2026-01-01",
+      "source_url": "https://tokenfactory.nebius.com/pricing",
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "VERIFIED"
+    },
+    {
+      "provider": "nebius",
+      "model_id": "meta-llama/Llama-3.3-70B-Instruct",
+      "display_name": "Meta Llama 3.3 (70B Instruct)",
+      "category": "General Purpose Inference",
+      "input_price_per_million": 0.23,
+      "output_price_per_million": 0.40,
+      "cached_input_price_per_million": 0.10,
+      "currency": "EUR",
+      "effective_date": "2026-01-01",
+      "source_url": "https://tokenfactory.nebius.com/pricing",
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "VERIFIED"
+    },
+    {
+      "provider": "nebius",
+      "model_id": "nvidia/nemotron-experimental-unlisted",
+      "display_name": "NVIDIA Experimental Unlisted Model",
+      "category": "Research / Unpriced",
+      "input_price_per_million": null,
+      "output_price_per_million": null,
+      "cached_input_price_per_million": null,
+      "currency": "EUR",
+      "effective_date": null,
+      "source_url": null,
+      "verification_timestamp": "2026-10-30T00:00:00Z",
+      "pricing_status": "UNAVAILABLE"
+    }
+  ],
+  "budget": {
+    "daily_budget_eur": 15.00,
+    "monthly_budget_eur": 350.00,
+    "warning_thresholds_pct": [50, 75, 90, 100],
+    "hard_limit_enabled": false
+  }
+}

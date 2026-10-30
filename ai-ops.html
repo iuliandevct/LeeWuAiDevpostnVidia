@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeeWu AI — AI Operations & Cost Observatory</title>
+  <link rel="stylesheet" href="ai_ops.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- Top Industrial Navigation Header -->
+  <header class="obs-header">
+    <div class="brand-section">
+      <div class="brand-logo">LW</div>
+      <div class="brand-title">
+        <span>LeeWu AI</span> • AI Operations & Cost Observatory
+        <span class="brand-badge">FinOps v1.0</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="control-pill pulse-live">
+        <span class="pulse-dot"></span>
+        <span>TELEMETRY LIVE</span>
+      </div>
+
+      <div class="control-pill">
+        <span>Currency:</span>
+        <select id="select-currency" class="select-compact">
+          <option value="EUR" selected>EUR (€)</option>
+          <option value="USD">USD ($)</option>
+        </select>
+      </div>
+
+      <label class="control-pill" style="cursor:pointer;" title="Toggle synthetic benchmark demonstration telemetry">
+        <input type="checkbox" id="toggle-synthetic" checked style="accent-color: var(--accent-yellow);">
+        <span>Include Demo Data</span>
+      </label>
+
+      <button id="btn-trigger-ai" class="btn btn-primary btn-sm" title="Sends a real inference request to Nebius NVIDIA Nemotron">
+        ⚡ Test Live Inference
+      </button>
+
+      <button id="btn-refresh" class="btn btn-sm" title="Force Refresh Telemetry">
+        ↻ Refresh
+      </button>
+
+      <button id="btn-auth-config" class="btn btn-sm" title="Configure Administrator Key">
+        🔑 Admin Key
+      </button>
+
+      <div class="control-pill" style="font-size: 10px;">
+        <span>Updated: <b id="last-updated">--:--:--</b></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="obs-container">
+
+    <!-- Synthetic vs Live Mode Notification Banner -->
+    <div id="mode-banner" class="banner-mode banner-synthetic">
+      <span>⚠️ <b>SYNTHETIC DEMO MODE ACTIVE</b> — Telemetry displays real requests combined with isolated synthetic benchmarks for demonstration.</span>
+      <div>
+        <button id="btn-seed-demo" class="btn btn-sm" style="margin-right: 6px;">+ Seed 35 Events</button>
+        <button id="btn-clear-demo" class="btn btn-sm">Clear Demo Data</button>
+      </div>
+    </div>
+
+    <!-- Overview HUD KPI Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Total AI Requests</span>
+          <span class="kpi-icon">📊</span>
+        </div>
+        <div class="kpi-value text-info" id="kpi-total-requests">0</div>
+        <div class="kpi-subtext">Across all configured models</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Token Consumption</span>
+          <span class="kpi-icon">🔤</span>
+        </div>
+        <div class="kpi-value text-warning" id="kpi-total-tokens">0</div>
+        <div class="kpi-subtext" id="kpi-tokens-sub">In: 0 | Out: 0</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Estimated Cost</span>
+          <span class="kpi-icon">💶</span>
+        </div>
+        <div class="kpi-value text-success" id="kpi-total-cost">€0.0000</div>
+        <div class="kpi-subtext">Verified Nebius/NVIDIA rates</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Average Latency</span>
+          <span class="kpi-icon">⏱️</span>
+        </div>
+        <div class="kpi-value" id="kpi-avg-latency">0 ms</div>
+        <div class="kpi-subtext">End-to-end inference TTFT</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Pipeline Health</span>
+          <span class="kpi-icon">🛡️</span>
+        </div>
+        <div class="kpi-value text-success" id="kpi-success-rate">100%</div>
+        <div class="kpi-subtext" id="kpi-failures-sub">0 failures logged</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Active Fleet</span>
+          <span class="kpi-icon">🤖</span>
+        </div>
+        <div class="kpi-value" id="kpi-active-models">0</div>
+        <div class="kpi-subtext"><span id="kpi-alerts-badge" class="brand-badge">0 Alerts</span></div>
+      </div>
+    </section>
+
+    <!-- Dashboard Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="overview">📈 Overview & Spending</button>
+      <button class="tab-btn" data-tab="costs">💰 FinOps & Cost Breakdown</button>
+      <button class="tab-btn" data-tab="models">🤖 Model Inventory & Availability</button>
+      <button class="tab-btn" data-tab="requests">🔍 Request Explorer</button>
+      <button class="tab-btn" data-tab="alerts">🚨 Anomaly Alerts & Auditing</button>
+    </nav>
+
+    <!-- TAB 1: OVERVIEW & SPENDING -->
+    <section id="pane-overview" class="tab-pane">
+      <div class="panel-grid-2">
+        <div class="obs-panel">
+          <div class="panel-title-bar">
+            <div class="panel-title">
+              <span>AI Spending & Request Volume (Daily Timeline)</span>
+            </div>
+            <div class="panel-legend">
+              <span><span class="legend-dot" style="background:var(--accent-yellow);"></span> Cost (€)</span>
+              <span><span class="legend-dot" style="background:var(--accent-green);"></span> Requests</span>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-spending" class="obs-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="obs-panel">
+          <div class="panel-title-bar">
+            <div class="panel-title">
+              <span>FinOps Budget Guardrails</span>
+            </div>
+            <span class="brand-badge">Strict Limits</span>
+          </div>
+
+          <div class="budget-meter-group">
+            <div class="budget-item">
+              <div class="budget-labels">
+                <span>Daily Consumption (Target: €15.00)</span>
+                <span id="budget-daily-label">€0.00 / €15.00 (0%)</span>
+              </div>
+              <div class="meter-track">
+                <div id="meter-daily-fill" class="meter-fill" style="width:0%; background:var(--accent-green);"></div>
+              </div>
+            </div>
+
+            <div class="budget-item">
+              <div class="budget-labels">
+                <span>Monthly Allocation (Target: €350.00)</span>
+                <span id="budget-monthly-label">€0.00 / €350.00 (0%)</span>
+              </div>
+              <div class="meter-track">
+                <div id="meter-monthly-fill" class="meter-fill" style="width:0%; background:var(--accent-blue);"></div>
+              </div>
+            </div>
+
+            <div style="font-size:11px; color:var(--text-muted); margin-top:10px; line-height:1.4;">
+              Threshold warnings triggered automatically at <b>50%</b>, <b>75%</b>, <b>90%</b>, and <b>100%</b>.
+              Production inference services remain active unless an administrator enables hard limits.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: FINOPS & COST BREAKDOWN -->
+    <section id="pane-costs" class="tab-pane" style="display:none;">
+      <div class="panel-grid-2">
+        <div class="obs-panel">
+          <div class="panel-title-bar">
+            <div class="panel-title">AI Cost Distribution by Model</div>
+          </div>
+          <div class="table-responsive">
+            <table class="obs-table">
+              <thead>
+                <tr>
+                  <th>Model Identifier</th>
+                  <th>Inferences</th>
+                  <th>Total Tokens</th>
+                  <th>Calculated Cost</th>
+                </tr>
+              </thead>
+              <tbody id="table-cost-model-body">
+                <tr><td colspan="4" class="text-muted">Loading telemetry...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="obs-panel">
+          <div class="panel-title-bar">
+            <div class="panel-title">Cost by Cargo Survey Dossier</div>
+          </div>
+          <div class="table-responsive">
+            <table class="obs-table">
+              <thead>
+                <tr>
+                  <th>Survey ID</th>
+                  <th>Calls</th>
+                  <th>Tokens</th>
+                  <th>Total Cost</th>
+                </tr>
+              </thead>
+              <tbody id="table-cost-survey-body">
+                <tr><td colspan="4" class="text-muted">Loading telemetry...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MODEL INVENTORY & AVAILABILITY -->
+    <section id="pane-models" class="tab-pane" style="display:none;">
+      <div class="obs-panel">
+        <div class="panel-title-bar">
+          <div class="panel-title">Dynamic AI Model Registry & Verification Proof</div>
+          <span class="text-muted" style="font-size:11px;">Verification is evidenced by live successful HTTP 200 completions</span>
+        </div>
+        <div class="table-responsive">
+          <table class="obs-table">
+            <thead>
+              <tr>
+                <th>Model / Family</th>
+                <th>Role Category</th>
+                <th>Verification</th>
+                <th>Verified Pricing (Per 1M)</th>
+                <th>Inferences</th>
+                <th>Tokens</th>
+                <th>Avg Latency</th>
+                <th>Cumulative Cost</th>
+                <th>Error Rate</th>
+              </tr>
+            </thead>
+            <tbody id="table-models-body">
+              <tr><td colspan="9" class="text-muted">Loading model fleet...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: REQUEST EXPLORER -->
+    <section id="pane-requests" class="tab-pane" style="display:none;">
+      <div class="obs-panel">
+        <div class="panel-title-bar">
+          <div class="panel-title">Live Inference Telemetry Audit Stream</div>
+          <div>
+            <button id="btn-export-csv" class="btn btn-sm">Export CSV</button>
+            <button id="btn-export-json" class="btn btn-sm">Export JSON</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <select id="filter-model" class="select-compact">
+            <option value="">All Configured Models</option>
+            <option value="nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B">Nemotron 3 Nano (30B A3B)</option>
+            <option value="nvidia/Nemotron-3.5-Super-VL">Nemotron 3.5 Super-VL</option>
+            <option value="nvidia/nemotron-3-super-120b-a12b">Nemotron 3 Super (120B A12B)</option>
+            <option value="NousResearch/Hermes-4-405B">Hermes 4 (405B)</option>
+          </select>
+
+          <input type="text" id="filter-survey" class="input-compact" placeholder="Filter by Survey ID (e.g. LW-DEMO-001)">
+
+          <select id="filter-status" class="select-compact">
+            <option value="">All Statuses</option>
+            <option value="SUCCESS">Success (200)</option>
+            <option value="FAILURE">Failures</option>
+            <option value="TIMEOUT">Timeouts</option>
+          </select>
+
+          <button id="btn-apply-filters" class="btn btn-primary btn-sm">Filter</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="obs-table">
+            <thead>
+              <tr>
+                <th>Timestamp (UTC)</th>
+                <th>Model</th>
+                <th>Survey ID</th>
+                <th>Tokens (In/Out)</th>
+                <th>Estimated Cost</th>
+                <th>Duration</th>
+                <th>HTTP Status</th>
+                <th>Request ID</th>
+              </tr>
+            </thead>
+            <tbody id="table-requests-body">
+              <tr><td colspan="8" class="text-muted">Loading requests...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination-controls">
+          <span id="requests-pagination-info">Page 1 of 1</span>
+          <div>
+            <button id="btn-prev-page" class="btn btn-sm" disabled>Previous</button>
+            <button id="btn-next-page" class="btn btn-sm" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: ANOMALY ALERTS & AUDITING -->
+    <section id="pane-alerts" class="tab-pane" style="display:none;">
+      <div class="obs-panel">
+        <div class="panel-title-bar">
+          <div class="panel-title">Operational Anomaly & Budget Warning Feed</div>
+          <span class="brand-badge">Automated Detection</span>
+        </div>
+        <div id="alerts-container">
+          <div class="text-muted" style="padding:16px;">Loading alerts...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="ai_ops.js"></script>
+</body>
+</html>
